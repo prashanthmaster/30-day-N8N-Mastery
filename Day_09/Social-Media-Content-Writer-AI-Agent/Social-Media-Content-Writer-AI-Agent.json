@@ -1,0 +1,295 @@
+{
+  "name": "Social-Media Content Writer AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Social Media Content Writer AI Agent for LinkedIn, Facebook, and Instagram.\n\nMISSION\nTurn the user's PROMPT into three platform-specific posts (separate articles) that are clear, actionable, and brand-safe. Optimize for each platform’s tone, structure, and character norms. Output must be clean JSON only (no markdown, no code fences).\n\nINPUTS (from n8n JSON)\n- PROMPT_TEXT: {{ $json.chatInput }}\n- BRAND: {{$json.Brand || ''}}\n- AUDIENCE: {{$json.Audience || ''}}\n- LINK_URL: {{$json.Link || ''}}\n- TONE: {{$json.Tone || 'professional, friendly'}}\n- LANGUAGE: {{$json.Language || 'English'}}\n- EXTRA_TAGS: {{$json.Tags || ''}}   // comma or space-separated optional tags\n\nCONSTRAINTS & STYLE BY PLATFORM\n1) LinkedIn\n   - 120–220 words, 1–3 short paragraphs (may include a tight bullet list)\n   - Professional, value-led, minimal emojis (0–2 total), 3–8 relevant hashtags at end\n   - Add 1 clear CTA (e.g., “Comment your experience” / “Connect to learn more”)\n   - Mention LINK_URL once if provided\n\n2) Facebook\n   - 60–120 words, conversational, approachable\n   - Up to 1 emoji per sentence (optional), 3–6 hashtags\n   - CTA: “Share”, “Message us”, or “Learn more” with LINK_URL if provided\n\n3) Instagram\n   - 80–150 words, strong hook in first 120 characters\n   - Line breaks for readability, 8–15 hashtags (mix broad + niche)\n   - 1 emoji per line (optional), CTA: “Save this”, “Follow for more”, “DM us”\n   - If LINK_URL is provided, say “Link in bio” (or include it if your account style allows)\n\nWHAT TO INCLUDE IN EVERY POST\n- Title/headline that fits the platform\n- Core value/insight customized to AUDIENCE\n- One specific CTA\n- 3–5 image_ideas (photography or graphic concepts)\n- Hashtags as an ARRAY (not inline text)\n- Keep brand-safe; don’t invent facts; use LANGUAGE\n- If LINK_URL exists, integrate naturally (LI/FB direct; IG: “link in bio” unless allowed)\n\nSECTION: PROMPT\nEcho the user’s prompt in the final JSON as \"prompt_echo\" so we can archive it in Sheets.\n\nOUTPUT FORMAT (STRICT JSON ONLY — NO MARKDOWN, NO FENCES)\nReturn exactly this structure:\n\n{\n  \"project\": \"social-posts\",\n  \"prompt_echo\": \"<verbatim copy of PROMPT_TEXT>\",\n  \"brand\": \"<BRAND>\",\n  \"tone\": \"<TONE>\",\n  \"language\": \"<LANGUAGE>\",\n  \"posts\": [\n    {\n      \"platform\": \"LinkedIn\",\n      \"title\": \"<headline>\",\n      \"body\": \"<post text, plain text, with line breaks where needed>\",\n      \"hashtags\": [\"#Example\", \"#Another\"],\n      \"cta\": \"<one clear CTA>\",\n      \"image_ideas\": [\"<idea1>\", \"<idea2>\", \"<idea3>\"],\n      \"link\": \"<LINK_URL or ''>\",\n      \"word_count\": <integer>\n    },\n    {\n      \"platform\": \"Facebook\",\n      \"title\": \"<headline>\",\n      \"body\": \"<post text>\",\n      \"hashtags\": [\"#Example\"],\n      \"cta\": \"<one clear CTA>\",\n      \"image_ideas\": [\"<idea1>\", \"<idea2>\", \"<idea3>\"],\n      \"link\": \"<LINK_URL or ''>\",\n      \"word_count\": <integer>\n    },\n    {\n      \"platform\": \"Instagram\",\n      \"title\": \"<hook-style headline>\",\n      \"body\": \"<post text with line breaks>\",\n      \"hashtags\": [\"#Example\"],\n      \"cta\": \"<one clear CTA>\",\n      \"image_ideas\": [\"<idea1>\", \"<idea2>\", \"<idea3>\"],\n      \"link\": \"<LINK_URL or ''>\",\n      \"word_count\": <integer>\n    }\n  ],\n\n  // Convenience payload for Google Sheets \"Append\" (one row per platform)\n  // Join arrays for easy single-cell storage.\n  \"rows\": [\n    {\n      \"timestamp\": \"{{$now}}\",\n      \"platform\": \"LinkedIn\",\n      \"title\": \"<title>\",\n      \"body\": \"<body>\",\n      \"hashtags_joined\": \"#tag1 #tag2 #tag3\",\n      \"cta\": \"<cta>\",\n      \"link\": \"<LINK_URL or ''>\",\n      \"image_ideas_joined\": \"<idea1> | <idea2> | <idea3>\",\n      \"tone\": \"<TONE>\",\n      \"language\": \"<LANGUAGE>\",\n      \"prompt_echo\": \"<PROMPT_TEXT>\"\n    },\n    {\n      \"timestamp\": \"{{$now}}\",\n      \"platform\": \"Facebook\",\n      \"title\": \"<title>\",\n      \"body\": \"<body>\",\n      \"hashtags_joined\": \"#tag1 #tag2 #tag3\",\n      \"cta\": \"<cta>\",\n      \"link\": \"<LINK_URL or ''>\",\n      \"image_ideas_joined\": \"<idea1> | <idea2> | <idea3>\",\n      \"tone\": \"<TONE>\",\n      \"language\": \"<LANGUAGE>\",\n      \"prompt_echo\": \"<PROMPT_TEXT>\"\n    },\n    {\n      \"timestamp\": \"{{$now}}\",\n      \"platform\": \"Instagram\",\n      \"title\": \"<title>\",\n      \"body\": \"<body>\",\n      \"hashtags_joined\": \"#tag1 #tag2 #tag3\",\n      \"cta\": \"<cta>\",\n      \"link\": \"<LINK_URL or ''>\",\n      \"image_ideas_joined\": \"<idea1> | <idea2> | <idea3>\",\n      \"tone\": \"<TONE>\",\n      \"language\": \"<LANGUAGE>\",\n      \"prompt_echo\": \"<PROMPT_TEXT>\"\n    }\n  ]\n}\n\nVALIDATION\n- Return ONLY valid JSON. No explanations, no markdown, no backticks.\n- Arrays must be real arrays (e.g., [\"#tag1\",\"#tag2\"]), not strings.\n- Keep within platform word/hashtag guidance above.\n- If a field is unknown, return an empty string (\"\").\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        -96
+      ],
+      "id": "a358976a-10f5-425e-bc2f-381a2576dab8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        -432
+      ],
+      "id": "d18cce5d-e7fb-4b4c-a665-528203a842c5",
+      "name": "Prompt Here !",
+      "webhookId": "cc105697-a421-4b4d-9148-0be71f9c7abd"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        128,
+        144
+      ],
+      "id": "7c46bd90-f953-4e00-b94b-bbf05fb55249",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "X1zq07eygdIuKH6F",
+          "name": "deepseek/deepseek-chat-v3.1:free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        160
+      ],
+      "id": "ecd1de9b-29c9-4f06-b32c-c110ebfa1fda",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Function node\n * Input: items[i].json may include:\n *   - ID / Id / id (any one)\n *   - AI output in one of: output | text | data | choices[0].message.content | choices[0].text\n * Output (per input item): { ID, LinkedIn, Facebook, Instagram }\n */\n\nfunction getRaw(llm) {\n  if (!llm) return '';\n  if (typeof llm === 'string') return llm;\n  if (llm.output) return String(llm.output);\n  if (llm.text) return String(llm.text);\n  if (llm.data) return String(llm.data);\n  if (Array.isArray(llm.choices)) {\n    const c0 = llm.choices[0];\n    if (c0?.message?.content) return String(c0.message.content);\n    if (c0?.text) return String(c0.text);\n  }\n  return '';\n}\n\nfunction stripCodeFences(s) {\n  const t = String(s).trim();\n  if (t.startsWith('```')) {\n    // remove first fence with optional language\n    let x = t.replace(/^```[\\w-]*\\s*/, '');\n    // remove trailing ```\n    if (x.endsWith('```')) x = x.slice(0, -3);\n    return x.trim();\n  }\n  return t;\n}\n\nfunction tryParseJson(s) {\n  try {\n    return JSON.parse(s);\n  } catch (_) {\n    // try to grab the outermost {...}\n    const first = s.indexOf('{');\n    const last = s.lastIndexOf('}');\n    if (first !== -1 && last !== -1 && last > first) {\n      const cut = s.slice(first, last + 1);\n      try { return JSON.parse(cut); } catch {}\n    }\n  }\n  return null;\n}\n\nfunction pickId(j) {\n  return j.ID ?? j.Id ?? j.id ?? j.Id_ ?? '';\n}\n\nfunction normalizeHashtags(h) {\n  if (!h) return '';\n  if (Array.isArray(h)) return h.join(' ');\n  return String(h);\n}\n\nfunction composeFromPost(p) {\n  if (!p) return '';\n  const title = p.title ? `${p.title}\\n\\n` : '';\n  const body = p.body ? `${p.body}` : '';\n  const tags = normalizeHashtags(p.hashtags);\n  const cta = p.cta ? `\\n\\n${p.cta}` : '';\n  const link = p.link ? `\\n${p.link}` : '';\n  const hashtags = tags ? `\\n\\n${tags}` : '';\n  return `${title}${body}${cta}${link}${hashtags}`.trim();\n}\n\nfunction extractFromJson(jsonObj) {\n  // Support either posts[] or rows[] from the agent\n  const result = { LinkedIn: '', Facebook: '', Instagram: '' };\n\n  const posts = Array.isArray(jsonObj?.posts) ? jsonObj.posts : [];\n  const rows  = Array.isArray(jsonObj?.rows)  ? jsonObj.rows  : [];\n\n  if (posts.length) {\n    const byPlat = {};\n    for (const p of posts) {\n      const name = String(p.platform || '').toLowerCase();\n      byPlat[name] = composeFromPost(p);\n    }\n    result.LinkedIn  = byPlat['linkedin']  || '';\n    result.Facebook  = byPlat['facebook']  || '';\n    result.Instagram = byPlat['instagram'] || '';\n  }\n\n  // If still empty, try rows[]\n  if ((!result.LinkedIn || !result.Facebook || !result.Instagram) && rows.length) {\n    const byPlat = {};\n    for (const r of rows) {\n      const name = String(r.platform || '').toLowerCase();\n      const hashtags = r.hashtags_joined || normalizeHashtags(r.hashtags);\n      const body = r.body || '';\n      const title = r.title ? `${r.title}\\n\\n` : '';\n      const cta = r.cta ? `\\n\\n${r.cta}` : '';\n      const link = r.link ? `\\n${r.link}` : '';\n      const text = `${title}${body}${cta}${link}${hashtags ? `\\n\\n${hashtags}` : ''}`.trim();\n      byPlat[name] = text;\n    }\n    result.LinkedIn  ||= byPlat['linkedin']  || '';\n    result.Facebook  ||= byPlat['facebook']  || '';\n    result.Instagram ||= byPlat['instagram'] || '';\n  }\n\n  return result;\n}\n\nfunction extractFromHeadings(raw) {\n  // Parse plain text with headings \"LinkedIn:\", \"Facebook:\", \"Instagram:\"\n  const out = { LinkedIn: '', Facebook: '', Instagram: '' };\n  const pattern = /^\\s*(LinkedIn|Facebook|Instagram)\\s*:?\\s*$/i;\n\n  // Normalize newlines; create an index of heading positions\n  const lines = raw.split(/\\r?\\n/);\n  const sections = [];\n  for (let i = 0; i < lines.length; i++) {\n    if (pattern.test(lines[i])) {\n      const name = lines[i].match(pattern)[1];\n      sections.push({ name, start: i });\n    }\n  }\n  // Add a sentinel end\n  sections.push({ name: '__END__', start: lines.length });\n\n  for (let i = 0; i < sections.length - 1; i++) {\n    const name = sections[i].name;\n    const start = sections[i].start + 1; // after the heading line\n    const end = sections[i + 1].start;\n    const text = lines.slice(start, end).join('\\n').trim();\n    if (/^linkedin$/i.test(name)) out.LinkedIn = text;\n    if (/^facebook$/i.test(name)) out.Facebook = text;\n    if (/^instagram$/i.test(name)) out.Instagram = text;\n  }\n  return out;\n}\n\n// Main\nconst outItems = [];\n\nfor (const item of items) {\n  const j = item.json || {};\n  const ID = pickId(j);\n\n  let raw = getRaw(j);\n  raw = stripCodeFences(raw);\n\n  // Sometimes agents wrap JSON inside REPLY:/SUBJECT: — try to isolate JSON block first\n  let jsonObj = tryParseJson(raw);\n\n  let LinkedIn = '', Facebook = '', Instagram = '';\n\n  if (jsonObj) {\n    const split = extractFromJson(jsonObj);\n    LinkedIn = split.LinkedIn;\n    Facebook = split.Facebook;\n    Instagram = split.Instagram;\n  }\n\n  // Fallback to plain-text headings\n  if (!LinkedIn && !Facebook && !Instagram && raw) {\n    const split = extractFromHeadings(raw);\n    LinkedIn = split.LinkedIn;\n    Facebook = split.Facebook;\n    Instagram = split.Instagram;\n  }\n\n  outItems.push({\n    json: {\n      ID,\n      LinkedIn: LinkedIn || '',\n      Facebook: Facebook || '',\n      Instagram: Instagram || '',\n      // raw: raw, // uncomment for debugging\n    },\n  });\n}\n\nreturn outItems;\n\n/* \n// OPTIONAL: If you prefer to return THREE separate items\n// (one row per platform), replace the final push with:\n\nif (LinkedIn) outItems.push({ json: { ID, Platform: 'LinkedIn', Body: LinkedIn }});\nif (Facebook) outItems.push({ json: { ID, Platform: 'Facebook', Body: Facebook }});\nif (Instagram) outItems.push({ json: { ID, Platform: 'Instagram', Body: Instagram }});\nreturn outItems;\n\n*/\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -96
+      ],
+      "id": "4f2c5370-9b94-4efd-9032-7c7466c10ec8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1CgLvsXUa3l80gRbDJzgarSGQdwRmB3tlVJy7dNvYQus/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CgLvsXUa3l80gRbDJzgarSGQdwRmB3tlVJy7dNvYQus/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Prompt Here !').item.json.sessionId }}",
+            "LinkedIN": "={{ $json.LinkedIn }}",
+            "Facebook": "={{ $json.Facebook }}",
+            "Instagram": "={{ $json.Instagram }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIN",
+              "displayName": "LinkedIN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        -304
+      ],
+      "id": "560e69e5-3d07-42b4-8b71-5f3df4184412",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        832,
+        -320
+      ],
+      "id": "836752d2-d742-48dd-b238-bf50be204130",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com,support@botcampus.ai",
+        "subject": "AGENTIC AI  - CONTENT WRITER For Social media",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Bot Campus AI — Social Content</title>\n<style>\n  .container { max-width: 640px; margin: 0 auto; background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; }\n  .section-title { font: 12px/1.2 Arial, Helvetica, sans-serif; letter-spacing: .5px; color: #6a6a6a; text-transform: uppercase; margin: 0 0 6px 0; }\n  .h1 { font: 22px/1.25 Arial, Helvetica, sans-serif; color: #111; margin: 0 0 6px 0; }\n  .h2 { font: 20px/1.25 Arial, Helvetica, sans-serif; margin: 8px 0 10px 0; }\n  .pad { padding: 20px 24px; font: 14px/1.6 Arial, Helvetica, sans-serif; color: #222; }\n  .divider { height: 1px; background: #eaeaea; }\n  .block { white-space: pre-wrap; word-wrap: break-word; }\n</style>\n</head>\n<body style=\"margin:0;padding:24px;background:#f6f7fb;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background:#f6f7fb;\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"100%\" class=\"container\" cellspacing=\"0\" cellpadding=\"0\">\n          <tr>\n            <td class=\"pad\">\n              <div class=\"h1\">Bot Campus AI — Social Media Articles</div>\n              <div style=\"font:13px Arial,Helvetica,sans-serif;color:#666;margin-top:4px;\">This email includes content blocks for LinkedIn, Facebook, and Instagram. Copy/paste sections as needed.</div>\n            </td>\n          </tr>\n\n          <!-- LinkedIn -->\n          <tr><td class=\"pad\">\n            <div class=\"section-title\">LinkedIn</div>\n            <div class=\"h2\" style=\"color:#0a66c2;\">Post</div>\n            <div class=\"block\">{{ $json.LinkedIN }}</div>\n          </td></tr>\n\n          <tr><td class=\"divider\"></td></tr>\n\n          <!-- Facebook -->\n          <tr><td class=\"pad\">\n            <div class=\"section-title\">Facebook</div>\n            <div class=\"h2\" style=\"color:#1877f2;\">Post</div>\n            <div class=\"block\">{{ $json.Facebook }}</div>\n          </td></tr>\n\n          <tr><td class=\"divider\"></td></tr>\n\n          <!-- Instagram -->\n          <tr><td class=\"pad\">\n            <div class=\"section-title\">Instagram</div>\n            <div class=\"h2\" style=\"color:#e1306c;\">Post</div>\n            <div class=\"block\">{{ $json.Instagram }}</div>\n          </td></tr>\n\n          <tr><td class=\"pad\" style=\"background:#fafafa;border-top:1px solid #eee;\">\n            <div style=\"font:12px Arial,Helvetica,sans-serif;color:#999;\">\n              © Bot Campus AI • <a href=\"https://botcampus.ai\" style=\"color:#888;text-decoration:underline;\">botcampus.ai</a>\n            </div>\n          </td></tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        -288
+      ],
+      "id": "1b019267-5a96-4955-a0a1-81ac5f898c7a",
+      "name": "Send a message",
+      "webhookId": "d1d39bcd-3326-4d72-b4b1-1b0faa8cd091",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Prompt Here !": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e72a0aa6-ab8c-47cf-92d9-0fc2aaca4228",
+  "meta": {
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "AhjeS9uu9JxmMUfb",
+  "tags": []
+}

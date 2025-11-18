@@ -1,0 +1,416 @@
+{
+  "name": "Weekly Report System",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -64
+      ],
+      "id": "a5349d19-7b4f-4708-871d-ac11796cf2e3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appPddDbYyMNuUfPo",
+          "mode": "list",
+          "cachedResultName": "Weekly Report ",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPdinbgET4GzeeF",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo/tblPdinbgET4GzeeF"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Team": "={{ $json.Team }}",
+            "Update ": "={{ $json.Update }}",
+            "KPI's": "={{ $json['KPI\\'s'] }}",
+            "Links": "={{ $json.Links }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Update ",
+              "displayName": "Update ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "KPI's",
+              "displayName": "KPI's",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Links",
+              "displayName": "Links",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created Time",
+              "displayName": "Created Time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        -64
+      ],
+      "id": "a4b9fcbd-903a-4c00-b504-dae16ede5510",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9Gt0UqNpYjEHtrsr",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appPddDbYyMNuUfPo",
+          "mode": "list",
+          "cachedResultName": "Weekly Report ",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPdinbgET4GzeeF",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo/tblPdinbgET4GzeeF"
+        },
+        "id": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        -48
+      ],
+      "id": "bba84630-4573-4bb6-80af-26b5211b4f1f",
+      "name": "Get a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9Gt0UqNpYjEHtrsr",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function node => Language: JavaScript\n// Returns 5 rows as proper n8n items with \"json\" wrapper\n// Field names match your Airtable: Team, Update, KPI's, Links\n\nconst rows = [\n  {\n    Team: \"Engineering\",\n    Update: \"Shipped API v2.3; reduced p95 latency.\",\n    Kpis: \"p95_latency_ms: 380->312; error_rate: -22%\",\n    Links: \"https://docs.example.com/release-v2-3\"\n  },\n  {\n    Team: \"Sales\",\n    Update: \"Closed 8 mid-market deals; pipeline healthy.\",\n    Kpis: \"deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%\",\n    Links: \"https://crm.example.com/opps?week=latest\"\n  },\n  {\n    Team: \"Marketing\",\n    Update: \"Launched UGC campaign; best CTR this quarter.\",\n    Kpis: \"impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142\",\n    Links: \"https://campaigns.example.com/ugc-q3\"\n  },\n  {\n    Team: \"Operations\",\n    Update: \"Cut cloud cost with rightsizing & spot usage.\",\n    Kpis: \"cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%\",\n    Links: \"https://runbooks.example.com/cost-rightsizing\"\n  },\n  {\n    Team: \"Product\",\n    Update: \"Completed usability tests; two P0 fixes shipped.\",\n    Kpis: \"nps: 42; csat: 4.6/5; tasks_closed: 27\",\n    Links: \"https://product.example.com/research/usability-week\"\n  }\n];\n\n// Map to n8n items and use the exact Airtable field key \"KPI's\"\nreturn rows.map(r => ({\n  json: {\n    Team: r.Team,\n    Update: r.Update,\n    \"KPI's\": r.Kpis,\n    Links: r.Links\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        -64
+      ],
+      "id": "2b49aea5-b7d9-486f-913a-d4467c4874a9",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an Executive Report Assistant.  \nTurn Airtable weekly updates into a **clean Gmail-ready executive summary**.  \nAlways write in **Markdown**, concise and professional.  \n\n#### Input Data\n- **Date:** {{ $json.createdTime }}\n- **Team:** {{ $json.Team }}\n- **Update:** {{ $json['Update '] }}\n- **KPIs:** {{ $json[\"KPI's\"] }}\n- **Links:** {{ $json.Links }}\n- **Created Time:** {{ $json['Created Time'] }}\n\n#### Rules\n- Group similar updates together.  \n- Convert raw text into **prose or bullet points**.  \n- Normalize numbers (e.g., 312 → 312ms).  \n- Remove duplicates or filler.  \n- Keep and format links properly.  \n- Tone: factual, concise, forward-looking.  \n\n#### Output Format\nStructure the Gmail report with **five clear sections**:\n\n1. **Highlights** – Key achievements, launches, or progress.  \n2. **KPIs** – Present performance metrics clearly.  \n3. **Risks / Blockers** – Summarize issues or delays.  \n4. **Next Week Focus** – Outline main priorities.  \n5. **Team Shoutouts** – Recognize individuals or teams.  \n\n---\n\n### Example Output\n\n```markdown\n**Weekly Executive Report – Sept 15, 2025**\n\n### 1. Highlights\n- Engineering team shipped API v2.3, reducing latency by 22%.  \n- Database migration 80% complete, on schedule.  \n\n### 2. KPIs\n- p95 Latency: 380ms → 312ms  \n- Error Rate: 2.2%  \n- [Release Notes](https://docs.example.com/release-v2-3)  \n\n### 3. Risks / Blockers\n- API integration with VendorX delayed (ETA +2 weeks).  \n\n### 4. Next Week Focus\n- Finalize Q4 roadmap.  \n- Launch beta testing for analytics dashboard.  \n\n### 5. Team Shoutouts\n- 🎉 Kudos to Engineering for reducing latency.  \n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        512,
+        -160
+      ],
+      "id": "db58e014-2ac7-4bf6-ae4f-db963f42496e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        112
+      ],
+      "id": "defcb4ab-ca9e-41eb-a15f-7bd579b4cb25",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "MWyYXBJPFpkjg5Nh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "=Weekly Report — {{ $('Schedule Trigger').item.json['Readable date'] }}",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1072,
+        -144
+      ],
+      "id": "9dca0fc3-48d7-40b8-923a-5c0ca5a9af36",
+      "name": "Send a message",
+      "webhookId": "b79469fd-676c-46f8-b83b-485416ef3ec4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Gn7WKHzigIdNcQXB",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Code": [
+      {
+        "json": {
+          "Team": "Engineering",
+          "Update": "Shipped API v2.3; reduced p95 latency.",
+          "KPI's": "p95_latency_ms: 380->312; error_rate: -22%",
+          "Links": "https://docs.example.com/release-v2-3"
+        }
+      },
+      {
+        "json": {
+          "Team": "Sales",
+          "Update": "Closed 8 mid-market deals; pipeline healthy.",
+          "KPI's": "deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%",
+          "Links": "https://crm.example.com/opps?week=latest"
+        }
+      },
+      {
+        "json": {
+          "Team": "Marketing",
+          "Update": "Launched UGC campaign; best CTR this quarter.",
+          "KPI's": "impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142",
+          "Links": "https://campaigns.example.com/ugc-q3"
+        }
+      },
+      {
+        "json": {
+          "Team": "Operations",
+          "Update": "Cut cloud cost with rightsizing & spot usage.",
+          "KPI's": "cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%",
+          "Links": "https://runbooks.example.com/cost-rightsizing"
+        }
+      },
+      {
+        "json": {
+          "Team": "Product",
+          "Update": "Completed usability tests; two P0 fixes shipped.",
+          "KPI's": "nps: 42; csat: 4.6/5; tasks_closed: 27",
+          "Links": "https://product.example.com/research/usability-week"
+        }
+      }
+    ],
+    "Get a record": [
+      {
+        "json": {
+          "id": "recaXAU3y03R9ZhUP",
+          "createdTime": "2025-09-15T09:23:19.000Z",
+          "Team": "Engineering",
+          "Update ": "Shipped API v2.3; reduced p95 latency.",
+          "KPI's": "p95_latency_ms: 380->312; error_rate: -22%",
+          "Links": "https://docs.example.com/release-v2-3",
+          "Created Time": "2025-09-15T09:23:19.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "recDAZ48W5B7vKvzE",
+          "createdTime": "2025-09-15T09:23:21.000Z",
+          "Team": "Sales",
+          "Update ": "Closed 8 mid-market deals; pipeline healthy.",
+          "KPI's": "deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%",
+          "Links": "https://crm.example.com/opps?week=latest",
+          "Created Time": "2025-09-15T09:23:21.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "recAxKGXdbzWWmDCY",
+          "createdTime": "2025-09-15T09:23:22.000Z",
+          "Team": "Marketing",
+          "Update ": "Launched UGC campaign; best CTR this quarter.",
+          "KPI's": "impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142",
+          "Links": "https://campaigns.example.com/ugc-q3",
+          "Created Time": "2025-09-15T09:23:22.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "rec7hoWHmtG2SUoee",
+          "createdTime": "2025-09-15T09:23:24.000Z",
+          "Team": "Operations",
+          "Update ": "Cut cloud cost with rightsizing & spot usage.",
+          "KPI's": "cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%",
+          "Links": "https://runbooks.example.com/cost-rightsizing",
+          "Created Time": "2025-09-15T09:23:24.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "rec4tVFHHYA438ian",
+          "createdTime": "2025-09-15T09:23:25.000Z",
+          "Team": "Product",
+          "Update ": "Completed usability tests; two P0 fixes shipped.",
+          "KPI's": "nps: 42; csat: 4.6/5; tasks_closed: 27",
+          "Links": "https://product.example.com/research/usability-week",
+          "Created Time": "2025-09-15T09:23:25.000Z"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "369d81b9-6de7-40f6-9370-7e359af5d48f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "029e74343ace7e09d424f762fabbbe35816a726626c29ed43ae074863f99784c"
+  },
+  "id": "rlfTtID8AUq0lpAe",
+  "tags": []
+}

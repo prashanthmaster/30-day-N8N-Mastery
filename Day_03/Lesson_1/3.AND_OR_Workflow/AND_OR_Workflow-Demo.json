@@ -1,0 +1,219 @@
+{
+  "name": "AND_OR_Workflow.md",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e8d50c1a-e1d0-4e0b-883a-ae8c600b40f4",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{20}}",
+              "operation": "larger",
+              "value2": "={{18}}"
+            }
+          ],
+          "string": [
+            {
+              "value1": "={{\"India\"}}",
+              "value2": "India"
+            }
+          ]
+        },
+        "combineOperation": "and"
+      },
+      "id": "59862dc0-bfd4-4e4f-8043-a227bca54c22",
+      "name": "If (AND Condition)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "✅ User is an adult AND from India"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d398e799-e83d-443e-98a9-8a2469bc7dd2",
+      "name": "Set - AND True",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "❌ Condition failed (either not adult or not from India)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "66b60d85-ee73-4fa6-943e-9fa1c573911e",
+      "name": "Set - AND False",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        16,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{85}}",
+              "operation": "larger",
+              "value2": "={{80}}"
+            },
+            {
+              "value1": "={{5}}",
+              "value2": "={{10}}"
+            }
+          ]
+        },
+        "combineOperation": "or"
+      },
+      "id": "c5302b57-0f16-481a-ad91-14f60e2b1c2f",
+      "name": "If (OR Condition)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "🏆 Qualified by score or rank"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6c03bd3-0a18-4a78-a89c-bfa924628c85",
+      "name": "Set - OR True",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "❌ Did not qualify"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f4059b3-f390-4d20-bda8-94771bd4f1fb",
+      "name": "Set - OR False",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        16,
+        400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "If (AND Condition)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If (OR Condition)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If (AND Condition)": {
+      "main": [
+        [
+          {
+            "node": "Set - AND True",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - AND False",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If (OR Condition)": {
+      "main": [
+        [
+          {
+            "node": "Set - OR True",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - OR False",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6d9171ba-0d58-48a8-841c-b414987c327b",
+  "meta": {
+    "instanceId": "029e74343ace7e09d424f762fabbbe35816a726626c29ed43ae074863f99784c"
+  },
+  "id": "INBC5raPJpg3tgx2",
+  "tags": []
+}

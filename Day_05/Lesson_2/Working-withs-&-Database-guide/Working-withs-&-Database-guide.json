@@ -1,0 +1,285 @@
+{
+  "name": "day 5  lesson 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -464,
+        -80
+      ],
+      "id": "e0855efa-fcdd-4d4b-b444-fe03256fcd18",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/chvishal523-v/dummy-csv/refs/heads/main/important-data.csv",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -288,
+        -80
+      ],
+      "id": "f00fdab1-e513-4a26-b5a8-fe5e3fac92f8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -80
+      ],
+      "id": "5bb54b08-9582-4bac-b9db-e417a2b998a0",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get CSV string from previous node\nconst csvData = items[0].json.data;\n\n// Split lines\nconst lines = csvData.trim().split(\"\\n\");\n\n// Extract header\nconst header = lines[0].split(\",\");\n\n// Filter rows (skip ones where Email is empty)\nconst filtered = lines.slice(1).filter(line => {\n  const cols = line.split(\",\");\n  return cols[2] && cols[2].trim() !== \"\";\n});\n\n// Convert filtered rows into row objects for Google Sheets Append\nconst rows = filtered.map(line => {\n  const cols = line.split(\",\");\n  let obj = {};\n  header.forEach((h, i) => {\n    obj[h] = cols[i];\n  });\n  return { json: obj };\n});\n\n// ✅ Return only row objects so Google Sheets appends all\nreturn rows;\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -80
+      ],
+      "id": "10269ecd-0e27-4283-816a-95df4456f462",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1XDjgXjQ9qJqTSKdXCqgqWir0i2UiFDYytIJXwA4JQoY",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XDjgXjQ9qJqTSKdXCqgqWir0i2UiFDYytIJXwA4JQoY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.ID }}",
+            "name": "={{ $json.Name }}",
+            "email": "={{ $json.Email }}",
+            "age": "={{ $json.Age }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "age",
+              "displayName": "age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        -240
+      ],
+      "id": "d5a53bf4-f978-437a-b70c-71c150e1d222",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PwHhcfAGQJDj3KVy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "ch.vishal.leadmaster.ai@gmail.com",
+        "subject": "cleaned backup data",
+        "message": "filtered data",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        -80
+      ],
+      "id": "c381b08c-845e-40c5-a768-195e34338d1c",
+      "name": "Send a message",
+      "webhookId": "0c3627ef-de1d-4e5b-b4bb-e48880667161",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UHZa8dl21qZshVrS",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assume previous node gave rows like:\n// items = [ {json: {ID:\"2\", Name:\"Bob\", Email:\"bob@example.com\", Age:\"30\"}}, {...} ]\n\n// Extract all headers (keys from the first row)\nconst headers = Object.keys(items[0].json);\n\n// Build CSV rows\nconst csvRows = [headers.join(\",\")];  // Header line\n\nitems.forEach(item => {\n  const row = headers.map(h => item.json[h] ?? \"\").join(\",\");\n  csvRows.push(row);\n});\n\n// Join into final CSV string\nconst csvData = csvRows.join(\"\\n\");\n\n// Return both as JSON and as binary CSV file\nreturn [\n  {\n    json: { csv: csvData },   // for preview\n    binary: {\n      data: {\n        data: Buffer.from(csvData).toString(\"base64\"),\n        mimeType: \"text/csv\",\n        fileName: \"exported.csv\"\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -48
+      ],
+      "id": "ea0d3cc2-89a9-442a-b61d-3fd4e73e4375",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3f23912c-be68-403c-9ab2-23c716976cc8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0668e88de7a16f28d063324a020917a9ba638413818ac1cc358f702865c45d84"
+  },
+  "id": "T7zHVNekM4Hg7mVn",
+  "tags": []
+}

@@ -1,0 +1,169 @@
+{
+  "name": "Nested If-Else Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{20}}",
+              "operation": "larger",
+              "value2": "={{5}}"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "If - Primary",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{20 - 5}}",
+              "operation": "larger",
+              "value2": "={{8}}"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "If - Nested (Margin)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        640,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Value1 is significantly greater"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Set - High Margin",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        860,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Value1 is greater but margin is small"
+            }
+          ]
+        }
+      },
+      "id": "5",
+      "name": "Set - Low Margin",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        860,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Value2 is greater or equal"
+            }
+          ]
+        }
+      },
+      "id": "6",
+      "name": "Set - Value2 or Equal",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        640,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "If - Primary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Primary": {
+      "main": [
+        [
+          {
+            "node": "If - Nested (Margin)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Value2 or Equal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Nested (Margin)": {
+      "main": [
+        [
+          {
+            "node": "Set - High Margin",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Low Margin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

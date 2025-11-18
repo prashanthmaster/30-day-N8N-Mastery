@@ -1,0 +1,373 @@
+{
+  "name": "Email with AI demo2",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "forms/standup",
+        "formTitle": "Daily Tech Standup",
+        "formDescription": "Quick daily report for the engineering team",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Employee Name",
+              "placeholder": "Your full name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "you@company.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Project",
+              "placeholder": "Project/Service name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Yesterday",
+              "fieldType": "textarea",
+              "placeholder": "What did you complete yesterday?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Today",
+              "fieldType": "textarea",
+              "placeholder": "What will you do today?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Blockers",
+              "fieldType": "textarea",
+              "placeholder": "Anything blocking you?"
+            },
+            {
+              "fieldLabel": "Priority",
+              "fieldType": "select",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tags",
+              "placeholder": "comma,separated,tags"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8fa6970-1dd2-4d5b-9214-fd8a555d77a8",
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -48
+      ],
+      "webhookId": "fbdf97ea-a2a5-47ed-906b-f90d7d7d7a1a"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "serial Number": "=1",
+            "Email": "={{ $json.Email }}",
+            "Project": "={{ $json.Yesterday }}",
+            "Yesterday": "={{ $json.Yesterday }}",
+            "Today": "={{ $json.Today }}",
+            "Blockers": "={{ $json.Blockers }}",
+            "Priority": "={{ $json.Priority }}",
+            "Tags": "={{ $json.Tags }}",
+            "submittedAt": "={{ $json.submittedAt }}",
+            "formMode": "={{ $json.formMode }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "serial Number",
+              "displayName": "serial Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Employee Name\n",
+              "displayName": "Employee Name\n",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project",
+              "displayName": "Project",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Yesterday",
+              "displayName": "Yesterday",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Today",
+              "displayName": "Today",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Blockers",
+              "displayName": "Blockers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "formMode",
+              "displayName": "formMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "42954086-42c5-4c44-86d5-33301df89278",
+      "name": "Google Sheets (Append Row)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        160,
+        -48
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgGA5lXJEM8iCSPE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets (Append Row)').item.json.Email }}",
+        "subject": "=Task Manager by - N8N ",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        -80
+      ],
+      "id": "8a02cfe8-93ef-4145-a47f-45b5cbc70a6d",
+      "name": "Send a message",
+      "webhookId": "a3ddf96c-c4a7-4ea0-9ef5-3f611be6d1aa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wGtIaFv98JB2CURw",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are Lex asssitant, a precise email composer.\n\nGOAL\nTransform arbitrary “content” into a well-structured, ready-to-send email tailored to the given audience, tone, and goal.\n\nHARD REQUIREMENTS\n\ncraete a seperate SUBJECT TO SEND\n -project tittle {{ $json.Project }}\n-yersterday task {{ $json.Yesterday }}\n- Today task {{ $json.Today }}\n-priority {{ $json.Priority }}\n\n\nbased on above context write a email ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        -64
+      ],
+      "id": "6b851c2c-e910-4864-8489-b586faf6d007",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        160
+      ],
+      "id": "87f0b9fd-3ceb-4978-b05a-29746b70b912",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uRnmfA2fByGfIwF8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Form Trigger": [
+      {
+        "json": {
+          "Employee Name": "jashu",
+          "Email": "jashwanthboddupally@gmail.com",
+          "Project": "N8n automation",
+          "Yesterday": "email task",
+          "Today": "sheet task",
+          "Blockers": "",
+          "Priority": "high",
+          "Tags": "no tages",
+          "submittedAt": "2025-09-10T09:58:02.649Z",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Google Sheets (Append Row)": [
+      {
+        "json": {
+          "serial Number": "1",
+          "Email": "jashwanthboddupally@gmail.com",
+          "Project": "email task",
+          "Yesterday": "email task",
+          "Today": "sheet task",
+          "Blockers": "",
+          "Priority": "high",
+          "Tags": "no tages",
+          "submittedAt": "2025-09-10T09:58:02.649Z",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets (Append Row)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets (Append Row)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1b5ec246-3ee7-42b6-88ed-9ec7517be2f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  },
+  "id": "o4R4GgNwnDEJbXce",
+  "tags": []
+}

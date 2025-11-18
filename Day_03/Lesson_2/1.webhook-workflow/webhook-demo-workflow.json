@@ -1,0 +1,126 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "115748c5-1ffe-4adc-bd4a-4261799ec6ad",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -816,
+        176
+      ],
+      "id": "2ea626d3-8d3f-4ef3-997d-ab6543909e3a",
+      "name": "Webhook",
+      "webhookId": "115748c5-1ffe-4adc-bd4a-4261799ec6ad"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "15c35ca1-e4e5-4212-ab0c-87eec34b5565",
+              "leftValue": "={{ $json.age }}",
+              "rightValue": "={{ 18 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        176
+      ],
+      "id": "cd992ab2-5512-4059-954f-88ca2a875786",
+      "name": "If Age >= 18"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        352
+      ],
+      "id": "8f849698-d704-4a8a-9a79-450625d662b3",
+      "name": "Fail"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "9f2749b8-75f1-4907-87cb-89c7a401a50e",
+      "name": "True"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If Age >= 18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Age >= 18": {
+      "main": [
+        [
+          {
+            "node": "True",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "name": "Jashu",
+        "age": 12
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  }
+}

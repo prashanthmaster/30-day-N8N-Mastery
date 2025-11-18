@@ -1,0 +1,245 @@
+{
+  "name": "AI+Data Work flow demo",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1VRmAnefoKap3BiE1e0r9twV_LCdcND6k",
+          "mode": "list",
+          "cachedResultName": "amazon_sample_sales_5rows.csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1VRmAnefoKap3BiE1e0r9twV_LCdcND6k/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "80ead693-b96e-481d-982c-0db6abfe1392",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -16
+      ],
+      "id": "e3e501e5-bde3-4f02-840c-82a928192351",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: many items from \"Extract From File\"\n// Output: ONE item with {summaryContext, columns, rowCount}\n\nconst rows = items.map(i => i.json);\nconst rowCount = rows.length;\nif (rowCount === 0) {\n  return [{ json: { summaryContext: \"No rows found.\", columns: [], rowCount: 0 } }];\n}\n\n// derive columns from first row\nconst columns = Object.keys(rows[0]);\n\n// detect numeric columns\nconst numericCols = columns.filter(c => rows.every(r => r[c] === null || r[c] === undefined || r[c] === \"\" || !isNaN(Number(r[c]))));\n\n// simple stats\nconst stats = {};\nfor (const c of numericCols) {\n  const nums = rows.map(r => Number(r[c])).filter(v => !isNaN(v));\n  if (nums.length) {\n    const sum = nums.reduce((a,b)=>a+b,0);\n    stats[c] = {\n      count: nums.length,\n      min: Math.min(...nums),\n      max: Math.max(...nums),\n      mean: Number((sum/nums.length).toFixed(2))\n    };\n  }\n}\n\n// sample first 10 rows (safe for prompt)\nconst sample = rows.slice(0, 10);\n\nconst summaryContext = {\n  meta: {\n    rowCount,\n    columns,\n    numericColumns: numericCols\n  },\n  quickStats: stats,\n  sampleRows: sample\n};\n\nreturn [{\n  json: {\n    columns,\n    rowCount,\n    summaryContext: JSON.stringify(summaryContext, null, 2)\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -16
+      ],
+      "id": "91bb0c9b-50f2-4869-83fa-1b767352221a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com,support@botcampus.ai",
+        "subject": "📊 CSV Sales Summary — AI Analyst",
+        "message": "==<!-- Gmail node body (Expression Mode, Send as HTML = ON) -->\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.6;\">\n  <tr>\n    <td style=\"padding:24px;\">\n\n      <!-- Header -->\n      <h2 style=\"margin:0 0 8px 0;font-size:22px;color:#2563eb;\">\n        📊 CSV Sales Summary — AI Analyst\n      </h2>\n      <p style=\"margin:0 0 16px 0;font-size:14px;color:#555;\">\n        {{ ($json.overview) || 'Summary not provided.' }}\n      </p>\n\n      <!-- Key Metrics -->\n      <h3 style=\"margin:16px 0 8px 0;color:#111;\">Key Metrics</h3>\n      <table cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:collapse;width:100%;font-size:14px;margin:0 0 16px 0;\">\n        <tr style=\"background:#eef2ff;\">\n          <th align=\"left\"  style=\"border:1px solid #e5e7eb;padding:8px;\">Metric</th>\n          <th align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">Min</th>\n          <th align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">Max</th>\n          <th align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">Mean</th>\n        </tr>\n\n        <!-- Row 1 -->\n        <tr>\n          <td style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[0] && $json.keyMetrics[0].metric) || 'Units Sold' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[0] && $json.keyMetrics[0].min) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[0] && $json.keyMetrics[0].max) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[0] && $json.keyMetrics[0].mean) || '—' }}\n          </td>\n        </tr>\n\n        <!-- Row 2 -->\n        <tr>\n          <td style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[1] && $json.keyMetrics[1].metric) || 'Unit Price (INR)' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[1] && $json.keyMetrics[1].min) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[1] && $json.keyMetrics[1].max) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[1] && $json.keyMetrics[1].mean) || '—' }}\n          </td>\n        </tr>\n\n        <!-- Row 3 -->\n        <tr>\n          <td style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[2] && $json.keyMetrics[2].metric) || 'Total (INR)' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[2] && $json.keyMetrics[2].min) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[2] && $json.keyMetrics[2].max) || '—' }}\n          </td>\n          <td align=\"right\" style=\"border:1px solid #e5e7eb;padding:8px;\">\n            {{ ($json.keyMetrics && $json.keyMetrics[2] && $json.keyMetrics[2].mean) || '—' }}\n          </td>\n        </tr>\n      </table>\n\n      <!-- Visuals (Bar + Pie side-by-side) -->\n      <h3 style=\"margin:16px 0 8px 0;color:#111;\">Visuals</h3>\n      <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"border-collapse:collapse;margin:0 0 12px 0;\">\n        <tr>\n          <td valign=\"top\" width=\"50%\" style=\"padding:0 8px 8px 0;\">\n            <div style=\"border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;\">\n              <img src=\"{{ ($json.chartUrls && $json.chartUrls.bar) || '' }}\" alt=\"Bar chart\" width=\"100%\" style=\"display:block;\">\n            </div>\n            <div style=\"font-size:12px;color:#555;margin-top:6px;\">\n              <a href=\"{{ ($json.chartUrls && $json.chartUrls.bar) || '#' }}\" style=\"color:#2563eb;text-decoration:none;\">Open bar chart</a>\n            </div>\n          </td>\n          <td valign=\"top\" width=\"50%\" style=\"padding:0 0 8px 8px;\">\n            <div style=\"border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;\">\n              <img src=\"{{ ($json.chartUrls && $json.chartUrls.pie) || '' }}\" alt=\"Pie chart\" width=\"100%\" style=\"display:block;\">\n            </div>\n            <div style=\"font-size:12px;color:#555;margin-top:6px;\">\n              <a href=\"{{ ($json.chartUrls && $json.chartUrls.pie) || '#' }}\" style=\"color:#2563eb;text-decoration:none;\">Open pie chart</a>\n            </div>\n          </td>\n        </tr>\n        <tr>\n          <td colspan=\"2\" style=\"padding-top:8px;\">\n            <div style=\"border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;\">\n              <img src=\"{{ ($json.chartUrls && $json.chartUrls.line) || '' }}\" alt=\"Line chart\" width=\"100%\" style=\"display:block;\">\n            </div>\n            <div style=\"font-size:12px;color:#555;margin-top:6px;\">\n              <a href=\"{{ ($json.chartUrls && $json.chartUrls.line) || '#' }}\" style=\"color:#2563eb;text-decoration:none;\">Open line chart</a>\n            </div>\n          </td>\n        </tr>\n      </table>\n\n      <!-- Insights -->\n      <h3 style=\"margin:16px 0 8px 0;color:#111;\">Notable Insights</h3>\n      <ul style=\"margin:0 0 12px 18px;padding:0;\">\n        <li>{{ ($json.insights && $json.insights[0]) || '—' }}</li>\n        <li>{{ ($json.insights && $json.insights[1]) || '—' }}</li>\n        <li>{{ ($json.insights && $json.insights[2]) || '—' }}</li>\n      </ul>\n\n      <!-- Next Steps -->\n      <h3 style=\"margin:16px 0 8px 0;color:#111;\">Next Steps</h3>\n      <ul style=\"margin:0 0 12px 18px;padding:0;\">\n        <li>{{ ($json.nextSteps && $json.nextSteps[0]) || '—' }}</li>\n        <li>{{ ($json.nextSteps && $json.nextSteps[1]) || '—' }}</li>\n        <li>{{ ($json.nextSteps && $json.nextSteps[2]) || '—' }}</li>\n      </ul>\n\n      <hr style=\"border:none;border-top:1px solid #e5e7eb;margin:16px 0;\">\n      <p style=\"font-size:12px;color:#555;margin:0;\">Auto-generated • {{ (new Date()).toISOString().slice(0,10) }}</p>\n\n    </td>\n  </tr>\n</table>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1424,
+        0
+      ],
+      "id": "da3f965b-05d0-497b-84ff-3d7237b9b7b3",
+      "name": "Send a message",
+      "webhookId": "ca2c51ed-ecff-48e2-97ed-c8b5cab530ad",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        272
+      ],
+      "id": "32c1a854-a16c-4ed0-8b1f-0ce98d69047e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o1yvYdsTMwd04brT",
+          "name": "Gemini 2.5-flash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional Data Analyst. You receive CSV data and must produce a clear, business-oriented analysis.\nINPUT\nThe variable {{ $json.summaryContext }} is a JSON string containing:\n- meta.rowCount, meta.columns, meta.numericColumns\n- quickStats: for each numeric column → {count, min, max, mean}\n- sampleRows: up to 10 example rows\n\nObjectives:\n1. Summarize the dataset with concise insights (overview, KPIs, trends, anomalies).\n2. Suggest which metrics are best represented by Bar, Line, and Pie charts.\n3. Always format numeric values with INR (₹) when relevant and use thousand separators.\n4. Return structured JSON with these fields:\n   {\n     \"overview\": \"1 short paragraph\",\n     \"keyMetrics\": [\n       {\"metric\":\"Units Sold\",\"min\":1,\"max\":3,\"mean\":1.6},\n       {\"metric\":\"Item Price (INR)\",\"min\":699,\"max\":58990,\"mean\":29637}\n     ],\n     \"insights\": [\"bullet1\",\"bullet2\",\"bullet3\"],\n     \"nextSteps\": [\"bullet1\",\"bullet2\"],\n     \"chartData\": {\n       \"bar\": {\"labels\": [...], \"values\": [...]},\n       \"pie\": {\"labels\": [...], \"values\": [...]},\n       \"line\": {\"labels\": [...], \"values\": [...]}\n     }\n   }\n\nRules:\n- Do not include schema/columns section.\n- Do not add meta comments or explanations.\n- Be precise, neutral, and business-like.\n\n\n\n\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "feaa4c79-9b53-40ac-b33c-f2af93d9d522",
+      "name": "Gemini LLM"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Robust charts builder from LLM output (string or object) with graceful fallback.\n// Place this Code node immediately AFTER the LLM node.\n\nfunction extractAIJson(payload) {\n  // 1) Already structured?\n  if (payload && typeof payload === 'object' && (payload.overview || payload.keyMetrics || payload.chartData)) {\n    return payload;\n  }\n  const s = String(payload?.text ?? payload?.output ?? payload?.completion ?? '').trim();\n  if (!s) return null;\n\n  // 2) Remove code fences if present\n  let raw = s.replace(/^```(?:json)?\\s*/i, '').replace(/```$/i, '').trim();\n\n  // 3) Normalize smart quotes and trailing commas\n  raw = raw.replace(/[“”]/g, '\"').replace(/[‘’]/g, \"'\")\n           .replace(/,\\s*([}\\]])/g, '$1');\n\n  // 4) Try JSON parse\n  try { return JSON.parse(raw); } catch {}\n\n  // 5) Try extracting largest {...} block\n  const start = raw.indexOf('{'); const end = raw.lastIndexOf('}');\n  if (start !== -1 && end !== -1) {\n    const block = raw.slice(start, end + 1);\n    try { return JSON.parse(block); } catch {}\n  }\n\n  // 6) One more attempt: convert single-quoted strings to double quotes (best-effort)\n  try {\n    const fixed = raw.replace(/'([^'\\\\]*?)'/g, (_, g) => `\"${g.replace(/\"/g, '\\\\\"')}\"`);\n    return JSON.parse(fixed);\n  } catch {}\n\n  return null;\n}\n\nfunction num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }\nfunction makeChart(type, data, options = {}) {\n  const chart = {\n    type,\n    data,\n    options: Object.assign({\n      plugins: {\n        legend: { labels: { font: { size: 14 }, color: \"#111\" } },\n        title: { display: true, text: type.toUpperCase() + \" Chart\", color: \"#111\" }\n      },\n      scales: (type !== \"pie\") ? { x: { ticks: { color: \"#111\" } }, y: { ticks: { color: \"#111\" } } } : undefined\n    }, options)\n  };\n  return \"https://quickchart.io/chart?c=\" + encodeURIComponent(JSON.stringify(chart));\n}\n\n// ---------- INPUT ----------\nconst payload = items[0]?.json ?? {};\nlet ai = extractAIJson(payload);\n\n// ---------- FALLBACK: synthesize from summaryContext if no JSON ----------\nlet summary = {};\nif (!ai) {\n  if (typeof payload.summaryContext === \"string\") {\n    try { summary = JSON.parse(payload.summaryContext) || {}; } catch {}\n  }\n  const rowCount = summary?.meta?.rowCount ?? 'N';\n  const cols = summary?.meta?.columns ?? [];\n  const quick = summary?.quickStats ?? {};\n\n  const keyMetrics = Object.keys(quick).map(k => ({\n    metric: k, min: quick[k]?.min, max: quick[k]?.max, mean: quick[k]?.mean\n  }));\n\n  ai = {\n    overview: `Dataset with ${rowCount} rows and ${cols.length} columns.`,\n    keyMetrics,\n    insights: [],\n    nextSteps: [],\n    sampleRows: summary?.sampleRows ?? []\n  };\n}\n\n// ---------- Build chart series ----------\nconst keyMetrics = Array.isArray(ai.keyMetrics) ? ai.keyMetrics : [];\nlet sampleRows = Array.isArray(ai.sampleRows) ? ai.sampleRows : [];\n\n// BAR (means from keyMetrics, or provided chartData)\nconst barLabels = ai?.chartData?.bar?.labels ?? keyMetrics.map(m => m.metric).filter(Boolean);\nconst barValues = ai?.chartData?.bar?.values ?? keyMetrics.map(m => num(m.mean)).filter(v => v !== null);\n\n// PIE (category/fulfillment distribution or provided)\nlet pieLabels = ai?.chartData?.pie?.labels;\nlet pieValues = ai?.chartData?.pie?.values;\nif (!pieLabels || !pieValues) {\n  if (sampleRows.length) {\n    const pick = (r) => r.Category ?? r[\"Product Category\"] ?? r.Fulfillment ?? r[\"Fulfillment\"] ?? \"Other\";\n    const counts = {};\n    for (const r of sampleRows) counts[pick(r)] = (counts[pick(r)] ?? 0) + 1;\n    const entries = Object.entries(counts);\n    if (entries.length) {\n      pieLabels = entries.map(([k]) => k);\n      pieValues = entries.map(([, v]) => v);\n    }\n  }\n  if (!pieLabels || !pieValues) { pieLabels = barLabels.slice(); pieValues = barValues.slice(); }\n}\n\n// LINE (date vs total/price/units or provided)\nlet lineLabels = ai?.chartData?.line?.labels;\nlet lineValues = ai?.chartData?.line?.values;\nif (!lineLabels || !lineValues) {\n  if (sampleRows.length) {\n    const keys = Object.keys(sampleRows[0] ?? {});\n    const dateKey = keys.find(k => /date/i.test(k));\n    const candidates = [\"Total (INR)\", \"Sales (INR, incl. GST)\", \"Item Price (INR)\", \"Units Sold\"];\n    const valKey = candidates.find(k => k in (sampleRows[0] ?? {})) ?? keys.find(k => num(sampleRows[0][k]) !== null);\n    if (valKey) {\n      const series = sampleRows.slice(0, 30).map((r, i) => ({\n        label: String(dateKey ? r[dateKey] : `#${i + 1}`),\n        value: num(r[valKey])\n      })).filter(p => p.value !== null);\n      if (series.length) {\n        lineLabels = series.map(p => p.label);\n        lineValues = series.map(p => p.value);\n      }\n    }\n  }\n  if (!lineLabels || !lineValues) { lineLabels = barLabels.slice(); lineValues = barValues.slice(); }\n}\n\n// ---------- Use existing chart URLs if LLM already made them ----------\nlet chartUrls = ai.chartUrls && ai.chartUrls.bar && ai.chartUrls.pie && ai.chartUrls.line\n  ? ai.chartUrls\n  : {\n      bar: makeChart(\"bar\", {\n        labels: barLabels,\n        datasets: [{\n          label: \"Mean\",\n          data: barValues,\n          backgroundColor: [\"#3b82f6\",\"#10b981\",\"#f59e0b\",\"#ef4444\",\"#8b5cf6\",\"#06b6d4\",\"#84cc16\",\"#f472b6\"]\n        }]\n      }),\n      pie: makeChart(\"pie\", {\n        labels: pieLabels,\n        datasets: [{\n          data: pieValues,\n          backgroundColor: [\"#3b82f6\",\"#10b981\",\"#f59e0b\",\"#ef4444\",\"#8b5cf6\",\"#06b6d4\",\"#84cc16\",\"#f472b6\"]\n        }]\n      }),\n      line: makeChart(\"line\", {\n        labels: lineLabels,\n        datasets: [{ label: \"Trend\", data: lineValues, borderColor: \"#3b82f6\", fill: false, tension: 0.25 }]\n      })\n    };\n\n// ---------- Output for Gmail ----------\nreturn [{\n  json: {\n    overview: ai.overview ?? \"\",\n    keyMetrics,\n    insights: ai.insights ?? [],\n    nextSteps: ai.nextSteps ?? [],\n    chartUrls\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        -16
+      ],
+      "id": "e94d8bab-dc27-4e2d-bf31-fc23edcc1a36",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -48
+      ],
+      "id": "12626f84-d8c8-4ae8-8785-5c0991cf6ba0",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {
+    "Gemini LLM": [
+      {
+        "json": {
+          "text": "```json\n{\n  \"overview\": \"This dataset provides a snapshot of daily fruit sales over 10 days in September 2025, detailing units sold, unit prices, and total revenue for individual fruit transactions across 10 distinct varieties.\",\n  \"keyMetrics\": [\n    {\n      \"metric\": \"Units Sold\",\n      \"min\": 9,\n      \"max\": 40,\n      \"mean\": 21.7\n    },\n    {\n      \"metric\": \"Unit Price (INR)\",\n      \"min\": \"₹45\",\n      \"max\": \"₹300\",\n      \"mean\": \"₹148\"\n    },\n    {\n      \"metric\": \"Total (INR)\",\n      \"min\": \"₹1,080\",\n      \"max\": \"₹5,500\",\n      \"mean\": \"₹2,843.50\"\n    }\n  ],\n  \"insights\": [\n    \"Strawberry and Mango are the top revenue generators, contributing ₹5,500 and ₹5,400 respectively, highlighting their strong market demand or premium pricing.\",\n    \"Banana achieved the highest units sold (40 units), but its lower unit price (₹45) resulted in moderate total revenue (₹1,800). Conversely, Watermelon, with the lowest units sold (9 units), generated a respectable ₹2,700 due to its high unit price (₹300), illustrating a value-vs-volume dynamic.\",\n    \"Pineapple generated the lowest total revenue (₹1,080) and had low units sold (12 units), indicating it may be an underperforming product that requires further investigation.\"\n  ],\n  \"nextSteps\": [\n    \"Investigate the factors contributing to the high performance of Strawberry and Mango to identify best practices and replicate success across other fruits.\",\n    \"Analyze sales patterns for lower-performing fruits like Pineapple and Papaya, considering targeted promotions, pricing adjustments, or assortment strategy review.\",\n    \"Examine daily sales fluctuations to understand potential correlations with specific dates or external events that might impact demand and refine inventory management.\"\n  ],\n  \"chartData\": {\n    \"bar\": {\n      \"labels\": [\n        \"Strawberry\",\n        \"Mango\",\n        \"Pomegranate\",\n        \"Apple\",\n        \"Grapes\",\n        \"Watermelon\",\n        \"Orange\",\n        \"Banana\",\n        \"Papaya\",\n        \"Pineapple\"\n      ],\n      \"values\": [\n        5500,\n        5400,\n        3060,\n        3000,\n        2700,\n        2700,\n        1920,\n        1800,\n        1275,\n        1080\n      ]\n    },\n    \"pie\": {\n      \"labels\": [\n        \"Strawberry\",\n        \"Mango\",\n        \"Pomegranate\",\n        \"Apple\",\n        \"Grapes\",\n        \"Watermelon\",\n        \"Orange\",\n        \"Banana\",\n        \"Papaya\",\n        \"Pineapple\"\n      ],\n      \"values\": [\n        5500,\n        5400,\n        3060,\n        3000,\n        2700,\n        2700,\n        1920,\n        1800,\n        1275,\n        1080\n      ]\n    },\n    \"line\": {\n      \"labels\": [\n        \"2025-09-08\",\n        \"2025-09-09\",\n        \"2025-09-10\",\n        \"2025-09-11\",\n        \"2025-09-12\",\n        \"2025-09-13\",\n        \"2025-09-14\",\n        \"2025-09-15\",\n        \"2025-09-16\",\n        \"2025-09-17\"\n      ],\n      \"values\": [\n        3000,\n        1800,\n        1920,\n        2700,\n        5400,\n        1080,\n        2700,\n        1275,\n        5500,\n        3060\n      ]\n    }\n  }\n}\n```"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Gemini LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini LLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini LLM": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9cd806bc-f58e-4435-be10-3310fcb1f2d7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "kI38deELRJWCvO4T",
+  "tags": []
+}

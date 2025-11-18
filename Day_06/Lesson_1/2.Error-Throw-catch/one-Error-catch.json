@@ -1,0 +1,149 @@
+{
+  "name": "one",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9bc60ec0-cf11-4b25-a9e8-36aba9cc8299",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1dqiJAP1hFkTUYI-a_kW3HQCWzwqsRKtSs_RA-_egkz4"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dqiJAP1hFkTUYI-a_kW3HQCWzwqsRKtSs_RA-_egkz4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $json.execution.url }}",
+            "id": "={{ $json.execution.id }}",
+            "error": "={{ $json.execution.error.message }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        -128
+      ],
+      "id": "063a1031-e137-417d-ae57-cc1582446fbd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PwHhcfAGQJDj3KVy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "error caught",
+        "message": "=error:  {{ $json.execution.error.message }}\nurl:{{ $json.execution.url }}\nid:\n{{ $json.execution.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        128
+      ],
+      "id": "f0481c05-630e-409c-8820-e0e4628eb769",
+      "name": "Send a message",
+      "webhookId": "eb493ae9-3de6-4057-ac80-faca834dcfa4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UHZa8dl21qZshVrS",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4939820d-8c35-4fea-b6b8-e50d065cb97b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0668e88de7a16f28d063324a020917a9ba638413818ac1cc358f702865c45d84"
+  },
+  "id": "RWU5tZxVK5Coih0S",
+  "tags": []
+}

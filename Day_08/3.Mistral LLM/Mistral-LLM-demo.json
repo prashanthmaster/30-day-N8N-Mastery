@@ -1,0 +1,399 @@
+{
+  "name": "Mistral LLM-demo",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        -192
+      ],
+      "id": "caa94b2b-50f0-4f4b-9d28-89d1e6c9866c",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28e8c2da-ecb3-4140-a669-cbb912d6a2a0",
+              "name": "Sheet ID ",
+              "value": "1agSsTJ4Zgp2gO_8lH9F-epvxPaTVPxEEoswvgQJD010",
+              "type": "string"
+            },
+            {
+              "id": "1251981e-41a0-4904-9ca8-1e02914910ea",
+              "name": "Sheet URL",
+              "value": "https://docs.google.com/spreadsheets/d/1agSsTJ4Zgp2gO_8lH9F-epvxPaTVPxEEoswvgQJD010/edit",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        -192
+      ],
+      "id": "2bfc32f2-6b2f-4bef-be62-68db8ab6566f",
+      "name": "Sheet Id",
+      "notesInFlow": true,
+      "notes": "set Node"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2572c781-0b80-42e1-99c1-44af14470c20",
+              "name": "Id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "35194519-02de-4aaa-992e-6c5036c9534f",
+              "name": "To send",
+              "value": "={{ $json.From }}",
+              "type": "string"
+            },
+            {
+              "id": "b5b12ab9-3a58-45ed-a85b-d3d4329b235b",
+              "name": "Subject",
+              "value": "={{ $json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "06b709e2-0f50-49c0-aca4-48e45898f314",
+              "name": "Body",
+              "value": "={{ $json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -192
+      ],
+      "id": "ebd0b493-0bae-40ef-8b40-c4ebe90171ca",
+      "name": "Normalize Email",
+      "notesInFlow": true,
+      "notes": "set Node"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json['Sheet ID '] }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665579565,
+          "mode": "list",
+          "cachedResultName": "Email Response mail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1agSsTJ4Zgp2gO_8lH9F-epvxPaTVPxEEoswvgQJD010/edit#gid=1665579565"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Normalize Email').item.json.Id }}",
+            "To Reply": "={{ $('Normalize Email').item.json['To send'] }}",
+            "Subject ": "={{ $('Normalize Email').item.json.Subject }}",
+            "Body": "={{ $('Normalize Email').item.json.Body }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "To Reply",
+              "displayName": "To Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subject ",
+              "displayName": "Subject ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -192
+      ],
+      "id": "fc2fd034-a872-48c4-a515-1314cc6bbb7e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are **BotCampus.ai**, an AI assistant that replies to emails about learning resources and roadmaps. \nYou have access to and can reference the following offerings at a high level:\n- **Roadmaps:** AI, N8n No-Code Automation, Python, Java, Machine Learning, NLP, Deep Learning, Web (HTML/CSS), and related tracks.\n- **Courses:** Beginner → Advanced paths across the same domains (concepts, prerequisites, outcomes, typical time commitment).\n\n## Inputs (provided in the user message)\n- **ID:** {{ $json.ID }} — a unique message identifier for logging/threading.\n- **TO reply:** {{ $json['To Reply'] }} — recipient email address you must reply to.\n- **Subject:** {{ $json['Subject '] }} — the incoming email subject.\n- **Body:** {{ $json.Body }} — the incoming email body (plain text; may contain questions/intent).\n\n## Objectives\n1) **Understand intent** from *Subject + Body*: (roadmap request, course info, enrollment/schedule, pricing/billing, troubleshooting/support, or other).\n2) **Match tone**:\n   - Work/corporate senders → **formal** (clear, concise, no emojis).\n   - Personal/free mailboxes → **casual** (friendly, warm; at most 1 tasteful emoji if appropriate).\n3) **Be accurate and safe**:\n   - Do **not** invent links, dates, or prices. If information is not provided, **ask 1 focused clarifying question** or state next steps.\n   - Never share sensitive data or make policy/guarantee claims.\n   - If the message looks risky (passwords, banking/wire, legal threats, harassment, phishing), set `needs_human: true`.\n4) **Be helpful**:\n   - Offer the **most relevant roadmap/course path** based on intent and experience hints in the Body.\n   - Give **actionable next steps** (e.g., “confirm your experience level,” “pick a start date,” “share your goal timeline”).\n   - Keep replies short (≈120–180 words), scannable; use a few bullets only if necessary.\n\n## Style & Personalization\n- Start with a brief greeting that uses the sender’s name if present (or a neutral greeting).\n- Keep sentences simple; avoid jargon unless the user is clearly advanced.\n- Match language if the Body is clearly in a non-English language; otherwise reply in English.\n- Close with a friendly, professional sign-off aligned to tone.\n\n## Resource Referencing\n- Refer to offerings by **name/track** (e.g., “AI Roadmap”, “N8n No-Code Automation Roadmap”, “Python Beginner → Advanced”).\n- If you need to reference URLs, use descriptive placeholders like **[Course Catalog Link]** unless an explicit link was provided.\n- Summarize what’s inside a roadmap/course (modules, outcomes, prerequisites) at a **high level** without fabricating specifics.\n\n## Output format (strict)\n- If escalation is required, the **first line** must be a single JSON object like:\n  `{\"needs_human\": true, \"category\": \"support|billing|security|other\", \"confidence\": 0.72}`\n  Otherwise omit this line **entirely**.\n\n- Then output **exactly**:\n\n---\nREPLY:\n<html><!-- Email-safe minimal HTML only; no <head>, CSS, or images -->\n  <!-- Keep structure simple: p, br, strong, em, ul/li, a -->\n  <!-- Use descriptive placeholders for links like [Course Catalog Link] without inventing URLs -->\n  <p>...</p>\n  <ul>\n    <li>...</li>\n  </ul>\n  <p>...</p>\n</html>\n\nSUBJECT:\n<plain text; default to “Re: {Subject}” when continuing a thread>\n---\n\n**Rules for the sections:**\n- **REPLY:** Must be **HTML body** only (no `<html><head><body>` wrappers required; keep tags to `<p>`, `<br>`, `<strong>`, `<em>`, `<ul>`, `<ol>`, `<li>`, `<a>`). One short paragraph plus 1–3 bullets if needed. Ask at most **one** clarifying question if required to proceed.\n- **SUBJECT:** Plain text. Keep clear and action-oriented; preserve original context (e.g., prefix with “Re:” when continuing a thread).\n- **Prohibited:** Do **not** invent prices, discounts, dates, URLs, or certification claims. Do **not** add CSS, images, or attachments. Do **not** output anything outside the specified format.\n\n## Examples of intent handling (guidance, not to print)\n- “Send me an AI roadmap” → Share AI roadmap overview, prerequisites, outcomes; ask goal/timeline; offer next steps.\n- “How to start with N8n?” → Suggest N8n No-Code Roadmap, beginner tasks, a first automation milestone; ask for use-case (e.g., email parsing, sheets updates).\n- “Python vs Java for data?” → Compare briefly based on goals; recommend a path; propose starter modules.\n- “Price/schedule?” → If not provided, say you’ll share pricing/schedule after they confirm region/plan preference; ask for preferred start week.\n\nNow perform the task for the given **ID**, **TO reply**, **Subject**, and **Body**.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        -192
+      ],
+      "id": "6bde20d8-a334-4bc0-9adb-6be456fa67ea",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the agent's single-string output into:\n// - replyHtml  : HTML body for email\n// - replyText  : (same as replyHtml for backward-compat; contains HTML)\n// - replySubject\n// - needs_human (boolean)\n// - category, confidence (if provided)\n// - raw (original text)\n\nconst raw =\n  $json.output                                     // your Agent's field\n  || $json.text\n  || $json.data\n  || $json.choices?.[0]?.message?.content\n  || $json.choices?.[0]?.text\n  || '';\n\nlet body = String(raw || '').trim();\nconst result = {\n  replyHtml: '',\n  replyText: '',\n  replySubject: '',\n  needs_human: false,\n  category: undefined,\n  confidence: undefined,\n  raw\n};\n\n// 1) Optional first-line JSON (escalation flag)\nconst firstLine = body.split(/\\r?\\n/, 1)[0].trim();\nif (firstLine.startsWith('{') && firstLine.endsWith('}')) {\n  try {\n    const meta = JSON.parse(firstLine);\n    if (typeof meta.needs_human === 'boolean') result.needs_human = meta.needs_human;\n    if (typeof meta.category === 'string') result.category = meta.category;\n    if (typeof meta.confidence === 'number') result.confidence = meta.confidence;\n    body = body.slice(firstLine.length).trim();\n  } catch {}\n}\n\n// 2) Strip leading/trailing code fences if model wrapped the output\nif (body.startsWith('```')) {\n  body = body.replace(/^```[a-zA-Z0-9_-]*\\s*/, ''); // remove opening fence + optional lang\n  if (body.endsWith('```')) body = body.slice(0, -3);\n  body = body.trim();\n}\n\n// 3) Extract REPLY + SUBJECT blocks (case-insensitive)\nconst match = body.match(/REPLY:\\s*([\\s\\S]*?)\\r?\\n+SUBJECT:\\s*([\\s\\S]*)$/i);\nif (match) {\n  result.replyHtml = match[1].trim();\n  result.replySubject = match[2].trim();\n} else {\n  // Fallback: treat entire body as reply; will set subject below\n  result.replyHtml = body || '<p>Thanks for your email — could you please share a few more details so I can help?</p>';\n  result.replySubject = '';\n}\n\n// 4) If reply isn't HTML, wrap it safely as minimal HTML\nconst looksLikeHtml = /<([a-z][\\w-]*)([^>]*)>/i.test(result.replyHtml);\nif (!looksLikeHtml) {\n  const escaped = String(result.replyHtml)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n  // Convert newlines to <br> and wrap\n  result.replyHtml = `<p>${escaped.replace(/\\r?\\n/g, '<br>')}</p>`;\n}\n\n// 5) Provide a safe default subject from upstream if agent did not supply one\nconst upstreamSubject =\n  $json['Subject '] || $json.Subject || $json.subject || 'Regarding your request';\nif (!result.replySubject) {\n  result.replySubject = `Re: ${String(upstreamSubject).trim()}`;\n}\n\n// 6) Backward-compat: also expose replyText (same as HTML)\nresult.replyText = result.replyHtml;\n\n// Done\nreturn [{ json: result }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        -192
+      ],
+      "id": "35abd3d4-2bb8-4fc6-88fc-0539f6598d0b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Append row in sheet').item.json.ID }}",
+        "message": "={{ $json.replyText }}",
+        "options": {
+          "appendAttribution": true,
+          "senderName": "Bot Campus AI Team "
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        992,
+        -192
+      ],
+      "id": "8bd213e3-2e92-4fc3-ae19-6abb9f630ef5",
+      "name": "Reply to a message",
+      "webhookId": "46763027-614f-47d1-ba18-00236195f390",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        384,
+        16
+      ],
+      "id": "4bc2f73e-ad7b-4602-ab9a-1a3c8c99d132",
+      "name": "LLM",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Mk0C5GJTuZAW3C97",
+          "name": "mistralai/mistral-small-3.2-24b-instruct:free"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "1995135c34f501f2",
+          "threadId": "1995135c34f501f2",
+          "snippet": "Hi Team, I have seen your roadmap on AI Agents. Can you give me more details around this. Thanks, Abdullah Khan",
+          "payload": {
+            "mimeType": "multipart/alternative"
+          },
+          "sizeEstimate": 6872,
+          "historyId": "1919789",
+          "internalDate": "1758004098000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "IMPORTANT",
+              "name": "IMPORTANT"
+            },
+            {
+              "id": "CATEGORY_PERSONAL",
+              "name": "CATEGORY_PERSONAL"
+            }
+          ],
+          "From": "Support Team <support@botcampus.ai>",
+          "To": "jashwanthboddupally <jashwanthboddupally@gmail.com>",
+          "Subject": "Regarding AI Agent Roadmap"
+        }
+      }
+    ],
+    "Append row in sheet": [
+      {
+        "json": {
+          "ID": "1995135c34f501f2",
+          "To Reply": "Support Team <support@botcampus.ai>",
+          "Subject ": "Regarding AI Agent Roadmap",
+          "Body": "Hi Team, I have seen your roadmap on AI Agents. Can you give me more details around this. Thanks, Abdullah Khan"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Email": {
+      "main": [
+        [
+          {
+            "node": "Sheet Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet Id": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "186f523f-1ab0-48c4-8cf7-54f4b4b573dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "a04U70Mdv6Qqfp8H",
+  "tags": []
+}

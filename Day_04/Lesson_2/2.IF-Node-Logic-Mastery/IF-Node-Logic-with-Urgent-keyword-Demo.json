@@ -1,0 +1,464 @@
+{
+  "name": "IF Node Logic with Urgent keyword Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -336
+      ],
+      "id": "cc2d4601-af41-44f9-9350-a9ac9d0e0af0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "11b0e10e-608d-491e-9347-1b60a22df110",
+              "name": "sender",
+              "value": "jashu@botcampus.com",
+              "type": "string"
+            },
+            {
+              "id": "f4c69d5e-3485-4c45-b96f-ebfe67e8a407",
+              "name": "subject",
+              "value": "URGENT: Q4 Report Needed",
+              "type": "string"
+            },
+            {
+              "id": "c346e112-3356-43a0-bfdb-0927f0aefb73",
+              "name": "body",
+              "value": "=Hi Abdullah,\n\nI’m going through Module 4 and had a doubt regarding the IF node conditions and decision-making tasks. Could you please clarify how the conditions are applied and how to structure them properly in workflows?\n\nThanks in advance for your guidance.\n",
+              "type": "string"
+            },
+            {
+              "id": "a9039746-aee6-499c-aa47-a3fb9da0b5fb",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -352
+      ],
+      "id": "11804a9c-99d2-459e-8640-5cf7070ce929",
+      "name": "Email Data"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "sender_domain",
+              "value": "={{ ($json[\"sender\"] || \"\").split(\"@\")[1] || \"\" }}"
+            },
+            {
+              "name": "subject_clean",
+              "value": "={{ ($json[\"subject\"] || \"\").toLowerCase() }}"
+            },
+            {
+              "name": "sender_name",
+              "value": "={{ ($json[\"sender\"] || \"\").split(\"@\")[0] || \"\" }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "is_urgent",
+              "value": "={{ ($json[\"subject\"] || \"\").toLowerCase().includes(\"urgent\") }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract & Clean",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -336
+      ],
+      "id": "03a840dd-b7fc-49af-aa5d-b68183147b59"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "de549723-3843-48bb-af8b-0a5e7ce1b386",
+              "leftValue": "={{ $json.is_urgent }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "f73821ab-4160-4a69-abdf-2139f370a467",
+              "leftValue": "={{ $json.sender_domain }}",
+              "rightValue": "botcampus.com",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Urgent + Company?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -352
+      ],
+      "id": "905f1ff3-9da4-473e-ae7c-5bc91de18a81"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.sender_domain }}",
+              "operation": "equal",
+              "value2": "company.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Company?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -224
+      ],
+      "id": "368c2c9d-d771-4107-9d28-e294223c3cee"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "category",
+              "value": "external"
+            },
+            {
+              "name": "action",
+              "value": "standard_processing"
+            },
+            {
+              "name": "message",
+              "value": "={{ \"📧 External email from \" + $json[\"sender_name\"] + \" - \" + $json[\"subject\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Standard Queue",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -128
+      ],
+      "id": "f556a99c-d889-4731-8d50-1d462eca8106"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "sender",
+              "value": "={{ $json.sender }}"
+            },
+            {
+              "name": "subject",
+              "value": "={{ $json.subject }}"
+            },
+            {
+              "name": "body",
+              "value": "= {{ $json.body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Email Data1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -336
+      ],
+      "id": "6a63e7b5-4195-4b58-bc0b-774bfaea2f4e"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "category",
+              "value": "=Urgent {{ $json.is_urgent }}"
+            },
+            {
+              "name": "action",
+              "value": "immediate_notification"
+            },
+            {
+              "name": "message",
+              "value": "=🚨 URGENT: Email {{ $json.subject_clean }} from  {{ $json.sender_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Urgent Notification1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -560
+      ],
+      "id": "b319c1db-e230-4ac2-a9ea-c9be2472dece"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "category",
+              "value": "company_priority"
+            },
+            {
+              "name": "action",
+              "value": "add_to_priority_inbox"
+            },
+            {
+              "name": "message",
+              "value": "={{ \"⚠️ Company email from \" + $json[\"sender_name\"] + \" - \" + $json[\"subject\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Priority Inbox1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -320
+      ],
+      "id": "46302767-85d4-4204-9e01-d4c3925c3d66"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "={{ $json.message }}",
+        "emailType": "text",
+        "message": "={{ $('Email Data1').item.json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1344,
+        -704
+      ],
+      "id": "c2bfc956-e073-4aed-83d4-70e6f18f0f06",
+      "name": "Send a message",
+      "webhookId": "9363296c-e19a-4290-a700-3a57bf09f494",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wGtIaFv98JB2CURw",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Email Data1').item.json.sender }}",
+        "subject": "={{ $('Email Data1').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('Email Data1').item.json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1632,
+        -336
+      ],
+      "id": "7a043eb8-ee8e-4211-8a83-04de8658a55d",
+      "name": "Send a message1",
+      "webhookId": "d029143c-0d94-437f-b213-c48f515e1343",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wGtIaFv98JB2CURw",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "4b275cc2-5313-41f2-b841-139314777a72",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Email Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Data": {
+      "main": [
+        [
+          {
+            "node": "Email Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract & Clean": {
+      "main": [
+        [
+          {
+            "node": "Urgent + Company?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent + Company?": {
+      "main": [
+        [
+          {
+            "node": "Urgent Notification1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Company?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company?": {
+      "main": [
+        [
+          {
+            "node": "Priority Inbox1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Standard Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Data1": {
+      "main": [
+        [
+          {
+            "node": "Extract & Clean",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Inbox1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard Queue": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Notification1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5af89af-75ab-4f12-832c-a48ba6dca15b",
+  "meta": {
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  },
+  "id": "MjYsNaOUeUdLyuTK",
+  "tags": []
+}

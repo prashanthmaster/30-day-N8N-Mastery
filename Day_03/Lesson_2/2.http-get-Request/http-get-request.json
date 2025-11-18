@@ -1,0 +1,91 @@
+{
+  "name": "HTTP GET \u2014 Basic Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger Open from canvas ",  
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/todos/1",
+        "options": {}
+      },
+      "id": "2",
+      "name": "HTTP Request (GET)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Fetched TODO successfully"
+            },
+            {
+              "name": "title",
+              "value": "={{ $json[\"title\"] }}"
+            },
+            {
+              "name": "completed",
+              "value": "={{ $json[\"completed\"] }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "todo_id",
+              "value": "={{ $json[\"id\"] }}"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "Set (Format)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (GET)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (GET)": {
+      "main": [
+        [
+          {
+            "node": "Set (Format)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

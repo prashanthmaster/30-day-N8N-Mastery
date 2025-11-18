@@ -1,0 +1,171 @@
+{
+  "name": "Daily Standup to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "forms/standup",
+        "formTitle": "Daily Tech Standup",
+        "formDescription": "Quick daily report for the engineering team",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Employee Name",
+              "name": "employee_name",
+              "placeholder": "Your full name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "name": "email",
+              "fieldType": "email",
+              "placeholder": "you@company.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Project",
+              "name": "project",
+              "placeholder": "Project/Service name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Yesterday",
+              "name": "yesterday",
+              "fieldType": "textarea",
+              "placeholder": "What did you complete yesterday?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Today",
+              "name": "today",
+              "fieldType": "textarea",
+              "placeholder": "What will you do today?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Blockers",
+              "name": "blockers",
+              "fieldType": "textarea",
+              "placeholder": "Anything blocking you?",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Priority",
+              "name": "priority",
+              "fieldType": "select",
+              "options": {
+                "options": [
+                  {
+                    "name": "low"
+                  },
+                  {
+                    "name": "medium"
+                  },
+                  {
+                    "name": "high"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tags",
+              "name": "tags",
+              "placeholder": "comma,separated,tags",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "formStandup",
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "",
+        "range": "",
+        "options": {
+          "locationDefine": "define",
+          "valueInputMode": "RAW",
+          "keyRow": 1
+        },
+        "columns": {
+          "string": [
+            {
+              "name": "employee_name",
+              "value": "={{ $json['employee_name'] }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json['email'] }}"
+            },
+            {
+              "name": "date_iso",
+              "value": "={{ $now }}"
+            },
+            {
+              "name": "project",
+              "value": "={{ $json['project'] }}"
+            },
+            {
+              "name": "yesterday",
+              "value": "={{ $json['yesterday'] }}"
+            },
+            {
+              "name": "today",
+              "value": "={{ $json['today'] }}"
+            },
+            {
+              "name": "blockers",
+              "value": "={{ $json['blockers'] }}"
+            },
+            {
+              "name": "priority",
+              "value": "={{ $json['priority'] }}"
+            },
+            {
+              "name": "tags",
+              "value": "={{ $json['tags'] }}"
+            }
+          ]
+        }
+      },
+      "id": "gsheetsAppend",
+      "name": "Google Sheets (Append Row)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        220,
+        -160
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "__PLEASE_CONFIGURE__",
+          "name": "Google Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets (Append Row)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

@@ -1,0 +1,619 @@
+{
+  "name": "My workflow 7",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Expense Form",
+        "formDescription": "You’ll track Date, Item, Amount, and Category — then later you can analyze totals and averages",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Date",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Item",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Amount",
+              "fieldType": "number",
+              "placeholder": "enter the amount you spend",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Category",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Food"
+                  },
+                  {
+                    "option": "Entertainment"
+                  },
+                  {
+                    "option": "Education"
+                  },
+                  {
+                    "option": "Transport"
+                  },
+                  {
+                    "option": "Health"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -336,
+        16
+      ],
+      "id": "a7e0e6f4-be99-413a-acfa-9e94feba9abd",
+      "name": "Expense Form",
+      "webhookId": "285bdcdf-1f1e-46d9-933a-eebf3ed201e4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3459ee4b-ffa6-4043-b8de-a0920667e5c0",
+              "name": "Date ",
+              "value": "={{ $json.Date }}",
+              "type": "string"
+            },
+            {
+              "id": "40b0fbad-46e2-4137-9210-7e9c23740715",
+              "name": "Item",
+              "value": "={{ $json.Item }}",
+              "type": "string"
+            },
+            {
+              "id": "dbaac436-a39d-4654-8009-c2b10d32bcc1",
+              "name": "Amount",
+              "value": "=₹{{ $json.Amount }}  ",
+              "type": "string"
+            },
+            {
+              "id": "4eba0e41-1ac5-4442-bdd9-cc4e1d858721",
+              "name": "Category",
+              "value": "={{ $json.Category }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "d82b79ea-e3ad-4133-b5db-b817161105a3",
+      "name": "Clean Expense Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1rmCyBxoNqcgIb-v0i9RFEUT4mNALVYst8tKu1pWag0Y/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmCyBxoNqcgIb-v0i9RFEUT4mNALVYst8tKu1pWag0Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json['Date '] }}",
+            "Item\t": "={{ $json.Item }}",
+            "Amount\t": "={{ $json.Amount }}",
+            "Category": "={{ $json.Category }}"
+          },
+          "matchingColumns": [
+            "Date"
+          ],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Item\t",
+              "displayName": "Item\t",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount\t",
+              "displayName": "Amount\t",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        80,
+        16
+      ],
+      "id": "a2985670-91dc-4ce4-9f99-d538b55f675e",
+      "name": "Expenses",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgGA5lXJEM8iCSPE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1rmCyBxoNqcgIb-v0i9RFEUT4mNALVYst8tKu1pWag0Y/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmCyBxoNqcgIb-v0i9RFEUT4mNALVYst8tKu1pWag0Y/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        16
+      ],
+      "id": "3bc68dea-c87b-446d-972c-e3fad4694690",
+      "name": "Read All Rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgGA5lXJEM8iCSPE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let totalSpent = 0;\nlet rowCount = 0;\n\nfor (const row of items) {\n  // Handle column variations (Amount vs Amount with tabs)\n  let rawAmount = row.json[\"Amount\"] || row.json[\"Amount\\t\"] || \"0\";\n  \n  // Remove currency symbols and spaces\n  const amount = parseFloat(String(rawAmount).replace(/[^0-9.]/g, \"\"));\n  \n  if (!isNaN(amount)) {\n    totalSpent += amount;\n    rowCount++;\n  }\n}\n\nreturn [{\n  json: {\n    totalSpent,\n    rowCount,\n    averageSpend: totalSpent / (rowCount || 1)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        32
+      ],
+      "id": "c69d917c-bf12-4c55-8780-f6dcec2b511b",
+      "name": "Amount spend Average"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "52a5552d-1c94-4f19-939c-69bafafcaa70",
+              "name": "Total Amount Spend",
+              "value": "=₹{{ $json.totalSpent }}",
+              "type": "string"
+            },
+            {
+              "id": "0d35be34-1f30-46a6-80be-2e004fd1b05a",
+              "name": "Average I spend ",
+              "value": "=₹{{ $json.averageSpend }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        32
+      ],
+      "id": "70a997f9-063b-443a-9c9d-cad38537b0ef",
+      "name": "filtering"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Think You are the Expense Tracker AI Agent \n\nInput Data\n\n-Total amount you spend on this month{{ $json['Total Amount Spend'] }}\n-The Average amount spend is {{ $json['Average I spend '] }}\n\nbased on this  info create a structure mail body no subject\n\n\nusing AI",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        32
+      ],
+      "id": "0349509e-f61d-4768-844e-1c35224b53d4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        784,
+        240
+      ],
+      "id": "dffa7ef8-31b4-4852-b779-5aa0152e78f6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uRnmfA2fByGfIwF8",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b84846d-52a0-47ed-bf05-64ee8b9b5a24",
+              "name": "Agent Response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        32
+      ],
+      "id": "5521334d-1b1c-40e0-9fe8-647830ea1bed",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "Expense Tracker Agent - Money Alert",
+        "emailType": "text",
+        "message": "={{ $json['Agent Response'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1584,
+        64
+      ],
+      "id": "9d836ac1-44a4-4049-9037-4497df1296b0",
+      "name": "Send a message",
+      "webhookId": "a808ab69-1c61-485d-82fb-092b4929ebef",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wGtIaFv98JB2CURw",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Expense Form": [
+      {
+        "json": {
+          "Date": "2025-09-11",
+          "Item": "Lunch",
+          "Amount": 150,
+          "Category": "Food",
+          "submittedAt": "2025-09-11T07:17:53.969-04:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Clean Expense Data": [
+      {
+        "json": {
+          "Date ": "2025-09-11",
+          "Item": "Lunch",
+          "Amount": "₹150  ",
+          "Category": "Food"
+        }
+      }
+    ],
+    "Expenses": [
+      {
+        "json": {
+          "Date": "2025-09-11",
+          "Item\t": "Lunch",
+          "Amount\t": "₹150  ",
+          "Category": "Food"
+        }
+      }
+    ],
+    "Read All Rows": [
+      {
+        "json": {
+          "row_number": 2,
+          "Date": "Sep 11",
+          "Item     ": "Lunch",
+          "Amount": 150,
+          "Category": "Food"
+        }
+      },
+      {
+        "json": {
+          "row_number": 3,
+          "Date": "Jan 15",
+          "Item     ": "Dinner",
+          "Amount": 200,
+          "Category": "Food"
+        }
+      },
+      {
+        "json": {
+          "row_number": 4,
+          "Date": "Jan 15",
+          "Item     ": "Tiffin",
+          "Amount": 120,
+          "Category": "Food"
+        }
+      },
+      {
+        "json": {
+          "row_number": 5,
+          "Date": "Jan 16",
+          "Item     ": "Movie Ticket",
+          "Amount": 500,
+          "Category": "Entertainment"
+        }
+      },
+      {
+        "json": {
+          "row_number": 6,
+          "Date": "Jan 16",
+          "Item     ": "Petrol",
+          "Amount": 200,
+          "Category": "Transport"
+        }
+      },
+      {
+        "json": {
+          "row_number": 7,
+          "Date": "Jan 17",
+          "Item     ": "Book",
+          "Amount": 599,
+          "Category": "Education"
+        }
+      },
+      {
+        "json": {
+          "row_number": 8,
+          "Date": "Jan 17",
+          "Item     ": "Files & Stationery",
+          "Amount": 299,
+          "Category": "Education"
+        }
+      },
+      {
+        "json": {
+          "row_number": 9,
+          "Date": "Jan 18",
+          "Item     ": "Gym Membership",
+          "Amount": 1999,
+          "Category": "Health"
+        }
+      },
+      {
+        "json": {
+          "row_number": 10,
+          "Date": "Jan 18",
+          "Item     ": "Coffee",
+          "Amount": 149,
+          "Category": "Food"
+        }
+      },
+      {
+        "json": {
+          "row_number": 11,
+          "Date": "Jan 18",
+          "Item     ": "Uber Ride",
+          "Amount": 199,
+          "Category": "Transport"
+        }
+      }
+    ],
+    "Amount spend Average": [
+      {
+        "json": {
+          "totalSpent": 4415,
+          "rowCount": 10,
+          "averageSpend": 441.5
+        }
+      }
+    ],
+    "filtering": [
+      {
+        "json": {
+          "Total Amount Spend": "₹4415",
+          "Average I spend ": "₹441.5"
+        }
+      }
+    ],
+    "AI Agent": [
+      {
+        "json": {
+          "output": "Hello there,\n\nHere is your spending summary for the current month:\n\n**Total Amount Spent:** ₹4415\n**Average Amount Spent:** ₹441.5\n\nThis provides a quick overview of your financial activity. Keeping track of these figures can help you understand your spending patterns and plan for the future.\n\nShould you require more detailed breakdowns or further insights, I am here to assist.\n\nBest regards,\n\nYour Expense Tracker AI Agent"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Expense Form": {
+      "main": [
+        [
+          {
+            "node": "Clean Expense Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Expense Data": {
+      "main": [
+        [
+          {
+            "node": "Expenses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expenses": {
+      "main": [
+        [
+          {
+            "node": "Read All Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Rows": {
+      "main": [
+        [
+          {
+            "node": "Amount spend Average",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Amount spend Average": {
+      "main": [
+        [
+          {
+            "node": "filtering",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtering": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Response": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "596936bf-b464-4edd-bdad-c4d66bd866be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  },
+  "id": "NtnWzuLS7eiNMXcL",
+  "tags": []
+}

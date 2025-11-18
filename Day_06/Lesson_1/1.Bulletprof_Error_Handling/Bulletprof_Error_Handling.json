@@ -1,0 +1,363 @@
+{
+  "name": "Error Handling",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a635d5ae-4530-48ec-b17b-a4a69f40344f",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "documentId",
+              "value": "1INVALID_ID_DEMO_NOT_FOUND"
+            },
+            {
+              "name": "range",
+              "value": "Sheet1!A:B"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ec6b4b2a-adf7-4ee3-bcc7-192a66fdc6c9",
+      "name": "Set Bad Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -432
+      ],
+      "id": "f0b6a109-6471-40fe-8e8d-4a43e88d2d7c",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 401042151,
+          "mode": "list",
+          "cachedResultName": "Error_Handling",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=401042151"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Good config').item.json.document_Id }}",
+            "NAME": "={{ $('Good config').item.json.Name }}",
+            "EMail": "={{ $('Good config').item.json.Email }}"
+          },
+          "matchingColumns": [
+            "Sheet _ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EMail",
+              "displayName": "EMail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1744,
+        144
+      ],
+      "id": "5d314795-0cf4-4650-8de1-e85b9ae3b972",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Error\n##  In There is a Error \"no proper Sheet id !!\"",
+        "height": 272,
+        "width": 864,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        -544
+      ],
+      "typeVersion": 1,
+      "id": "fc3fd5f1-5580-448a-afda-3fb3c2648e1e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Name",
+              "value": "Jane Doe"
+            },
+            {
+              "name": "Email",
+              "value": "jane.doe@example.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "da83d258-c531-4266-ba97-88094744e903",
+      "name": "Set Data2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        912,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "document_Id",
+              "value": "98765456t789"
+            },
+            {
+              "name": "Name",
+              "value": "={{ $json.Name }}"
+            },
+            {
+              "name": "Email",
+              "value": "={{ $json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "14ff6deb-8ed7-4ca0-a2c4-67de3c5999d5",
+      "name": "Good config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Name",
+              "value": "Jane Doe"
+            },
+            {
+              "name": "Email",
+              "value": "jane.doe@example.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "377cfdd7-9c08-4eaf-9a59-bfba045998fb",
+      "name": "Set Data 1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -432
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## correct\n## Proper Bulletproof Error Handling\n",
+        "height": 320,
+        "width": 1120,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "8355dda0-dfb2-4167-9c07-d3bdb1a6332e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "title": "Error_Handling",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        160
+      ],
+      "id": "e9e44da9-31a9-496f-9523-426672014fed",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Data2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Bad Config": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Data2": {
+      "main": [
+        [
+          {
+            "node": "Good config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Good config": {
+      "main": [
+        [
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Data 1": {
+      "main": [
+        [
+          {
+            "node": "Set Bad Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create sheet": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2c823556-66f7-433f-9065-c4c0f66292ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "o3BS24To09fsGRjl",
+  "tags": []
+}

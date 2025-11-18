@@ -1,0 +1,139 @@
+{
+  "name": "HTTP POST \u2014 Basic Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "name",
+              "value": "Asha"
+            },
+            {
+              "name": "note",
+              "value": "Here's some data to save"
+            },
+            {
+              "name": "priority",
+              "value": "high"
+            },
+            {
+              "name": "category",
+              "value": "onboarding"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "Set (Build Payload)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "jsonParameters": true,
+        "sendBinaryData": false,
+        "options": {},
+        "bodyParametersJson": "={{ $json }}"
+      },
+      "id": "3",
+      "name": "HTTP Request (POST)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "Saved successfully (simulated)"
+            },
+            {
+              "name": "echoed_name",
+              "value": "={{ $json[\"name\"] }}"
+            },
+            {
+              "name": "echoed_note",
+              "value": "={{ $json[\"note\"] }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "post_id",
+              "value": "={{ $json[\"id\"] }}"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Set (Format Response)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        980,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set (Build Payload)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set (Build Payload)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (POST)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (POST)": {
+      "main": [
+        [
+          {
+            "node": "Set (Format Response)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {}
+}

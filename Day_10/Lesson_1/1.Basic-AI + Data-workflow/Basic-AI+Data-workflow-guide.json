@@ -1,0 +1,228 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json[\"id\"] }}",
+        "options": {}
+      },
+      "id": "1916cce2-f98a-41b0-9299-60d6c64224fa",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(i => i.json);\nconst rowCount = rows.length;\n\nif (rowCount===0){\n  return [{json:{summaryContext:'No rows found.',columns:[],rowCount:0}}];\n}\n\nconst columns = Object.keys(rows[0]);\nconst numericCols = columns.filter(c =>\n  rows.every(r => r[c]==null || r[c]==='' || !isNaN(Number(r[c])))\n);\n\nconst stats = {};\nfor (const c of numericCols){\n  const nums = rows.map(r => Number(r[c])).filter(v => !isNaN(v));\n  if(nums.length){\n    const sum = nums.reduce((a,b)=>a+b,0);\n    stats[c] = {\n      count: nums.length,\n      min: Math.min(...nums),\n      max: Math.max(...nums),\n      mean: Number((sum/nums.length).toFixed(2))\n    };\n  }\n}\n\nconst sample = rows.slice(0,10);\n\nconst summaryContext = {\n  meta: { rowCount, columns, numericColumns: numericCols },\n  quickStats: stats,\n  sampleRows: sample\n};\n\nreturn [{\n  json:{\n    columns,\n    rowCount,\n    summaryContext: JSON.stringify(summaryContext, null, 2)\n  }\n}];"
+      },
+      "id": "ee97b036-b27b-4e82-9969-bd6f89395d74",
+      "name": "Code in JavaScript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFile",
+        "fileToWatch": {
+          "__rl": true,
+          "value": "1QAIDcnOhAxHGnKyDefg_vhMEFisqDPw9",
+          "mode": "list",
+          "cachedResultName": "sample_amazon_sales.csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1QAIDcnOhAxHGnKyDefg_vhMEFisqDPw9/view?usp=drivesdk"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "5471be03-859b-429c-a1ed-85d5615bc1c1",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2173b33f-c244-4807-9966-41df2cea42b4",
+      "name": "Extract From File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a precise data analyst. Produce a compact, Gmail-friendly HTML summary of a CSV dataset.\n\nHARD RULES\n- DO NOT include a “Columns and Data Types” (or any schema) section.\n- Sections must be exactly, in this order: Overview, Key Metrics, Notable Insights, Next Steps.\n- Use only inline styles. Neutral grays only (#111 text, #555 muted, #e5e7eb borders). No external CSS/JS.\n- Keep output under ~250 words. No apologies or meta commentary.\n\nINPUT\nThe variable {{ $json.summaryContext }} is a JSON string containing:\n- meta.rowCount, meta.columns, meta.numericColumns\n- quickStats: for each numeric column → {count, min, max, mean}\n- sampleRows: up to 10 example rows\n\nWHAT TO WRITE\n1) Overview...\n2) Key Metrics...\n3) Notable Insights...\n4) Next Steps...\n\nOUTPUT (return only this single HTML block; no <html> or <body> tags):\n<div style=\"font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.6;font-size:14px;\">\n  <h3 style=\"margin:0 0 8px 0;color:#111;\">Overview</h3>\n  <h3 style=\"margin:16px 0 8px 0;color:#111;\">Key Metrics</h3>\n  <h3 style=\"margin:16px 0 8px 0;color:#111;\">Notable Insights</h3>\n  <ul style=\"margin:0 0 12px 18px;padding:0;\"></ul>\n  <h3 style=\"margin:16px 0 8px 0;color:#111;\">Next Steps</h3>\n  <ul style=\"margin:0;padding:0 0 4px 18px;\"></ul>\n</div>",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "89219977-4a23-4795-8e80-d9f42c067659",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        240
+      ],
+      "id": "dee2133c-ad52-4f84-83fe-d8b8fd8392fb",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "cLCdY5swsxgvlPYD",
+          "name": "Open AI API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "AI Vison ",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "b73edc91-72f6-46da-a51b-4ae7ec89d355",
+      "name": "Send a message",
+      "webhookId": "5de78428-2f96-4efe-86b5-169e8fc429db",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract From File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract From File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3d678e12-8ccf-48a2-ac23-c2a6a9e24ad2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "hHlZCXlxPp74DZq4",
+  "tags": []
+}

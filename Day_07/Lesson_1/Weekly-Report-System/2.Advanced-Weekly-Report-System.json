@@ -1,0 +1,512 @@
+{
+  "name": "Weekly Report System",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                5
+              ],
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -64
+      ],
+      "id": "a5349d19-7b4f-4708-871d-ac11796cf2e3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appPddDbYyMNuUfPo",
+          "mode": "list",
+          "cachedResultName": "Weekly Report ",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPdinbgET4GzeeF",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo/tblPdinbgET4GzeeF"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Team": "={{ $json.Team }}",
+            "Update ": "={{ $json.Update }}",
+            "KPI's": "={{ $json['KPI\\'s'] }}",
+            "Links": "={{ $json.Links }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Team",
+              "displayName": "Team",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Update ",
+              "displayName": "Update ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "KPI's",
+              "displayName": "KPI's",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Links",
+              "displayName": "Links",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created Time",
+              "displayName": "Created Time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        -64
+      ],
+      "id": "a4b9fcbd-903a-4c00-b504-dae16ede5510",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9Gt0UqNpYjEHtrsr",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appPddDbYyMNuUfPo",
+          "mode": "list",
+          "cachedResultName": "Weekly Report ",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPdinbgET4GzeeF",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appPddDbYyMNuUfPo/tblPdinbgET4GzeeF"
+        },
+        "id": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        -48
+      ],
+      "id": "bba84630-4573-4bb6-80af-26b5211b4f1f",
+      "name": "Get a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "9Gt0UqNpYjEHtrsr",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function node => Language: JavaScript\n// Returns 5 rows as proper n8n items with \"json\" wrapper\n// Field names match your Airtable: Team, Update, KPI's, Links\n\nconst rows = [\n  {\n    Team: \"Engineering\",\n    Update: \"Shipped API v2.3; reduced p95 latency.\",\n    Kpis: \"p95_latency_ms: 380->312; error_rate: -22%\",\n    Links: \"https://docs.example.com/release-v2-3\"\n  },\n  {\n    Team: \"Sales\",\n    Update: \"Closed 8 mid-market deals; pipeline healthy.\",\n    Kpis: \"deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%\",\n    Links: \"https://crm.example.com/opps?week=latest\"\n  },\n  {\n    Team: \"Marketing\",\n    Update: \"Launched UGC campaign; best CTR this quarter.\",\n    Kpis: \"impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142\",\n    Links: \"https://campaigns.example.com/ugc-q3\"\n  },\n  {\n    Team: \"Operations\",\n    Update: \"Cut cloud cost with rightsizing & spot usage.\",\n    Kpis: \"cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%\",\n    Links: \"https://runbooks.example.com/cost-rightsizing\"\n  },\n  {\n    Team: \"Product\",\n    Update: \"Completed usability tests; two P0 fixes shipped.\",\n    Kpis: \"nps: 42; csat: 4.6/5; tasks_closed: 27\",\n    Links: \"https://product.example.com/research/usability-week\"\n  }\n];\n\n// Map to n8n items and use the exact Airtable field key \"KPI's\"\nreturn rows.map(r => ({\n  json: {\n    Team: r.Team,\n    Update: r.Update,\n    \"KPI's\": r.Kpis,\n    Links: r.Links\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        -64
+      ],
+      "id": "2b49aea5-b7d9-486f-913a-d4467c4874a9",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You turn weekly raw updates into a crisp executive report.\nSections: 1) Highlights 2) KPIs 3) Risks/Blockers 4) Next Week Focus 5) Team Shoutouts.\nRules: be concise, group similar items, convert bullets to clear prose/bullets,\nnormalize numbers, remove duplicates, keep links.\nOutput in clean Markdown. No preamble.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        416,
+        -160
+      ],
+      "id": "db58e014-2ac7-4bf6-ae4f-db963f42496e",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        416,
+        112
+      ],
+      "id": "defcb4ab-ca9e-41eb-a15f-7bd579b4cb25",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "MWyYXBJPFpkjg5Nh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Basic LLM Chain').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -176
+      ],
+      "id": "d3ed80be-443a-40aa-9b22-64f912d4be18",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "qGxc47LllHxFdin1",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "1WvKp-wnZ7RQfWs_gAgB6eyLyDJjlA4Vb",
+        "title": "Weekly Record system "
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        848,
+        -176
+      ],
+      "id": "6d7730d1-a289-40d1-8c47-d58ec7e00bab",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "qGxc47LllHxFdin1",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "=Weekly Report — {{ $('Schedule Trigger').item.json['Readable date'] }}",
+        "message": "=Hi all,<br><br>\nHere’s the weekly report:\n<a href=\"https://docs.google.com/document/d/1aMNTp5k0P3LlpA9pe0UCrvE-ZkvvtX7dXrbz2cuKHkk/edit?usp=sharing\">Open in Google Docs</a><br><br>\n— BotCampus AI Weekly Automations",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        -176
+      ],
+      "id": "9dca0fc3-48d7-40b8-923a-5c0ca5a9af36",
+      "name": "Send a message",
+      "webhookId": "b79469fd-676c-46f8-b83b-485416ef3ec4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Gn7WKHzigIdNcQXB",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Code": [
+      {
+        "json": {
+          "Team": "Engineering",
+          "Update": "Shipped API v2.3; reduced p95 latency.",
+          "KPI's": "p95_latency_ms: 380->312; error_rate: -22%",
+          "Links": "https://docs.example.com/release-v2-3"
+        }
+      },
+      {
+        "json": {
+          "Team": "Sales",
+          "Update": "Closed 8 mid-market deals; pipeline healthy.",
+          "KPI's": "deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%",
+          "Links": "https://crm.example.com/opps?week=latest"
+        }
+      },
+      {
+        "json": {
+          "Team": "Marketing",
+          "Update": "Launched UGC campaign; best CTR this quarter.",
+          "KPI's": "impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142",
+          "Links": "https://campaigns.example.com/ugc-q3"
+        }
+      },
+      {
+        "json": {
+          "Team": "Operations",
+          "Update": "Cut cloud cost with rightsizing & spot usage.",
+          "KPI's": "cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%",
+          "Links": "https://runbooks.example.com/cost-rightsizing"
+        }
+      },
+      {
+        "json": {
+          "Team": "Product",
+          "Update": "Completed usability tests; two P0 fixes shipped.",
+          "KPI's": "nps: 42; csat: 4.6/5; tasks_closed: 27",
+          "Links": "https://product.example.com/research/usability-week"
+        }
+      }
+    ],
+    "Get a record": [
+      {
+        "json": {
+          "id": "recaXAU3y03R9ZhUP",
+          "createdTime": "2025-09-15T09:23:19.000Z",
+          "Team": "Engineering",
+          "Update ": "Shipped API v2.3; reduced p95 latency.",
+          "KPI's": "p95_latency_ms: 380->312; error_rate: -22%",
+          "Links": "https://docs.example.com/release-v2-3",
+          "Created Time": "2025-09-15T09:23:19.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "recDAZ48W5B7vKvzE",
+          "createdTime": "2025-09-15T09:23:21.000Z",
+          "Team": "Sales",
+          "Update ": "Closed 8 mid-market deals; pipeline healthy.",
+          "KPI's": "deals_closed: 8; pipeline_value_inr: 1.8cr; win_rate: 32%",
+          "Links": "https://crm.example.com/opps?week=latest",
+          "Created Time": "2025-09-15T09:23:21.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "recAxKGXdbzWWmDCY",
+          "createdTime": "2025-09-15T09:23:22.000Z",
+          "Team": "Marketing",
+          "Update ": "Launched UGC campaign; best CTR this quarter.",
+          "KPI's": "impressions: 410000; clicks: 18950; ctr: 4.6%; cac_inr: 142",
+          "Links": "https://campaigns.example.com/ugc-q3",
+          "Created Time": "2025-09-15T09:23:22.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "rec7hoWHmtG2SUoee",
+          "createdTime": "2025-09-15T09:23:24.000Z",
+          "Team": "Operations",
+          "Update ": "Cut cloud cost with rightsizing & spot usage.",
+          "KPI's": "cloud_cost_inr: -18%; incidents: 0; uptime: 99.97%",
+          "Links": "https://runbooks.example.com/cost-rightsizing",
+          "Created Time": "2025-09-15T09:23:24.000Z"
+        }
+      },
+      {
+        "json": {
+          "id": "rec4tVFHHYA438ian",
+          "createdTime": "2025-09-15T09:23:25.000Z",
+          "Team": "Product",
+          "Update ": "Completed usability tests; two P0 fixes shipped.",
+          "KPI's": "nps: 42; csat: 4.6/5; tasks_closed: 27",
+          "Links": "https://product.example.com/research/usability-week",
+          "Created Time": "2025-09-15T09:23:25.000Z"
+        }
+      }
+    ],
+    "Basic LLM Chain": [
+      {
+        "json": {
+          "text": "## Highlights\n\n*   Successful launch of Feature X.\n*   Strong user engagement growth for Feature Y.\n*   On track to achieve Q2 revenue target.\n*   Improving user sentiment for Feature Z.\n*   Product A marketing campaign is successfully driving daily sign-ups.\n*   Initiated partnership discussions with Acme Corp.\n\n## KPIs\n\n*   **Feature Y User Engagement:** +15%\n*   **Q2 Revenue:** $1.2M (Target: $1.5M)\n*   **Feature Z User Sentiment:** +5 points\n*   **Product A Marketing Sign-ups:** 500 daily\n*   **New Customers this week:** 100\n\n## Risks/Blockers\n\n*   Data migration is currently blocked by database access issues; IT support is required.\n*   Server outage on Monday for 3 hours impacted Feature B availability.\n\n## Next Week Focus\n\n*   Complete documentation for Feature X.\n*   Conduct a review of new security protocols.\n*   Follow-up meeting scheduled with Acme Corp.\n*   Initiate development for Feature W.\n\n## Team Shoutouts\n\n*   **John Doe:** For swiftly fixing critical bug #123 (Link: jira.com/bug123).\n*   **Sarah Connor:** For outstanding communication during the server outage.\n*   **Ops Team:** For quick and effective incident response.\n*   **Mary Smith:** For a professional and impactful presentation at the Acme Corp meeting."
+        }
+      },
+      {
+        "json": {
+          "text": "## Weekly Executive Report\n\n### 1) Highlights\n*   Feature X successfully launched.\n*   Exceeded user acquisition target by 200 users.\n*   Strong revenue performance.\n*   Security audit completed.\n*   Successful marketing campaign launch (Details: https://example.com/report).\n\n### 2) KPIs\n*   **Revenue:** $1.2M\n*   **MAU:** +15%\n*   **Churn Rate:** 5.2% (slight increase)\n\n### 3) Risks/Blockers\n*   Legal approval for Project Z pending.\n*   Database performance issue requires resolution.\n*   API integration with Partner A pending.\n\n### 4) Next Week Focus\n*   Prioritize bug fixes.\n*   Finalize Feature Y scope and begin detailed planning.\n*   Review Q3 budget.\n\n### 5) Team Shoutouts\n*   **Sarah** for excellent Feature X testing.\n*   **John** for outstanding backend stability work.\n*   **Marketing Team** for the successful campaign launch."
+        }
+      },
+      {
+        "json": {
+          "text": "## 1) Highlights\n*   Successfully launched marketing campaign ([http://link.com/assets](http://link.com/assets)).\n*   New dashboard design approved.\n*   Sales increased by 10% Week-over-Week.\n*   User engagement increased by 15%.\n*   Completed user research phase 1.\n*   Achieved weekly target of 5 new sign-ups.\n*   Achieved 95% test coverage.\n*   Project Gemini is on track.\n\n## 2) KPIs\n*   Total Sales: $1.2 million (up 10% Week-over-Week)\n*   Churn Rate: 5% (stable)\n*   User Engagement: Up 15%\n*   New Sign-ups: 5\n*   Customer Acquisition Cost: $50 per customer\n*   Test Coverage: 95%\n\n## 3) Risks/Blockers\n*   API integration with Vendor X is blocked, potentially delaying feature launch by a week.\n*   Recruitment for the Senior Engineer role is progressing slowly.\n*   New server provisioning by IT is pending.\n\n## 4) Next Week Focus\n*   Begin Q4 planning.\n*   Conduct Q3 budget review (scheduled for Monday).\n*   Resolve Vendor X API integration issues.\n*   Onboard 2 new clients.\n*   Follow up with IT regarding new server provisioning.\n*   Refine product roadmap.\n\n## 5) Team Shoutouts\n*   **Dev Team:** For their dedication and late nights.\n*   **Sarah:** For leading the new dashboard design effort.\n*   **Sales Team:** For great work this quarter."
+        }
+      },
+      {
+        "json": {
+          "text": "## Weekly Executive Report\n\n**Reporting Period:** [Start Date] – [End Date]\n\n### 1) Highlights\n\n*   **Successful Project Launch:** Project X went live smoothly, receiving positive initial feedback from the key client.\n*   **Significant Sales Growth:** Achieved a 15% increase in weekly sales, driven by strong market adoption.\n*   **Improved Customer Satisfaction:** Our CSAT score saw a 3-point improvement, indicating enhanced customer experience.\n\n### 2) Key Performance Indicators (KPIs)\n\n*   **Sales Revenue:** $115K (↑ 15% WoW)\n*   **Website Unique Visitors:** 250K (↓ 5% vs. Target of 260K)\n*   **Customer Satisfaction (CSAT):** [Current Score]% (↑ 3 pts WoW)\n*   **Product Feature Completion:** [X]% (On track)\n\n### 3) Risks/Blockers\n\n*   **Legal Approval Pending:** Contract B is awaiting legal sign-off, potentially impacting upcoming partnership deadlines. ([Internal Tracker Link for Contract B])\n*   **Critical Bug Identified:** A critical bug in Feature Y has been found during QA, blocking further testing until resolution.\n*   **Resource Constraint:** [Specific team/resource] is currently over-allocated, posing a risk to [specific project/task] delivery.\n\n### 4) Next Week Focus\n\n*   **Q3 Budget Finalization:** Complete and approve the Q3 operational budget.\n*   **Product Z Marketing Campaign Launch:** Initiate the new marketing campaign for Product Z.\n*   **Onboarding New Talent:** Onboard Emily, our new [Role], ensuring a smooth integration into the team.\n*   **Feature Y Bug Resolution:** Prioritize and resolve the critical bug in Feature Y to unblock QA.\n\n### 5) Team Shoutouts\n\n*   **Alex** for swiftly debugging and resolving the critical payment gateway issue.\n*   **Sarah and David** for their prompt and effective response to the server outage on Tuesday, minimizing downtime.\n*   **John** for an outstanding presentation to the Board, clearly articulating our strategy and progress."
+        }
+      },
+      {
+        "json": {
+          "text": "```python\nimport re\n\ndef generate_executive_report(raw_updates_string):\n    \"\"\"\n    Transforms weekly raw updates into a crisp executive report.\n\n    Args:\n        raw_updates_string (str): A multi-line string containing raw weekly updates.\n\n    Returns:\n        str: The executive report in clean Markdown format.\n    \"\"\"\n    highlights = set()\n    kpis = set()\n    risks_blockers = set()\n    next_week_focus = set()\n    team_shoutouts = set()\n\n    # Keywords for categorization (case-insensitive matching)\n    highlight_keywords = [\n        \"launched\", \"completed\", \"achieved\", \"deployed\", \"resolved\", \"fixed\",\n        \"shipped\", \"delivered\", \"closed\", \"improved\", \"successful\", \"finalized\",\n        \"released\", \"implemented\", \"finished\", \"rolled out\", \"migrated\", \"upgraded\",\n        \"secured\", \"addressed\", \"reduced\", \"increased\", \"enabled\", \"onboarded\"\n    ]\n    kpi_keywords = [\n        \"rate\", \"users\", \"revenue\", \"conversion\", \"tickets\", \"uptime\", \"performance\",\n        \"sla\", \"visits\", \"metrics\", \"trend\", \"up by\", \"down by\", \"increased by\",\n        \"decreased by\", \"target\", \"currently at\", \"now at\", \"was at\", \"orders\",\n        \"processed\", \"active users\", \"sign-ups\", \"sales\", \"transactions\", \"costs\",\n        \"leads\", \"reach\"\n    ]\n    risk_blocker_keywords = [\n        \"blocker\", \"blocked\", \"issue\", \"problem\", \"risk\", \"delay\", \"delayed\",\n        \"stuck\", \"pending\", \"waiting for\", \"concern\", \"vulnerability\",\n        \"critical\", \"bottleneck\", \"dependency\", \"unresolved\", \"bug\", \"facing challenge\",\n        \"impediment\", \"requires attention\", \"unable to\", \"struggling with\"\n    ]\n    next_week_keywords = [\n        \"next week\", \"will focus\", \"plan to\", \"aim to\", \"start\", \"begin\",\n        \"continue\", \"investigate\", \"prepare\", \"document\", \"research\", \"explore\",\n        \"monitor\", \"follow up\", \"commence\", \"prioritize\", \"kick off\", \"schedule\"\n    ]\n    shoutout_keywords = [\n        \"thanks to\", \"shoutout to\", \"kudos to\", \"great work by\", \"appreciated\",\n        \"recognize\", \"props to\", \"big thanks to\", \"special thanks to\"\n    ]\n\n    # Helper function to check for number presence in a string\n    def has_number(text):\n        return bool(re.search(r'\\d+(\\.\\d+)?%?|\\$\\d+(\\.\\d+)?|\\b\\d+\\b', text))\n\n    # Helper function for basic word-to-digit number normalization\n    def normalize_numbers_words(text):\n        num_map = {\n            \"zero\": \"0\", \"one\": \"1\", \"two\": \"2\", \"three\": \"3\", \"four\": \"4\",\n            \"five\": \"5\", \"six\": \"6\", \"seven\": \"7\", \"eight\": \"8\", \"nine\": \"9\",\n            \"ten\": \"10\"\n        }\n        for word, digit in num_map.items():\n            text = re.sub(r'\\b' + word + r'\\b', digit, text, flags=re.IGNORECASE)\n        return text\n    \n    # Helper to clean and add an item to a set (for de-duplication)\n    def add_item(collection, item_text):\n        # Strip leading bullets/whitespace, then capitalize the first letter of the content\n        cleaned_item = item_text.strip().lstrip('-* ').capitalize()\n        # Add only if not already present (case-insensitive check)\n        if cleaned_item and cleaned_item.lower() not in [x.lower() for x in collection]:\n            collection.add(cleaned_item)\n\n    # Process each line/item from the raw updates\n    for line in raw_updates_string.split('\\n'):\n        item = line.strip()\n        if not item:  # Skip empty lines\n            continue\n\n        normalized_item = normalize_numbers_words(item)  # Apply word-to-digit normalization\n        item_lower = normalized_item.lower()\n\n        # Prioritize categorization based on specificity\n        # 1. Team Shoutouts (most specific keywords)\n        if any(kw in item_lower for kw in shoutout_keywords):\n            add_item(team_shoutouts, normalized_item)\n            continue\n\n        # 2. KPIs (requires both a number and a KPI-related keyword)\n        if has_number(normalized_item) and any(kw in item_lower for kw in kpi_keywords):\n            add_item(kpis, normalized_item)\n            continue\n\n        # 3. Risks/Blockers (specific negative keywords)\n        if any(kw in item_lower for kw in risk_blocker_keywords):\n            add_item(risks_blockers, normalized_item)\n            continue\n\n        # 4. Next Week Focus (future-oriented keywords)\n        if any(kw in item_lower for kw in next_week_keywords):\n            add_item(next_week_focus, normalized_item)\n            continue\n\n        # 5. Highlights (general positive achievements - fallback for positive actions)\n        if any(kw in item_lower for kw in highlight_keywords):\n            add_item(highlights, normalized_item)\n            continue\n        \n        # Fallback for items containing links that weren't categorized otherwise.\n        # A link often points to something completed or noteworthy, hence Highlights.\n        if re.search(r'https?://\\S+', normalized_item):\n             add_item(highlights, normalized_item)\n             continue\n        \n    # Convert sets to lists and sort for consistent, readable output\n    highlights_list = sorted(list(highlights))\n    kpis_list = sorted(list(kpis))\n    risks_blockers_list = sorted(list(risks_blockers))\n    next_week_focus_list = sorted(list(next_week_focus))\n    team_shoutouts_list = sorted(list(team_shoutouts))\n\n    report_parts = []\n\n    if highlights_list:\n        report_parts.append(\"## 1) Highlights\")\n        for item in highlights_list:\n            report_parts.append(f\"- {item}\")\n        report_parts.append(\"\")\n\n    if kpis_list:\n        report_parts.append(\"## 2) KPIs\")\n        for item in kpis_list:\n            report_parts.append(f\"- {item}\")\n        report_parts.append(\"\")\n\n    if risks_blockers_list:\n        report_parts.append(\"## 3) Risks/Blockers\")\n        for item in risks_blockers_list:\n            report_parts.append(f\"- {item}\")\n        report_parts.append(\"\")\n\n    if next_week_focus_list:\n        report_parts.append(\"## 4) Next Week Focus\")\n        for item in next_week_focus_list:\n            report_parts.append(f\"- {item}\")\n        report_parts.append(\"\")\n\n    if team_shoutouts_list:\n        report_parts.append(\"## 5) Team Shoutouts\")\n        for item in team_shoutouts_list:\n            report_parts.append(f\"- {item}\")\n        report_parts.append(\"\")\n\n    return \"\\n\".join(report_parts).strip()\n```"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "369d81b9-6de7-40f6-9370-7e359af5d48f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "029e74343ace7e09d424f762fabbbe35816a726626c29ed43ae074863f99784c"
+  },
+  "id": "rlfTtID8AUq0lpAe",
+  "tags": []
+}

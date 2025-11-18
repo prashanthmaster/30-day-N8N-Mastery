@@ -1,0 +1,112 @@
+{
+  "name": "Email workflow demo",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "forms/contact",
+        "formTitle": "Contact Us",
+        "formDescription": "sample mail from",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Enter a name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Enter your email ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Mail Subject",
+              "fieldType": "textarea",
+              "placeholder": "Enter a Subject",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "placeholder": "Enter short message body ",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2aee197e-7d0e-4bce-990d-fad0dc643ce7",
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        32
+      ],
+      "webhookId": "70a6e304-f906-4bd8-8fa2-0aca7527f1f6"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $json['Mail Subject'] }}",
+        "emailType": "text",
+        "message": "={{ $json.Message }}",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        32
+      ],
+      "id": "f2936ba3-6d36-492d-bc47-a29f4247a3f8",
+      "name": "Send a message",
+      "webhookId": "5d4c81dd-dfea-4ef8-adfc-f4f527a748d5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wGtIaFv98JB2CURw",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Form Trigger": [
+      {
+        "json": {
+          "Name": "Jashu",
+          "Email": "jashwanthboddupally@gmail.com",
+          "Mail Subject": "sending a Good morning greetings",
+          "Message": "Send a Good morning to my friend\r\n",
+          "submittedAt": "2025-09-10T05:29:26.407Z",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5aeb8a76-743f-467c-9b85-e5ef52d24d98",
+  "meta": {
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  },
+  "id": "o4R4GgNwnDEJbXce",
+  "tags": []
+}

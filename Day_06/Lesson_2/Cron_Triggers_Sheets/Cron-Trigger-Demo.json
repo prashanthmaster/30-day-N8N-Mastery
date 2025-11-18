@@ -1,0 +1,157 @@
+{
+  "name": "My workflow 7",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 9,
+              "triggerAtMinute": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "65a62238-c584-477e-a7db-95e86289d552",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = Date.now();\nconst istIso = new Date(now + 19800000).toISOString(); // UTC +5:30 → IST\n\n// Replace these with real metrics later (from DB/API/previous nodes)\nreturn [{\n  json: {\n    date_ist: istIso.slice(0,10), // YYYY-MM-DD\n    signups: 12,\n    revenue_inr: 34990,\n    note: 'Daily API log'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "6b173d21-e239-436e-9c00-92c11cd513e0",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1YntdUDN8w819TjmbFzZpB6btkIQ4G1V2dQe2YjkXGgQ/edit?gid=1754009725#gid=1754009725",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1754009725,
+          "mode": "list",
+          "cachedResultName": "Cron Time trigger",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YntdUDN8w819TjmbFzZpB6btkIQ4G1V2dQe2YjkXGgQ/edit#gid=1754009725"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date_IST": "={{ $json.date_ist }}",
+            "SignUp's": "={{ $json.signups }}",
+            "Revenue_Income": "={{ $json.revenue_inr }}",
+            "Note": "={{ $json.note }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date_IST",
+              "displayName": "Date_IST",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SignUp's",
+              "displayName": "SignUp's",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Revenue_Income",
+              "displayName": "Revenue_Income",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Note",
+              "displayName": "Note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "db52fbd3-17bc-4d30-9d36-3557b21afeac",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kgGA5lXJEM8iCSPE",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e070d19a-b2b3-4472-9e5c-221d2a0fb7a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42d13b6d7987a10c8e2c8db41171b42d509e245ebab6f50c51434763260454f5"
+  },
+  "id": "Fl3sGt2MEEZ5gqfi",
+  "tags": []
+}

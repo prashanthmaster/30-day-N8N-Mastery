@@ -1,0 +1,143 @@
+{
+  "name": "Basic If / Else Workflow in n8n",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -16
+      ],
+      "id": "a07c6fea-d98f-44e6-8c1b-c614c22e312d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f36f6feb-8123-4318-830a-785688617ba3",
+              "leftValue": "={{5}}",
+              "rightValue": "={{2}}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "1106c27d-1f30-4d83-ac40-8caa02a71090",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "617dda09-c1f0-4df8-b3e8-f1ab272990ee",
+              "name": "message",
+              "value": "✅ Value1 is greater",
+              "type": "string"
+            },
+            {
+              "id": "aa090672-e0b0-4b84-924d-6536de12d844",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -128
+      ],
+      "id": "5ef4db96-4d90-4539-b7b4-423013ccdd36",
+      "name": "true"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20df3e8e-6827-45a3-b98c-8d03c033dee9",
+              "name": "message",
+              "value": "❌ Value2 is greater or equal",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        144
+      ],
+      "id": "c1cceccd-22f1-4d5a-869b-269eaabb36f6",
+      "name": "false"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "true",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "false",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f8b3c5b9-1c73-4526-ae55-3d81731b5bf3",
+  "meta": {
+    "instanceId": "4caff109641a4b76fad8626954e7816add04bc4fbfcb573c0cd290600a1f6f72"
+  },
+  "id": "ypuuO9yNx0ray9Vs",
+  "tags": []
+}
