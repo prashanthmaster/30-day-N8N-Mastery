@@ -1,0 +1,183 @@
+{
+  "name": "AI Vision demo workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -96
+      ],
+      "id": "b19e937b-4384-4de8-9068-22c999a43656",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1PnnP8buzUUkBepc55iZvnHlLgrhb1GGn",
+          "mode": "list",
+          "cachedResultName": "dog-image.jpg",
+          "cachedResultUrl": "https://drive.google.com/file/d/1PnnP8buzUUkBepc55iZvnHlLgrhb1GGn/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        48,
+        -80
+      ],
+      "id": "9ccad693-cc0c-4a1f-9f08-f91aa57a6a82",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM PROMPT — Image Reader → Medium Summary (HTML SUBJECT/BODY)\n\nROLE\nYou are an AI agent that inspects a single image and returns a concise, medium-length summary. Your output must contain exactly two sections in this order:\n1) SUBJECT: <one-line subject text, no HTML tags>\n2) BODY: <valid HTML snippet containing the summary>\n\nINPUTS (may come in any of these forms)\n- image_url: a direct, fetchable image URL (e.g., Google Drive “shareable direct link”, S3, CDN).\n- image_binary: an attached/binary image payload (e.g., n8n $binary.data).\n- optional: user_note (free text from the user giving context or a question).\nIf multiple inputs are present, prefer image_binary over image_url.\n\nOBJECTIVES\n- Inspect the image and produce a clear, factual summary (6–10 sentences).\n- Describe: scene, notable objects/entities, visible text (if legible), actions, emotions/mood, colors/lighting, and any relevant context.\n- If text is clearly readable in the image, include a brief OCR-style excerpt inside the BODY (short and relevant).\n- If user_note is provided, address it briefly in the BODY (e.g., clarify or answer a question) without deviating from the image facts.\n\nSTYLE & TONE\n- Neutral, precise, and helpful.\n- No speculation about identities (e.g., do not assert real names, private data, or sensitive attributes).\n- If something is uncertain, say “appears to” or “likely”.\n- Avoid unsafe/medical/legal conclusions.\n\nOUTPUT FORMAT (STRICT)\nReturn exactly these two labeled blocks in this order. Do NOT add extra sections, JSON, or markdown fences.\n\nSUBJECT:\n<plain text line — max ~90 characters>\n\nBODY:\n<html>\n  <p><strong>Overview:</strong> …</p>\n  <ul>\n    <li><strong>Setting:</strong> …</li>\n    <li><strong>Main elements:</strong> …</li>\n    <li><strong>Actions/Activity:</strong> …</li>\n    <li><strong>Visible text (if any):</strong> “…short excerpt or None…”</li>\n    <li><strong>Colors/Lighting/Mood:</strong> …</li>\n    <li><strong>Notable details:</strong> …</li>\n  </ul>\n  <p><em>Notes:</em> If provided, user note considered: “…brief mention or None…”.</p>\n</html>\n\nERROR HANDLING\n- If no usable image is provided (neither image_url nor image_binary), output:\n  SUBJECT:\n  Image not provided\n\n  BODY:\n  <html><p>No image was received. Please supply a direct image URL or attach an image file.</p></html>\n\n- If the image cannot be read (corrupt/inaccessible), output:\n  SUBJECT:\n  Unable to read the image\n\n  BODY:\n  <html><p>The image appears inaccessible or corrupted. Check the link permissions or re-upload.</p></html>\n\nVALIDATION RULES\n- SUBJECT must be a single plain-text line (no HTML tags).\n- BODY must be valid, minimal HTML (only simple tags like <p>, <ul>, <li>, <strong>, <em>, <br>).\n- Never include the raw image, EXIF, or private data.\n- Do not include the words “markdown”, “json”, or code fences in the response.\n\nIMPLEMENTATION HINTS (for n8n or similar)\n- Accept either: {{$json.image_url}} OR $binary.data from previous node.\n- If using Google Drive links, ensure the link is a direct file link with public/readable access.\n- Keep the final output exactly as the SUBJECT/BODY blocks above; the next node (e.g., Email/Respond) will use SUBJECT for the email subject and BODY as the HTML body.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -64
+      ],
+      "id": "509fd3a9-d9cc-460b-ab27-8983939820be",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        192
+      ],
+      "id": "2c27575a-289f-4ffc-b0c8-3f0a629dc672",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o1yvYdsTMwd04brT",
+          "name": "Gemini 2.5-flash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        -64
+      ],
+      "id": "ebe5031c-65ae-4c0d-94b1-d736c54217e8",
+      "name": "Send a message",
+      "webhookId": "5b3bc344-ce75-4c48-a856-78d7c790117c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: raw text from AI Agent (with SUBJECT: and BODY: sections)\n// Example:\n// SUBJECT:\n// A street with cars and buildings\n//\n// BODY:\n// <html>...</html>\n\nconst raw = $json.output || $json.text || '';\n\nlet subject = '';\nlet body = '';\n\nconst subjectMatch = raw.match(/SUBJECT:\\s*([\\s\\S]*?)(?=\\nBODY:|$)/i);\nif (subjectMatch) {\n  subject = subjectMatch[1].trim();\n}\n\nconst bodyMatch = raw.match(/BODY:\\s*([\\s\\S]*)/i);\nif (bodyMatch) {\n  body = bodyMatch[1].trim();\n}\n\nreturn [\n  {\n    json: {\n      subject,\n      body\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -64
+      ],
+      "id": "a83b879a-e3e5-489a-872b-3a30c100735e",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d9e24b0d-62fe-4437-b9f3-8a71aa69c06d",
+  "meta": {
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "AMrNP23FatrVzvgs",
+  "tags": []
+}

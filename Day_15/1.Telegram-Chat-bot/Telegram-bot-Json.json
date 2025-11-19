@@ -1,0 +1,205 @@
+{
+  "name": "Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -528,
+        -32
+      ],
+      "id": "a3b78fe3-0b3b-41f7-8a21-fa6dcb8fbba8",
+      "name": "Telegram Trigger",
+      "webhookId": "2f60856b-c2df-4b5d-9946-3358b5f683ee",
+      "credentials": {
+        "telegramApi": {
+          "id": "ivmX7sunY0X4NPoz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        144
+      ],
+      "id": "fd6e9a62-bab1-492e-baad-6b71a2d4d55a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6ij9OcJamOS507z1",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "04122eea-6c92-45ca-af2d-9bab22f305ef",
+      "name": "Send a text message",
+      "webhookId": "7193e5af-15e6-438d-bec7-928a5f1dcd95",
+      "credentials": {
+        "telegramApi": {
+          "id": "ivmX7sunY0X4NPoz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -112,
+        144
+      ],
+      "id": "36d4f208-c5bd-48ce-8a4a-96e0986b6770",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## Telegram Chat Bot ",
+        "height": 512,
+        "width": 1280,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -720,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "cfc9fab0-0ea3-4105-85e2-12f2c83dff46",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Telegram Trigger\n",
+        "height": 224,
+        "width": 256,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -608,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "c5202c86-2364-4939-b8c8-32b846b0a69e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Reply to Telegram\n",
+        "height": 240,
+        "width": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "50a90c70-ef3e-4506-9c91-83c98dcdc2be",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI assistant operating as a Telegram bot. Your goal is to provide helpful, accurate, and engaging responses using Telegram-specific features.\n\nInput: {{ $json.message.text }}\n\nUsername: {{ $json.message.from.username }}\n\nCommunication Style\n\nKeep replies concise and mobile-friendly\n\nSplit long replies into multiple messages\n\nUse friendly, conversational tone\n\nSupport multiple languages\n\nMatch user tone while staying professional\n\nTelegram Features\n\nUse Telegram markdown:\n\n*bold*, _italic_, `code`, code blocks\n\nUse emojis sparingly\n\nHandle voice, media, and locations gracefully\n\nAllow interrupted/resumed conversations\n\nResponse Rules\n\nPrioritize clarity over detail\n\nBreak complex info into parts\n\nUse descriptive text for links\n\nNumber multi-step instructions\n\nAsk clarifying questions when needed\n\nUser Experience\n\nGreet users warmly\n\nTrack context within session\n\nHandle typos/informal language\n\nGive friendly errors\n\nSuggest useful commands\n\nSafety & Privacy\n\nDon’t request or store personal data\n\nAvoid unethical, illegal, or harmful content\n\nNo legal/medical/financial advice\n\nRespect privacy principles\n\nCommands\n\nSupport /start, /help, /cancel, /reset\n\nHandle unknown commands with suggestions\n\nLimitations\n\nAdmit when you don’t know\n\nBe transparent about AI nature\n\nSuggest alternatives when needed\n\nConversation Flow\n\nMaintain session context\n\nReference past messages\n\nSupport topic changes naturally\n\nConfirm major actions\n\nProvide progress updates when needed\n\nYour role is to be a friendly, useful AI that uses Telegram effectively to serve users.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        -32
+      ],
+      "id": "9c0fe287-e561-4713-ab12-56c512910625",
+      "name": "AI Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Response",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Response",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Response": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "49f3ee54-492f-44de-9877-1eceaf7c9e72",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09ace0978f111a318a47bb9ca1684cddb283474980bcad2a64ecc984f6ba3a0c"
+  },
+  "id": "Pou27PWmkAca00pM",
+  "tags": []
+}

@@ -1,0 +1,489 @@
+{
+  "name": "My workflow2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead scoring Agent ",
+        "formDescription": "A lead scoring agent is an automated system, often powered by AI, that assesses incoming sales leads and assigns a numerical score to prioritize them based on their likelihood to convert into paying customers",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Industry",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "SaaS / Software/ IT "
+                  },
+                  {
+                    "option": "Hardware & Electronics"
+                  },
+                  {
+                    "option": "Finance / Insurance"
+                  },
+                  {
+                    "option": "E-commerce / Retail"
+                  },
+                  {
+                    "option": "Telecommunications"
+                  },
+                  {
+                    "option": "Healthcare Providers"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company size",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1 (Founder&CEO)"
+                  },
+                  {
+                    "option": "2-10"
+                  },
+                  {
+                    "option": "10-50"
+                  },
+                  {
+                    "option": "50 - 100"
+                  },
+                  {
+                    "option": "100 - 500"
+                  },
+                  {
+                    "option": "500 - 1,000"
+                  },
+                  {
+                    "option": "1,000 - 10,000"
+                  },
+                  {
+                    "option": "10,0000+"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Annual revenue",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "<$1M (Pre-revenue / Micro)"
+                  },
+                  {
+                    "option": "$1–10M (Small)"
+                  },
+                  {
+                    "option": "$10–50M (Mid)"
+                  },
+                  {
+                    "option": "$50–200M (Upper-Mid)"
+                  },
+                  {
+                    "option": "$200M+ (Enterprise)"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -576,
+        -16
+      ],
+      "id": "38dbb3d3-9228-421f-a4d6-12828caf30db",
+      "name": "On form submission",
+      "webhookId": "7dad2f8d-14eb-4692-8312-a981ee937429"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        -128
+      ],
+      "id": "31c4122d-905c-4949-8ce3-67bbfbbd35c1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bgmELJQfURqAtCs7",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb1ad22a-fd1e-42e2-8a90-fe7d67a89936",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "03499e85-db52-4478-ae2f-a3615e2a1ed0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "Emails demo n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['Name '] }}",
+            "Email": "={{ $('On form submission').item.json.Email }}",
+            "Company name": "={{ $('On form submission').item.json['Company name'] }}",
+            "Industry": "={{ $('On form submission').item.json.Industry }}",
+            "Company size": "={{ $('On form submission').item.json['Company size'] }}",
+            "Lead Score ": "={{ $json.output }}",
+            "Annual revenue": "={{ $('On form submission').item.json['Annual revenue'] }}",
+            "submittedAt": "={{ $('On form submission').item.json.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Lead Score ",
+              "displayName": "Lead Score ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company name",
+              "displayName": "Company name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company size",
+              "displayName": "Company size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Annual revenue",
+              "displayName": "Annual revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        176
+      ],
+      "id": "3b45aa62-da34-43be-a178-d82ee0e8bd1a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6E44HxJbnQkvpzMd",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com,support@botcampus.ai",
+        "subject": "AI Agent Lead Qualification — Summary ",
+        "message": "=<!-- START: Email-safe lead summary (no JS) -->\n<!doctype html>\n<html>\n  <body style=\"margin:0;padding:0;background:#0b1020;font-family:Inter,Segoe UI,Arial,sans-serif;\">\n    <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#0b1020;\">\n      <tr>\n        <td align=\"center\" style=\"padding:24px;\">\n          <table role=\"presentation\" width=\"640\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#101733;border:1px solid #1c2655;border-radius:16px;color:#eaf0ff;\">\n            <tr>\n              <td style=\"padding:22px 24px;background:linear-gradient(135deg,#121c44,#0e183b);border-radius:16px 16px 0 0;border-bottom:1px solid #1c2655;\">\n                <div style=\"font-size:18px;font-weight:800;letter-spacing:.2px;\">Lead Qualification — Summary</div>\n                <div style=\"font-size:12px;color:#9fb0ff;margin-top:6px;\">Automated scoring snapshot</div>\n              </td>\n            </tr>\n\n            <tr>\n              <td style=\"padding:22px 24px;\">\n                <!-- Score Badge -->\n                <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n                  <tr>\n                    <td style=\"padding-bottom:16px;\">\n                      <span style=\"display:inline-block;padding:10px 14px;border-radius:12px;background:#0f1840;border:1px solid #23306a;color:#bcd0ff;font-size:12px;margin-right:10px;\">Score</span>\n                      <span style=\"display:inline-block;font-size:36px;font-weight:900;vertical-align:middle;\">{{ $json.output }}</span>\n                    </td>\n                  </tr>\n                  <tr>\n                    <td>\n                      <!-- Progress bar -->\n                      <div style=\"height:10px;background:#0a1330;border:1px solid #23306a;border-radius:999px;overflow:hidden;\">\n                        <div style=\"height:10px;width:{{ $json.output }}%;background:linear-gradient(90deg,#ff6b6b,#ffd166 35%,#6c8cff 65%,#35d1a6);\"></div>\n                      </div>\n                    </td>\n                  </tr>\n                </table>\n\n                <!-- Details -->\n                <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin-top:18px;\">\n                  <tr>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Name</div>\n                      <div style=\"font-size:14px;font-weight:600;\">{{ $('On form submission').item.json['Name '] }}</div>\n                    </td>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Company</div>\n                      <div style=\"font-size:14px;font-weight:600;\">{{ $('On form submission').item.json['Company name'] }}</div>\n                    </td>\n                  </tr>\n                  <tr>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Industry</div>\n                      <div style=\"font-size:14px;font-weight:600;\">{{ $('On form submission').item.json.Industry }}</div>\n                    </td>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Company size</div>\n                      <div style=\"font-size:14px;font-weight:600;\">{{ $('On form submission').item.json['Company size'] }}</div>\n                    </td>\n                  </tr>\n                  <tr>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Annual revenue</div>\n                      <div style=\"font-size:14px;font-weight:600;\">{{ $('On form submission').item.json['Annual revenue'] }}</div>\n                    </td>\n                    <td width=\"50%\" style=\"padding:10px;border:1px solid #1c2655;border-radius:12px;background:#0a1330;\">\n                      <div style=\"font-size:11px;color:#9fb0ff;\">Tier</div>\n                      <div style=\"font-size:14px;font-weight:700;color:#2fd97c;\"> II </div>\n                    </td>\n                  </tr>\n                </table>\n\n                <!-- CTA -->\n                <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"margin-top:22px;\">\n                  <tr>\n                    <td align=\"right\">\n                      <a href=\"\" style=\"display:inline-block;background:linear-gradient(135deg,#3347ff,#1bd1a0);color:#ffffff;text-decoration:none;padding:12px 16px;border-radius:12px;font-weight:700;\">\n                        Open Interactive Scoring\n                      </a>\n                    </td>\n                  </tr>\n                </table>\n\n              </td>\n            </tr>\n\n            <tr>\n              <td style=\"height:12px;line-height:12px\">&nbsp;</td>\n            </tr>\n          </table>\n          <div style=\"height:24px;line-height:24px\">&nbsp;</div>\n        </td>\n      </tr>\n    </table>\n  </body>\n</html>\n<!-- END -->\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "70a2d63d-6bfc-457b-8b1b-e9a6241c66f2",
+      "name": "Send a message",
+      "webhookId": "991a1549-7656-4a40-a3d8-35deb4f23bbb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NxTl2M6SDHgsw9Tz",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a deterministic lead-scoring assistant. You will receive exactly three fields: industry, company_size_label, and annual_revenue_label. Compute a single integer final score from 0–100 using the rubric below. Clamp to 0–100. Output only the integer (no words, no JSON, no punctuation).\n\nScoring (additive):\n\nIndustry\n\n“SaaS / Software / IT”: +20\n\nAnything else: +10\n\nCompany size\n\n1–10: +10\n\n11–50: +18\n\n51–200: +20\n\n201–500: +26\n\n500–1,000: +36\n\n1,001–5,000: +45\n\n5,001–10,000: +50\n\n10,000+: +60\n\nAnnual revenue\n\n<$1M: +0\n\n$1–10M: +5\n\n$10–50M: +10\n\n$50–200M: +12\n\n$200M+: +15",
+        "options": {
+          "systemMessage": "={\n  \"industry\": \"SaaS / Software / IT\",\n  \"company_size_label\": \"500 - 1,000\",\n  \"annual_revenue_label\": \"$10–50M (Mid)\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        -320
+      ],
+      "id": "32d5a84e-dcfd-4062-8451-1d9347bbf5d3",
+      "name": " AI Score calculator"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e9a95c8b-659a-44ba-9a7a-cc850ee97b98",
+              "name": "Industry",
+              "value": "={{ $json.Industry }}",
+              "type": "string"
+            },
+            {
+              "id": "3b7d64b8-9eec-4199-a332-56dc75d769c6",
+              "name": "Company size",
+              "value": "={{ $json['Company size'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3810ec8b-ccaf-43f8-ad53-48b68f4bd827",
+              "name": "Annual Revenue",
+              "value": "={{ $json['Annual revenue'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        -336
+      ],
+      "id": "6f0da8e3-64ba-4b79-84e6-fbf8d1126dde",
+      "name": "Filtering data"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        240,
+        48
+      ],
+      "id": "1459e6d7-71a3-4f24-8a76-e9ed03f0655e",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Filtering data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": " AI Score calculator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " AI Score calculator": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtering data": {
+      "main": [
+        [
+          {
+            "node": " AI Score calculator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0b0d3f8e-6196-446b-a216-2d1296cf9940",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "ofujYVzknFjiXHLP",
+  "tags": []
+}

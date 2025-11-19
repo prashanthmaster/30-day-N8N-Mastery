@@ -1,0 +1,208 @@
+{
+  "name": "AI LinkedIn Auto Post",
+  "nodes": [
+    {
+      "parameters": {
+        "person": "lOKWmA6wrH",
+        "text": "={{ $json.post_text }}",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "image",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        768,
+        112
+      ],
+      "id": "d9e230d1-89d2-4591-b70f-d5e166984491",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "g4VBw3vnRdd91Tq5",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are “PlannerBot”, an assistant that converts a short human brief into Long LinkedIn-ready post texts, It should have emojies, Bullet points with more number of lines.\n\nRules:\n1) Keep it platform-friendly: concise, skimmable, no hashtags spam (<=3), emojis optional.\n2) If a link is provided, add a 1-line hook before the link.\n3) If an image URL is provided, mention “[image attached]” (we’ll attach separately).\n4) Return strict JSON only.\n\nInput fields:\n\n- Propmt (string)\n- tone (e.g., friendly/professional)\n- count (1–5)\n- Schedule_time (IST)\n- link (optional)\n- media (optional)\n\nOutput JSON schema:\n{\n  \"posts\": [\n    {\n      \"text\": \"string\",\n      \"Schedule_time\": \"IST format\",\n      \"link\": \"optional\",\n      \"image_url\": \"optional\"\n    }\n  ]\n}\n",
+        "options": {
+          "systemMessage": "You are a helpful Linkedin Post creator assistant \n\ncreate a Highly professional post creator. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        -224
+      ],
+      "id": "a87f93e0-af11-47d1-b23f-7c1f61e38448",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        64
+      ],
+      "id": "bb2a76c1-3f4f-4678-8c9b-2a1bc0e6542d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "KoA205jRxV8pxvEf",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * SINGLE POST — use AI schedule time (no errors).\n * Supports:\n * - scheduled_iso (UTC ISO)\n * - scheduled_ist (\"YYYY-MM-DD HH:mm\" or \"hh:mm AM/PM\")\n * - Schedule_time (\"HH:mm\" or \"hh:mm AM/PM\" with optional \"IST\")\n * - date + time\n * Falls back to now+3min if time can't be parsed.\n */\n\nconst TZ_OFFSET_MIN = 330; // IST\n\n// ---------- helpers ----------\nfunction parseMaybeJSON(v) {\n  if (typeof v === 'string') {\n    try { return JSON.parse(v); } catch (_) {}\n    const m = v.match(/^\\s*```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n    if (m) { try { return JSON.parse(m[1]); } catch (_) {} }\n  }\n  return v;\n}\nfunction unescapeNewlines(s) {\n  return String(s).replace(/\\\\n/g, '\\n').replace(/\\r\\n/g, '\\n');\n}\nfunction istWallToUTCISO(yyyy_mm_dd, timeStr) {\n  // timeStr: \"HH:mm\" or \"hh:mm AM/PM\" (optional \" IST\")\n  let t = timeStr.replace(/\\s*IST\\s*$/i, '').trim();\n  const pm = /\\bpm\\b/i.test(t);\n  const am = /\\bam\\b/i.test(t);\n  t = t.replace(/\\s*(am|pm)\\s*$/i, '').trim();\n\n  let [hh, mm] = t.split(':').map(Number);\n  if (!isFinite(hh) || !isFinite(mm)) return null;\n\n  if (pm && hh < 12) hh += 12;\n  if (am && hh === 12) hh = 0;\n\n  const [Y, M, D] = yyyy_mm_dd.split('-').map(Number);\n  if (![Y, M, D].every(n => isFinite(n))) return null;\n\n  // Build IST wall clock time then shift to UTC\n  const ist = new Date(Date.UTC(Y, M - 1, D, hh, mm));\n  const utc = new Date(ist.getTime() - TZ_OFFSET_MIN * 60 * 1000);\n  return utc.toISOString();\n}\nfunction todayIST() {\n  const now = new Date();\n  const ist = new Date(now.getTime() + TZ_OFFSET_MIN * 60 * 1000);\n  const Y = ist.getUTCFullYear();\n  const M = ist.getUTCMonth() + 1;\n  const D = ist.getUTCDate();\n  return `${Y}-${String(M).padStart(2,'0')}-${String(D).padStart(2,'0')}`;\n}\nfunction addDaysISO(iso, days) {\n  const d = new Date(iso);\n  d.setUTCDate(d.getUTCDate() + days);\n  return d.toISOString();\n}\n\n// ---------- read AI output ----------\nlet ai = parseMaybeJSON($json);\nif (typeof ai?.output !== 'undefined') ai = parseMaybeJSON(ai.output);\nif (Array.isArray(ai?.posts) && ai.posts.length) ai = ai.posts[0];\n\n// fields\nconst textRaw = ai?.text ?? '';\nconst link = ai?.link || undefined;\nconst image_url = ai?.image_url || ai?.imageUrl || undefined;\n\n// ---------- choose schedule ----------\nlet scheduled_iso = null;\n\n// 1) direct UTC ISO\nif (typeof ai?.scheduled_iso === 'string' && ai.scheduled_iso.includes('T')) {\n  const d = new Date(ai.scheduled_iso);\n  if (!isNaN(d)) scheduled_iso = d.toISOString();\n}\n\n// 2) IST date+time\nif (!scheduled_iso && typeof ai?.scheduled_ist === 'string') {\n  const m = ai.scheduled_ist.trim().match(/^(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{1,2}:\\d{2}(?:\\s?[APMapm]{2})?)$/);\n  if (m) scheduled_iso = istWallToUTCISO(m[1], m[2]);\n}\n\n// 3) Separate date + time\nif (!scheduled_iso && typeof ai?.date === 'string' && typeof ai?.time === 'string') {\n  scheduled_iso = istWallToUTCISO(ai.date.trim(), ai.time.trim());\n}\n\n// 4) Time-only field like \"Schedule_time\": \"01:30 PM IST\"\nif (!scheduled_iso && typeof ai?.Schedule_time === 'string') {\n  const today = todayIST();\n  scheduled_iso = istWallToUTCISO(today, ai.Schedule_time.trim());\n  // if that is in the past relative to now, schedule same time tomorrow\n  if (scheduled_iso) {\n    const now = Date.now();\n    if (new Date(scheduled_iso).getTime() <= now) {\n      scheduled_iso = addDaysISO(scheduled_iso, 1);\n    }\n  }\n}\n\n// 5) Fallback: now + 3 minutes\nif (!scheduled_iso) {\n  scheduled_iso = new Date(Date.now() + 3 * 60 * 1000).toISOString();\n}\n\n// ---------- text (preserve formatting) ----------\nconst post_text = unescapeNewlines(textRaw);\n\n// ---------- output ----------\nreturn [{\n  json: {\n    post_text,\n    link,\n    image_url,\n    scheduled_iso\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -32
+      ],
+      "id": "1ea652e2-9638-41f9-8328-9be03ba9e573",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "formTitle": "Schedule Your Linked post Here ",
+        "formDescription": "Just drop a prompt about you want to be post..",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Prompt",
+              "placeholder": "Enter a prompt here",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Schedule Time ",
+              "fieldType": "textarea",
+              "placeholder": "Enter time",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "image",
+              "fieldType": "file",
+              "acceptFileTypes": "drop a media here ",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -928,
+        128
+      ],
+      "id": "f30fe484-6af5-402b-ab10-c449d552ad34",
+      "name": "On form submission",
+      "webhookId": "833110d8-235b-4293-86c4-ab3cc9ff4a19"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        320
+      ],
+      "id": "3360ca39-53ad-4f85-83f4-14b386b53a09",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5f2c375b-8ed6-4d79-83dc-a92d736e543c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "iB2qqwwYatLp2lqQ",
+  "tags": []
+}

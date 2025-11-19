@@ -1,0 +1,308 @@
+{
+  "name": "memory demo",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "45f3a702-ce2b-41d0-96d9-b897e809078e",
+      "name": "When chat message received",
+      "webhookId": "94a69d01-441a-4e57-aa5c-9df631098a2a"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit?gid=873827956#gid=873827956",
+          "__regex": "https:\\/\\/(?:drive|docs)\\.google\\.com(?:\\/.*|)\\/d\\/([0-9a-zA-Z\\-_]+)(?:\\/.*|)"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 873827956,
+          "mode": "list",
+          "cachedResultName": "Chat_memory ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit#gid=873827956"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Session_ID": "={{ $json.sessionId }}",
+            "Input": "={{ $json.chatInput }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Input",
+              "displayName": "Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_response",
+              "displayName": "AI_response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "e127961b-9a49-4966-b3bc-4c05814c4675",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM ROLE\nYou are “Memory Chat Agent”. You MUST use Google Sheets as the long-term memory (“the brain”).\nEach conversation is keyed by Session_ID. Always try to read memory first, then respond.\n\nINPUTS (from n8n JSON)\n- Session_ID: {{ $json.Session_ID }}\n- User_Input: {{ $json.Input }}\n\nTOOLS AVAILABLE\n- Google Sheets: “Get row(s) in sheet”\n  • Use it to fetch memory where Session_ID == {{ $json.Session_ID }}.\n  • The sheet contains columns like: Session_ID, Conversation_History, AI_response (and optionally Title, Notes, etc.).\n  • If no rows are found, assume empty history.\n\nMEMORY POLICY\n1) Before answering, attempt to load the row for the given Session_ID.\n2) If Conversation_History exists, summarise it mentally and use it for context.\n3) Append the new turn to the end of history in this textual format:\n   User: <latest user message>\n   Assistant: <your final reply>\n4) Keep responses concise, friendly, and helpful. If the user asks to recall earlier info, use the loaded history.\n\nYOUR OBJECTIVE\nGiven (Session_ID, User_Input) and the loaded Conversation_History (if any), produce the best possible reply using the prior context.\n- If context is helpful, incorporate it.\n- If there is no prior row, treat this as the first turn and start the history cleanly.\n\nSTYLE\n- Professional, clear, friendly.\n- Use simple, direct sentences.\n- If something is ambiguous, ask one short clarifying question.\n\nOUTPUT (STRICT CONTRACT)\nReturn ONLY a single plain-text field named AI_response (no markdown fencing, no extra keys).\nThe value must be the final message you want to send to the user.\n\nEXAMPLES\n\nExample A — no prior history:\nINPUT:\n  Session_ID = 9f12\n  User_Input = “Hi, what can you do?”\nSHEET:\n  (no rows found)\nYOU RETURN:\n  AI_response = \"Hi! I’m your memory-enabled assistant. I can answer questions, remember past context in this session, and summarize notes. How can I help today?\"\n\nExample B — with prior history:\nINPUT:\n  Session_ID = 9f12\n  User_Input = “Remind me what we planned for tomorrow?”\nSHEET (Conversation_History excerpt):\n  User: Help me draft a study plan for Monday.\n  Assistant: Sure—morning: calculus; afternoon: ML…\nYOU RETURN:\n  AI_response = \"Yesterday we planned: morning—calculus practice; afternoon—machine learning reading. Do you want me to add time blocks or send this to your email?\"\n\nIMPORTANT RULES\n- Always try to load memory from Google Sheets first using the provided Session_ID.\n- Never invent the history; if the sheet returns nothing, proceed as a first message.\n- Output must be ONLY the AI_response text (no JSON, no keys besides AI_response in the final n8n field).\n- Do not alter Session_ID.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -32
+      ],
+      "id": "3f8afc9c-c7a3-4013-b085-84c14bd0080d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        192
+      ],
+      "id": "62f50926-228b-448b-b625-ad046739707a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "cLCdY5swsxgvlPYD",
+          "name": "Open AI API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI",
+          "mode": "list",
+          "cachedResultName": "N8N-memory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 873827956,
+          "mode": "list",
+          "cachedResultName": "Chat_memory ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit#gid=873827956"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        208
+      ],
+      "id": "90302169-d6a0-4c1f-a635-3c80224f6615",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI",
+          "mode": "list",
+          "cachedResultName": "N8N-memory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 873827956,
+          "mode": "list",
+          "cachedResultName": "Chat_memory ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TJaclwIbgFGX7lwpbuPmfXPJE0es8BScZhgeZ4vm2nI/edit#gid=873827956"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Session_ID": "={{ $('When chat message received').item.json.sessionId }}",
+            "AI_response": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "Session_ID"
+          ],
+          "schema": [
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Input",
+              "displayName": "Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_response",
+              "displayName": "AI_response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        -64
+      ],
+      "id": "f2137d32-0a7c-4f90-845c-6c1ea33dc5d9",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "20699888-2943-46ad-aa37-0dc22f121e7c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "mgVbXvZYuM9FYktA",
+  "tags": []
+}

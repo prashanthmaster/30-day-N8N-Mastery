@@ -1,0 +1,489 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Universal Form Intelligence",
+        "formDescription": "Enter your Data here ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Reminder"
+                  },
+                  {
+                    "option": "Database"
+                  },
+                  {
+                    "option": "Broadcast"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Event description "
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1280,
+        -272
+      ],
+      "id": "b915853b-1164-43d8-9205-03ae919414ee",
+      "name": "On form submission",
+      "webhookId": "aaf8601d-82ec-4cd9-bb8d-3c3c696b1140"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "=Reminder",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "cff2a5ff-d7e8-4e32-b72b-3063488e50e9"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ccfde923-4deb-48dc-8c94-c473614ec16e",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "Broadcast",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "411bb23e-a804-4512-a900-0662985563c1",
+                    "leftValue": "={{ $json.Action }}",
+                    "rightValue": "=Database",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -928,
+        -288
+      ],
+      "id": "ea246da9-c8e4-4226-99c4-4352ad4dec4d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You convert a single natural-language reminder into ONE Google Calendar-ready payload.\n\nSTRICT OUTPUT:\n- Return EXACTLY one JSON object on a single line.\n- No Markdown, no code fences, no commentary—JSON only.\n\nSCHEMA (exact keys):\n{\n  \"startDateTime\": \"YYYY-MM-DDTHH:mm:ss.SSS±HH:mm\",\n  \"endDateTime\":   \"YYYY-MM-DDTHH:mm:ss.SSS±HH:mm\",\n  \"summary\":       \"string\",\n  \"description\":   \"string\"\n}\n\nRULES:\n- Timezone default: Asia/Kolkata (+05:30). Use this unless input explicitly gives another timezone/city.\n- If input gives only a time (no date), use TODAY in Asia/Kolkata.\n- Relative words:\n  • today/tonight/this evening/morning/afternoon → today (IST)\n  • tomorrow → tomorrow (IST)\n  • next <weekday> → the next occurrence after NOW_IST (IST)\n- Durations:\n  • If a duration exists (e.g., “for 2 hours”, “for 30 minutes”), set end = start + duration.\n  • Otherwise default duration = 60 minutes.\n- Title/summary: short, capitalized; remove time/date words. Keep key nouns/verbs (“Project sync”, “Dinner with a friend”).\n- Description: a concise sentence from the remaining context (participants, purpose, notes). No time/date strings here.\n- If a different timezone is explicitly given in text, convert to RFC3339 with that offset.\n- Validate ISO/RFC3339 with offset like 2025-09-30T22:00:00.000+05:30.\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Text: \"{{ $json['Event description '] }}\" NOW_IST: \"{{ $now.setZone('Asia/Kolkata').toISO() }}\"  Return exactly one JSON object with keys startDateTime, endDateTime, summary, description."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -192,
+        -720
+      ],
+      "id": "1c73293d-112e-43af-a5c7-92f596b5075a",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -576
+      ],
+      "id": "dab1b0aa-b2a4-42d7-8057-1284a4ef325a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o1yvYdsTMwd04brT",
+          "name": "Gemini 2.5-flash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// INPUT ASSUMPTIONS:\n// - Previous node (AI) produced something like:\n//   {\"startDateTime\":\"2025-09-30T22:00:00.000+05:30\",\"endDateTime\":\"2025-09-30T23:00:00.000+05:30\",\"summary\":\"Dinner With a Friend\",\"description\":\"Casual dinner.\"}\n// OR a line like: [DateTime: 2025-09-30T22:00:00.000+05:30]\n// - Also supports cases where the AI JSON arrived as a raw string in fields like answer/text/response/etc.\n\n// WHAT THIS DOES:\n// - Extracts and parses the AI output robustly\n// - Defaults end = start + 60 minutes if not provided\n// - Preserves the original timezone offset\n// - Ensures the output keys: startDateTime, endDateTime, summary, description\n\nfunction coalesce(...vals) {\n  for (const v of vals) if (v !== undefined && v !== null && String(v).trim() !== '') return v;\n  return undefined;\n}\n\nfunction stripCodeFences(s) {\n  return String(s).replace(/^\\s*```[a-zA-Z]*\\s*|\\s*```\\s*$/g, '').trim();\n}\n\nfunction extractJson(s) {\n  s = stripCodeFences(String(s));\n  // Try direct JSON parse\n  try { return JSON.parse(s); } catch {}\n  // Try to find a JSON object substring\n  const m = s.match(/\\{[\\s\\S]*\\}/);\n  if (m) {\n    try { return JSON.parse(m[0]); } catch {}\n  }\n  return null;\n}\n\nfunction extractBracketDateTime(s) {\n  const m = String(s).match(/\\[DateTime:\\s*([^\\]]+)\\]/i);\n  return m ? m[1] : null;\n}\n\nfunction pad(n) { return String(n).padStart(2,'0'); }\nfunction ms3(n){ return String(n).padStart(3,'0'); }\n\nfunction addMinutesKeepOffset(isoWithOffset, minutes) {\n  const offMatch = String(isoWithOffset).match(/([+-]\\d{2}:\\d{2})$/);\n  const offset = offMatch ? offMatch[1] : '+05:30';\n  // Convert offset to minutes\n  const sign = offset.startsWith('-') ? -1 : 1;\n  const [hh, mm] = offset.slice(1).split(':').map(Number);\n  const offsetMin = sign * (hh * 60 + mm);\n\n  const startDate = new Date(isoWithOffset);\n  const endUtc = new Date(startDate.getTime() + minutes * 60 * 1000);\n\n  // Shift into the target offset \"local\" and format using UTC getters\n  const endLocalMillis = endUtc.getTime() + offsetMin * 60 * 1000;\n  const d = new Date(endLocalMillis);\n  const yyyy = d.getUTCFullYear();\n  const MM   = pad(d.getUTCMonth() + 1);\n  const dd   = pad(d.getUTCDate());\n  const HH   = pad(d.getUTCHours());\n  const mm2  = pad(d.getUTCMinutes());\n  const ss   = pad(d.getUTCSeconds());\n  const SSS  = ms3(d.getUTCMilliseconds());\n  return `${yyyy}-${MM}-${dd}T${HH}:${mm2}:${ss}.${SSS}${offset}`;\n}\n\nfunction titleCase(s) {\n  return String(s || '')\n    .trim()\n    .replace(/\\s+/g,' ')\n    .replace(/\\b\\w/g, c => c.toUpperCase());\n}\n\nconst out = [];\n\nfor (let i = 0; i < items.length; i++) {\n  const it = items[i];\n  const input = it.json;\n\n  // Try many likely fields for AI output\n  const rawAi = coalesce(\n    input.ai, input.answer, input.text, input.output, input.response, input.message,\n    input.content, input.result, input.data, input.choices?.[0]?.message?.content,\n    JSON.stringify(input) // last-ditch\n  );\n\n  let payload = null;\n  let startDateTime, endDateTime, summary, description;\n\n  // Case 1: Proper JSON object\n  payload = typeof rawAi === 'object' ? rawAi : extractJson(rawAi);\n\n  if (payload && typeof payload === 'object') {\n    startDateTime = payload.startDateTime;\n    endDateTime   = payload.endDateTime;\n    summary       = payload.summary;\n    description   = payload.description;\n  } else {\n    // Case 2: Bracketed timestamp like [DateTime: ...]\n    const bracket = extractBracketDateTime(rawAi);\n    if (!bracket) {\n      throw new Error('Could not parse AI output as JSON or [DateTime: ...].');\n    }\n    startDateTime = bracket;\n  }\n\n  // Validate start\n  if (!startDateTime) throw new Error('Missing startDateTime.');\n  const startOk = new Date(startDateTime);\n  if (isNaN(startOk.getTime())) throw new Error('Invalid startDateTime: ' + startDateTime);\n\n  // Default summary/description if absent\n  const originalText = coalesce(input.event_description, input.prompt, input.query, '');\n  if (!summary) summary = titleCase((originalText || '').split(/[.!?]/)[0] || 'Reminder');\n  if (!description) description = String(originalText || '').trim();\n\n  // If end missing, default +60 min while preserving offset\n  if (!endDateTime) {\n    endDateTime = addMinutesKeepOffset(startDateTime, 60);\n  } else {\n    // quick sanity check\n    const endOk = new Date(endDateTime);\n    if (isNaN(endOk.getTime())) throw new Error('Invalid endDateTime: ' + endDateTime);\n  }\n\n  out.push({\n    json: {\n      startDateTime,\n      endDateTime,\n      summary,\n      description\n    },\n    pairedItem: { item: i }\n  });\n}\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -736
+      ],
+      "id": "e2becf26-b085-4cd6-942a-85db2868389e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "slack",
+          "mode": "list",
+          "cachedResultName": "slack"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "name",
+              "value": "={{ $json.Name }}"
+            },
+            {
+              "column": "email",
+              "value": "={{ $json.Email }}"
+            },
+            {
+              "column": "data",
+              "value": "={{ $json['Event description '] }}"
+            },
+            {
+              "column": "created_at",
+              "value": "={{ $json.submittedAt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -96,
+        272
+      ],
+      "id": "eeb58000-cb2b-40be-9c11-4f9abbf6861f",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "mySql": {
+          "id": "Ub5D0f5oMtRpXDGp",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "2937d85f1e262c6966fbcb3e06873fe45ffb305521dc652e1465ab9c1130efbf@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "start": "={{ $json.startDateTime }}",
+        "end": "={{ $json.endDateTime }}",
+        "additionalFields": {
+          "description": "={{ $json.description }}",
+          "summary": "={{ $json.summary }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        -752
+      ],
+      "id": "cbf92b86-65b4-4baa-b4f8-2fdc14953d07",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zw8ZNobw6sYEQBy7",
+          "name": "Calendar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will be given short or raw event descriptions. Your task is to rewrite them into professional, medium-length contextual descriptions. Focus on clearly communicating the purpose, context, and significance of the event. Use a formal yet approachable tone suitable for workplace or public communication.\n\nINPUT :\n   -{{ $json['Event description '] }}\nGuidelines:\n- Expand acronyms or jargon where necessary.\n- Provide clear context if it's missing (e.g., time, place, stakeholders).\n- Maintain factual accuracy.\n- Avoid unnecessary embellishments or vague generalities.\n- Keep output length between 80 to 150 words.\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You will be given short or raw event descriptions. Your task is to rewrite them into professional, medium-length contextual descriptions. Focus on clearly communicating the purpose, context, and significance of the event. Use a formal yet approachable tone suitable for workplace or public communication.\n\nGuidelines:\n- Expand acronyms or jargon where necessary.\n- Provide clear context if it's missing (e.g., time, place, stakeholders).\n- Maintain factual accuracy.\n- Avoid unnecessary embellishments or vague generalities.\n- Keep output length between 80 to 150 words.\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        0,
+        -288
+      ],
+      "id": "295a3022-b892-42c0-bad6-b9143cafb05f",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -96
+      ],
+      "id": "25aa68db-3251-446d-8186-4bff25aa8fa6",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o1yvYdsTMwd04brT",
+          "name": "Gemini 2.5-flash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09HNRB0KMH",
+          "mode": "list",
+          "cachedResultName": "n8n-alerts"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        288,
+        -256
+      ],
+      "id": "345c9f38-b8c9-4fd3-91ae-8701e9ba63ab",
+      "name": "Send a message",
+      "webhookId": "215a9c18-d2a8-41b1-8e8f-468f02beff3e",
+      "credentials": {
+        "slackApi": {
+          "id": "nbaVUcqtzdEWWymK",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Reminder\n",
+        "height": 352,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "059c760e-d588-4f3e-a0e9-c7fabe652fe2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Slack\n",
+        "height": 400,
+        "width": 688,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "1e7bed8b-68c8-4b93-adc8-ea4cf57a3c20",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## MYSql ",
+        "height": 208,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        208
+      ],
+      "typeVersion": 1,
+      "id": "bb7b8b33-b20c-477d-841f-fc5bb1474a4c",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4aa7c100-f9db-4b73-9256-e0e3aa39f1e3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "WB0weSfRZEViSOuf",
+  "tags": []
+}

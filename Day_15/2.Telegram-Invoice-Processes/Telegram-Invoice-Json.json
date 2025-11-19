@@ -1,0 +1,570 @@
+{
+  "name": "Telegram Invoice",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        256
+      ],
+      "id": "f29d8cae-30e8-49f7-ac44-5b5ea2ef8069",
+      "name": "Telegram Trigger",
+      "webhookId": "2f60856b-c2df-4b5d-9946-3358b5f683ee",
+      "credentials": {
+        "telegramApi": {
+          "id": "KmbhemivwZxnYVAk",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        720,
+        432
+      ],
+      "id": "3393f68c-da18-436a-bc56-11efdf2ee230",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BodBnKxdMy1LguXf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "\n{\n  \"Invoice Number\": \"<string>\",\n  \"Total Amount\": \"<number>\",\n  \"Raw OCR text\": \"<string>\",\n  \"Timestamp\": \"<ISO-8601 UTC>\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        416
+      ],
+      "id": "cfc7ef80-57d7-4f75-8208-ca4d6031d208",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "name": "n8n",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1WvKp-wnZ7RQfWs_gAgB6eyLyDJjlA4Vb",
+          "mode": "list",
+          "cachedResultName": "N8N Folder",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1WvKp-wnZ7RQfWs_gAgB6eyLyDJjlA4Vb"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1696,
+        256
+      ],
+      "id": "28ed39ff-df63-498e-b750-baab6c1a7c6a",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PTwWGXY8y6pkwFkv",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        432
+      ],
+      "id": "a98f4fe0-4048-428b-bf23-3b9ca0a3d4cb",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BodBnKxdMy1LguXf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Text Parsing from File\n ",
+        "height": 288,
+        "width": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "42f447eb-6cde-4262-bf22-a224ffd1a77c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Reply back to Telegram",
+        "height": 320,
+        "width": 336,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2240,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "59c04357-2c73-455c-a68e-956809eee7d4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[3].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        256
+      ],
+      "id": "ad994ca5-f5e7-4697-8b92-44aef182e8ce",
+      "name": "Download File",
+      "webhookId": "81ba04bb-717c-47a1-954b-db4097a7231f",
+      "credentials": {
+        "telegramApi": {
+          "id": "KmbhemivwZxnYVAk",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/parse/image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "K81216359788957"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "Image",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "language",
+              "value": "eng"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        256
+      ],
+      "id": "8b341577-7910-45ff-8a3d-98d193eb6c6b",
+      "name": "Text Parse from Files"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.ParsedResults }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a precise extractor. From the provided invoice JSON (fields may include rawText, invoiceNumber, totals), return ONE JSON object with EXACTLY these keys:\n\n{\n  \"Invoice Number\": \"<string>\",\n  \"Total Amount\": \"<number>\",\n  \"Raw OCR text\": \"<string>\",\n  \"Timestamp\": \"<ISO-8601 UTC>\"\n}\n\nRules:\n- \"Invoice Number\": use the given invoiceNumber if present; otherwise infer from rawText (patterns: Invoice No/Number/#/Inv#).\n- \"Total Amount\": prefer totals.total; otherwise find the value near “Grand Total”, “Total Amount”, “Amount Due”, or “Balance Due” in rawText. Output only the numeric value (no currency symbol).\n- \"Raw OCR text\": copy the full rawText exactly.\n- \"Timestamp\": the current UTC time in ISO-8601 (e.g., 2025-10-16T09:41:00Z).\n- No extra text, no markdown, no trailing commas.\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        720,
+        256
+      ],
+      "id": "615ace21-02bd-48ec-81ce-fa4f44e0d067",
+      "name": "Context validate"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 915066924,
+          "mode": "list",
+          "cachedResultName": "Invoice",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=915066924"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Download File').item.json.result.file_id }}",
+            "INVOICE": "={{ $json.output['Invoice Number'] }}",
+            "TOTAL AMOUNT": "={{ $json.output['Total Amount'] }}",
+            "TEXT PARSED": "={{ $json.output['Raw OCR text'] }}",
+            "TIMESTAMP": "={{ $json.output.Timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "INVOICE",
+              "displayName": "INVOICE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TOTAL AMOUNT",
+              "displayName": "TOTAL AMOUNT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TEXT PARSED",
+              "displayName": "TEXT PARSED",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TIMESTAMP",
+              "displayName": "TIMESTAMP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        256
+      ],
+      "id": "f78baf84-c758-4441-b146-01438fb4dc54",
+      "name": " Data Backup ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "28s0o4w6pgAtleen",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Download File').item.json.result.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        256
+      ],
+      "id": "6f461818-9aff-4258-8ad7-5fbd63f68ed2",
+      "name": "Get File",
+      "webhookId": "81ba04bb-717c-47a1-954b-db4097a7231f",
+      "credentials": {
+        "telegramApi": {
+          "id": "KmbhemivwZxnYVAk",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Context validate').item.json.output['Raw OCR text'] }}",
+        "options": {
+          "systemMessage": "=Summarize this invoice and provide a quick analysis of the total amount, due date, and\nvendor.\n\nI want a summary as reply message in Telegram foramt\n\nInvoice Text: {{ $('Context validate').item.json.output }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1952,
+        256
+      ],
+      "id": "728c0c12-674e-4572-911d-b8e5640c7e1d",
+      "name": "AI Summerizer"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2368,
+        256
+      ],
+      "id": "4d44d6a3-6914-4a4b-a962-aee9bd9b3473",
+      "name": "reply",
+      "webhookId": "f6fd24ab-4890-4c5b-a96e-208352defe01",
+      "credentials": {
+        "telegramApi": {
+          "id": "KmbhemivwZxnYVAk",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Telegram AI Invoice Parser",
+        "height": 832,
+        "width": 2768,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "b06edcb4-ca33-467e-ae91-7fc0aba22fb9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Data Back-UP",
+        "height": 272,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "d43d9460-32d9-417b-9070-ec3cb88deeb6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Invoice Drive Backup",
+        "height": 272,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1584,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "55d67f9f-2773-4fa0-bc50-e79ea3a9ea97",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Context validate",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Context validate",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "AI Summerizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Summerizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Text Parse from Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Parse from Files": {
+      "main": [
+        [
+          {
+            "node": "Context validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Context validate": {
+      "main": [
+        [
+          {
+            "node": " Data Backup ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Data Backup ": {
+      "main": [
+        [
+          {
+            "node": "Get File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Summerizer": {
+      "main": [
+        [
+          {
+            "node": "reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ea7177d9-9f6b-4d52-9700-0624a951c806",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c4adf2546b23582fcd0efa3ddda400aeaaa2d4b43fc7a71129f7147774abc468"
+  },
+  "id": "gwK7oxdTRrDjfhq2",
+  "tags": []
+}

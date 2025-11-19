@@ -1,0 +1,297 @@
+{
+  "name": "cross - platform",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "CRM Sample user Data",
+        "formDescription": "Re-contact the interested (unregistered) user across platforms to complete Botcampus.ai sign-up.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Phone number",
+              "fieldType": "number",
+              "placeholder": "+91 "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -768,
+        80
+      ],
+      "id": "9809f51e-3d49-4d2d-b2b6-270e4ce5b035",
+      "name": "On form submission",
+      "webhookId": "db32ebf2-deea-468f-aa3e-a2f8778c2f28"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appv4H0c4telkhEMA",
+          "mode": "list",
+          "cachedResultName": "N8n Air table",
+          "cachedResultUrl": "https://airtable.com/appv4H0c4telkhEMA"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGIpnhpvbE3f1k9",
+          "mode": "list",
+          "cachedResultName": "Cross Social media platform CRM",
+          "cachedResultUrl": "https://airtable.com/appv4H0c4telkhEMA/tblGIpnhpvbE3f1k9"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "Phone": "={{ $json['Phone number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Facebook_UserID",
+              "displayName": "Facebook_UserID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        80
+      ],
+      "id": "74c27e27-6683-497f-bbce-98165fa41df6",
+      "name": "CRM Data",
+      "alwaysOutputData": false,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "iIZgbx2CfaWRszEv",
+          "name": "jash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM PROMPT — Cross-Channel Orchestrator (Email + LinkedIn + Facebook)\n\nROLE\nYou are the Cross-Channel Re-Engagement Orchestrator for Botcampus AI. Your goal is to convert an “interested but unregistered” prospect into a completed sign-up at https://www.botcampus.ai by sending:\n1) A re-engagement HTML email.\n\nCONTEXT ABOUT BOTCAMPUS AI\n- Company: Botcampus AI (Botcampus.ai)\n- What we offer: Practical, up-to-date courses across multiple domains with a strong focus on the latest trends in AI, industry projects, and career acceleration.\n- Primary URL: https://www.botcampus.ai\n- Core promise: Learn faster with curated, current AI content and guided pathways that help learners apply skills in real projects.\n\nINPUT (provided to you each run)\n- name: string (prospect’s first name; may be empty)\n- email: string (prospect’s email)\n- phone: string (prospect’s phone; optional)\n- linkedin: string (prospect’s LinkedIn profile URL; optional)\n- facebook: string (prospect’s Facebook profile URL; optional)\n\nOPTIONAL ENRICHMENT (may or may not be present — handle gracefully)\n- browsing_insights: object with any of:\n  - pages_viewed: array of strings (e.g., [\"Courses\", \"AI Trends\", \"Pricing\"])\n  - last_visit_iso: ISO 8601 string of last website visit\n  - time_on_site_seconds: integer\n  - interested_categories: array of strings (e.g., [\"Generative AI\", \"Data Engineering\"])\n  - device: string (e.g., \"mobile\", \"desktop\")\nIf browsing_insights is missing, still mention that the prospect visited the website in a generic, truthful way without fabricating specifics.\n\nTONE & COMPLIANCE\n- Be professional, concise, and helpful. No emojis.\n- Personalize with the user’s first name if available.\n- Reference that they recently visited our website; include insights if provided (do not invent details).\n- Clear CTA: “Complete your Botcampus.ai sign-up” with the site link.\n- Avoid spammy language; keep LinkedIn/Facebook messages short and conversational.\n\nEMAIL REQUIREMENTS\n- Produce a production-ready HTML email (Gmail-safe, table-based or simple, responsive-friendly).\n- Include:\n  - Subject line (compelling but not click-baity).\n  - Preheader (in the first line as hidden text or visible short intro).\n  - Company intro (what Botcampus AI is).\n  - A short “You recently visited our website” line. If insights exist, summarize briefly (e.g., pages viewed, last visit date, categories of interest). If not, use a generic mention (“We noticed you recently checked out Botcampus.ai…”).\n  - 2–4 key benefits or offers (e.g., current AI trends, project-based learning, mentor/community access, flexible pace).\n  - Primary CTA button linking to https://www.botcampus.ai (append UTM parameters you choose, e.g., utm_source=reengagement&utm_medium=email&utm_campaign=orchestrator).\n  - Secondary reassurance: brief FAQ/credibility note or support contact.\n  - Footer with company name and basic contact text.\n- Keep the whole email body compact (skimmable headings, short paragraphs, bullet points ok).\n\nLINKEDIN & FACEBOOK REQUIREMENTS\n- Direct, respectful, and brief.\n- Mention the recent site visit (with insights if provided).\n- One clear CTA to complete sign-up at https://www.botcampus.ai (you may use short UTM variants for each channel).\n- Keep LinkedIn ≤ ~300 characters; Facebook ≤ ~500 characters (guideline, not hard fail).\n- Do not include HTML—plain text only.\n\nOUTPUT FORMAT (return exactly ONE JSON object; keys must match verbatim)\n{\n  \"email subject\": string,\n  \"Email Body\": string.\n}\n\nTEMPLATING / PERSONALIZATION RULES\n- Use the prospect’s first name when available: {{ $json.fields.Name }}e.g., “Hi ,”. If name is missing, use “Hi there,”.\n- If browsing_insights present:\n  - When listing insights, keep them brief and accurate. Example: \n    - “We saw you explored: Courses, AI Trends”\n    - “Last visit: 2025-10-10”\n    - “Time on site: ~3 minutes”\n  - Never fabricate values. Only echo what’s provided.\n- If browsing_insights absent:\n  - Use a generic sentence: “We noticed you recently visited our website and explored our learning paths.”\n- Always include the canonical site link https://www.botcampus.ai and clearly ask to complete sign-up.\n\nCHANNEL-SPECIFIC UTM (suggested)\n- Email: utm_source=reengagement&utm_medium=email&utm_campaign=botcampus_orchestrator.\n\nVALIDATION CHECKS BEFORE YOU RETURN\n1) All four JSON keys exist with non-empty strings.\n2) Email body is valid HTML (basic structure: <!doctype html><html>…).\n3) The site URL https://www.botcampus.ai is present in all three channels (email CTA, LinkedIn DM, Facebook DM).\n4) Mentions the website visit (with insights if supplied, generic if not).\n5) No emojis. Professional tone.\n\nEXAMPLE (illustrative only — adjust to actual inputs)\nINPUT:\n{\n  \"name\": {{ $json.fields.Name }},\n  \"email\":{{ $json.fields.Email }} ,\n  \"phone\": {{ $json.fields.Phone }}\n  }\n}\n\nEXPECTED OUTPUT SHAPE:\n{\n  \"email subject\": \"Aarav, finish your Botcampus.ai sign-up to start learning today\",\n  \"Email Body\": \"<!doctype html><html><head><meta charset=\\\"utf-8\\\"><meta name=\\\"viewport\\\" content=\\\"width=device-width,initial-scale=1\\\"><title>Complete your sign-up</title></head><body style=\\\"font-family:Arial,Helvetica,sans-serif;margin:0;padding:0;background:#f6f7f9;\\\"><table role=\\\"presentation\\\" width=\\\"100%\\\" cellspacing=\\\"0\\\" cellpadding=\\\"0\\\" style=\\\"background:#f6f7f9;padding:24px 0;\\\"><tr><td align=\\\"center\\\"><table role=\\\"presentation\\\" width=\\\"600\\\" cellspacing=\\\"0\\\" cellpadding=\\\"0\\\" style=\\\"background:#ffffff;border-radius:8px;padding:24px;\\\"><tr><td style=\\\"font-size:12px;color:#666;line-height:1.4;\\\">You recently visited Botcampus.ai. We saw interest in: Courses, AI Trends, Pricing • Last visit: 2025-10-12 • About 3 minutes on site (mobile).</td></tr><tr><td><h1 style=\\\"margin:16px 0 8px;font-size:22px;\\\">Hi Aarav, ready to continue?</h1><p style=\\\"margin:0 0 12px;\\\">Botcampus AI offers practical, up-to-date courses focused on the latest trends in AI, with project-based learning to build real experience.</p><ul style=\\\"margin:0 0 16px 18px;padding:0;\\\"><li>Fresh AI curriculum aligned to industry</li><li>Hands-on projects & guided paths</li><li>Flexible pace, mentor support, community</li><li>Transparent pricing and certificates</li></ul><p style=\\\"margin:0 0 16px;\\\">Complete your sign-up now and start learning:</p><p style=\\\"margin:0 0 20px;\\\"><a href=\\\"https://www.botcampus.ai/?utm_source=reengagement&utm_medium=email&utm_campaign=botcampus_orchestrator\\\" style=\\\"background:#2d6cdf;color:#fff;text-decoration:none;padding:12px 18px;border-radius:6px;display:inline-block;\\\">Complete sign-up at Botcampus.ai</a></p><p style=\\\"font-size:12px;color:#666;\\\">Questions? Reply to this email and we’ll help you pick the right path.</p></td></tr><tr><td style=\\\"font-size:11px;color:#999;border-top:1px solid #eee;padding-top:12px;\\\">© Botcampus AI • Learn the latest in AI and modern tech • <a href=\\\"https://www.botcampus.ai\\\">https://www.botcampus.ai</a></td></tr></table></td></tr></table></body></html>\".\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        80
+      ],
+      "id": "1fd01c80-b1b1-447e-8203-df8c23c70a01",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        256
+      ],
+      "id": "42f73942-e3a7-4e7b-b35d-d33666d30740",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "jd0hUTW9XtDctv05",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"email subject\": \"string\",\n  \"Email Body\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        256
+      ],
+      "id": "a1060f84-ea23-44c1-afac-d38a63ae8910",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "={{ $json.output['email subject'] }}",
+        "message": "={{ $json.output['Email Body'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        80
+      ],
+      "id": "4e09e984-5756-4e2c-b338-0076f61e8066",
+      "name": "Send a message",
+      "webhookId": "2380ed20-0efd-4a63-b18d-00bfb99e91cd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uwlFWAp8XLHMZISH",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Cross-Channel Orchestration",
+        "height": 400,
+        "width": 1664,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -896,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "a5297aa4-b8ad-49c0-bf69-602e7c91c09d",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "CRM Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b9516cc-19f3-44f9-bc08-742a118fa0c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09ace0978f111a318a47bb9ca1684cddb283474980bcad2a64ecc984f6ba3a0c"
+  },
+  "id": "8y56hLhnm5E4HXpi",
+  "tags": []
+}

@@ -1,0 +1,513 @@
+{
+  "name": "Jashu- linkedIn",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": " The Social Media Orchestrator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Enter the prompt",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Days",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "5 Days"
+                  },
+                  {
+                    "option": "7 Days"
+                  },
+                  {
+                    "option": "14 days "
+                  },
+                  {
+                    "option": "30 days"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Select a Social Media ",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "LinkedIn"
+                  },
+                  {
+                    "option": "Facebook"
+                  },
+                  {
+                    "option": "Both - Linkedin & Facebook"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -944,
+        368
+      ],
+      "id": "96a3d558-9b49-462e-bacb-3e6163117cc0",
+      "name": "On form submission",
+      "webhookId": "a251216e-a15d-4952-a0b6-974584cf4c5d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your job is to write platform-specific daily posts based on a topic and return the content in a structured format for Google Sheets. The Google Sheet has three columns:\n- \"day\" ( Day 1.... Day N (text))\n- \"linkedin\" (text)\n- \"facebook\" (text)\n\nEach request corresponds to one day (Day 1, Day 2, etc.). Posts must be unique and increasingly insightful across days.\n\n- **LinkedIn** content: professional tone, professional  and points wise with emojis.\n- **Facebook** content: casual tone, professional and pointwise with emojis.\n\n\nI attched the google sheet tool to agent so append into that \n\n{{(() => {\n  const day = $json.Days ;\n  const prompt = $json[\"Enter the prompt\"];\n  const platform = ($json['Select a Social Media '] || \"Both - LinkedIn & Facebook\").toLowerCase();\n\n  const base = `Generate social media posts for Day $json.Days , based on this topic: \"${prompt}\".`;\n\n  if (platform.includes(\"both\")) {\n    return base + `\\nWrite two outputs:\\n1. LinkedIn (professional)\\n2. Facebook (casual)\\nReturn JSON like: { \"day\": ${day}, \"linkedin\": \"...\", \"facebook\": \"...\" }`;\n  }\n\n  if (platform.includes(\"linkedin\")) {\n    return base + `\\nWrite one output:\\nLinkedIn (professional, 3-5 sentences)\\nReturn JSON like: { \"day\": ${day}, \"linkedin\": \"...\" }`;\n  }\n\n  if (platform.includes(\"facebook\")) {\n    return base + `\\nWrite one output:\\nFacebook (casual, 2-3 sentences)\\nReturn JSON like: { \"day\": ${day}, \"facebook\": \"...\" }`;\n  }\n\n  // Fallback if platform is unrecognized\n  return base + `\\nWrite two outputs:\\n1. LinkedIn (professional)\\n2. Facebook (casual)\\nReturn JSON like: { \"day\": ${day}, \"linkedin\": \"...\", \"facebook\": \"...\" }`;\n})()}}\n",
+        "options": {
+          "systemMessage": "=You are a professional social media content creator, integrated into an automated content generation system.\n\nYour job is to write platform-specific daily posts based on a topic and return the content in a structured format for Google Sheets. The Google Sheet has three columns:\n- \"day\" (number)\n- \"linkedin\" (text)\n- \"facebook\" (text)\n\nAlways return your response as **valid JSON** with keys matching exactly: `day`, `linkedin`, and `facebook`. Leave a field blank if it's not required.\n\nEach request corresponds to one day (Day 1, Day 2, etc.). Posts must be unique and increasingly insightful across days.\n\n- **LinkedIn** content: professional tone, 3–5 sentences.\n- **Facebook** content: casual tone, 2–3 sentences.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -624,
+        320
+      ],
+      "id": "64bd7ecb-8b5b-4dc8-8193-9f36b74ed5be",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1841027503,
+          "mode": "list",
+          "cachedResultName": "Social Media Orchestrator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=1841027503"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "Day": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Day', ``, 'string') }}",
+            "Instagram": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Instagram', ``, 'string') }}",
+            "Facebook": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Facebook', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Day",
+              "displayName": "Day",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram",
+              "displayName": "Instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Facebook",
+              "displayName": "Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        528
+      ],
+      "id": "b19e701d-818e-44d3-be82-c1c62dbe3edd",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CJPr1LGq7m0DSFww",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        544
+      ],
+      "id": "180352d5-b0e7-4d0e-b9f4-8e1aea0d1c82",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "jd0hUTW9XtDctv05",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 7,
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        352
+      ],
+      "id": "7c2f609b-83ba-4284-9d73-0ed158a2e373",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE\nYou are the Daily Social Media Orchestrator Agent. Once per day you must fetch rows from the connected Google Sheets tool and output exactly one row per run in a very simple format.\n\nHOW TO CHOOSE THE ROW\n1) CALL the “Get row(s) in Google Sheets” tool to retrieve ALL rows (array of objects).\n2) Identify the day column (try, in order): Day → day → days.\n   - Accept values like \"Day 1\", \"Day 2\", … or plain numbers 1, 2, …\n3) Determine LAST handled day by scanning your memory (past outputs). \n   - Find the highest N that appeared in a previous line matching: `Day: Day N`.\n   - If none found, set LAST = 0.\n4) Compute NEXT = the smallest day number strictly greater than LAST.\n   - If none exists (i.e., LAST is already the max day in the sheet), wrap to the smallest day number present.\n5) Select exactly ONE row whose day == NEXT.\n6) If linkedin/facebook fields are empty, generate concise, good copy:\n   - linkedin: professional tone (≤ 120 words)\n   - facebook: casual, friendly (≤ 120 words)\n\nSTRICT OUTPUT FORMAT (no JSON, no markdown, no extra text)\nDay: Day <NEXT>\nlinkedin: <linkedin text>\nfacebook: <facebook text>\n\nRULES\n- Use the Google Sheets tool once per run.\n- Be tolerant of header case/spaces.\n- If multiple rows share the same day number, pick the first.\n- If the sheet/column cannot be read, still return the three lines with:\n  Day: ERROR\n  linkedin:\n  facebook:\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        336
+      ],
+      "id": "bcbfce65-20be-490e-a0e6-a9c174485f81",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"selected_day\": \"string\",             \n  \"day_label\": \"string\",      \n    \"linkedin\": \"string\",\n    \"facebook\": \"string\"\n  }\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        640
+      ],
+      "id": "4b611c65-7735-4133-a1cc-7d1bf47eb67a",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "person": "lOKWmA6wrH",
+        "text": "={{ $json.output.linkedin }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        944,
+        208
+      ],
+      "id": "dd6679aa-43d5-4dfc-abe1-674ddf47ef65",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "LxJ0SiwPbDeN9jtv",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "me",
+        "edge": "feed",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $json.output.facebook }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        944,
+        448
+      ],
+      "id": "c6f49bb9-9793-49c9-8ea5-fd9c81b6bd63",
+      "name": "Facebook Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "j6KEfYI119Ukg3GQ",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Schedule Trigger').item.json.timestamp }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        656
+      ],
+      "id": "7cd66da8-f559-4806-bb0d-3416ea3b5c09",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        208,
+        640
+      ],
+      "id": "b3107347-580a-48f8-a8dd-a336f58059a3",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "jd0hUTW9XtDctv05",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1841027503,
+          "mode": "list",
+          "cachedResultName": "Social Media Orchestrator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=1841027503"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        640
+      ],
+      "id": "4d4ef9c6-208c-4b2f-a8f4-29bef859ea3c",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CJPr1LGq7m0DSFww",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## B - Agent will get the Google sheet Rows and daily it will post on linkedin and facebook pages",
+        "height": 736,
+        "width": 1232,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "a0cfff53-0331-4a51-b3d3-ec2d7d054499",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## A - Agent will create the all Articles and store in Google sheets ",
+        "height": 528,
+        "width": 832,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "a7d68bc6-f0f2-495b-8193-7c365c92218d",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Enter the prompt": "Write the AI agents era 7 days and post a article on each day",
+          "Days": "3 Days",
+          "Select a Social Media ": "Both - Linkedin & Facebook",
+          "submittedAt": "2025-10-10T07:17:27.796-04:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c3818870-456a-4ba6-ad4f-670136d96b57",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09ace0978f111a318a47bb9ca1684cddb283474980bcad2a64ecc984f6ba3a0c"
+  },
+  "id": "FBMByNCtzCpFUwxp",
+  "tags": []
+}

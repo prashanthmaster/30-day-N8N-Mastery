@@ -1,0 +1,97 @@
+{
+  "name": "My workflow 7",
+  "nodes": [
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "c6e47eef-55f7-4a6b-a1f2-d241ccbe10e5",
+      "name": "Upload to N8N Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -416,
+        -64
+      ],
+      "id": "f55cbabe-788f-4d72-8cf4-d490ce441d0e",
+      "name": "When chat message received",
+      "webhookId": "88b08bfe-84b7-4bab-9b52-a71ec0619cfd"
+    },
+    {
+      "parameters": {
+        "url": "=https://image.pollinations.ai/prompt/{{ $json.chatInput }}",
+        "options": {}
+      },
+      "id": "3b13939b-da8e-4880-a7e2-d47b32d5f438",
+      "name": "pollinations.ai",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -96,
+        -64
+      ],
+      "typeVersion": 4.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "pollinations.ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pollinations.ai": {
+      "main": [
+        [
+          {
+            "node": "Upload to N8N Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dfe99dc2-fcdd-40cd-9b8a-a571481ac63d",
+  "meta": {
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "amleS5HzpIAC4UDB",
+  "tags": []
+}

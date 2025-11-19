@@ -1,0 +1,413 @@
+{
+  "name": "E-commerce workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fbd8d7bf-ce60-4f3e-b32e-d91d0f7fbb7c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        224
+      ],
+      "id": "81736106-f4cf-4ad9-9a2b-906a1cf1d01e",
+      "name": "Webhook",
+      "webhookId": "fbd8d7bf-ce60-4f3e-b32e-d91d0f7fbb7c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Use the following normalized payload to generate the email BODY HTML now.\n\nBrand:\n- brand_name: {{ $json.brand_name || \"Your Store\" }}\n- logo_url: {{ $json.logo_url || \"\" }}\n- brand_color: {{ $json.brand_color || \"#0E7C86\" }}\n\nOrder:\n- order_id: {{ $json.OrderID || $json.order_id }}\n- order_date: {{ $json.order_date || $now }}\n- order_status: {{ $json.Order_status || $json.order_status || \"confirmed\" }}\n\nCustomer:\n- name: {{ $json['Name '] }}\n- email: {{ $json.Gmail || $json.customer_email }}\n- phone: {{ $json.Mobile || $json.customer_phone }}\n\nShipping Address (may be a JSON string in $json.Address):\n- address_raw: {{ $json.Address }}\n- street: {{ $json.address?.street || \"\" }}\n- apartment: {{ $json.address?.apartment || \"\" }}\n- city: {{ $json.address?.city || \"\" }}\n- state: {{ $json.address?.state || \"\" }}\n- zip: {{ $json.address?.zip || \"\" }}\n- country: {{ $json.address?.country || \"\" }}\n\nItem(s) (single item example; add loop upstream if multiple):\n- product_name: {{ $json.Product_name || $json.product_name }}\n- category: {{ $json.Category || $json.category }}\n- quantity: {{ $json.Quantity || $json.quantity || 1 }}\n- item_amount: {{ $json.Item_Amount || $json.unit_price || $json.total }}\n- currency: {{ $json.currency || \"INR\" }}\n\nLinks & Support:\n- view_order_url: {{ $json.view_order_url || \"\" }}\n- help_center_url: {{ $json.help_center_url || \"\" }}\n- support_email: {{ $json.support_email || \"support@example.com\" }}\n- support_phone: {{ $json.support_phone || \"\" }}\n- brand_address_block: {{ $json.brand_address_block || \"\" }}\n\nNow return ONLY the <body>…</body> HTML that fits the System Prompt’s rules.\n",
+        "options": {
+          "systemMessage": "=You are a senior E-commerce Communications AI that crafts production-ready EMAIL HTML bodies.\n\nPRIMARY GOAL\n• Generate a polished, brand-safe, responsive HTML email BODY (return ONLY <body>…</body>, no <html>, no <head>, no Markdown, no code fences).\n\nINPUTS YOU MAY RECEIVE\n• order_id, order_date, order_status\n• customer: name, email, phone\n• address: street, apartment, city, state, zip, country (may arrive as a JSON string—parse it safely)\n• items: product_name, category, quantity, unit_price (or item_amount/total); currency (if missing, infer from locale; default \"INR\")\n• links: view_order_url, help_center_url, support_email, support_phone\n• brand: brand_name, logo_url, brand_color (hex), address_block, social links (optional)\n\nRELIABILITY & FORMATTING RULES\n1) Output ONLY the <body>…</body> markup with inline CSS (table-based layout, max width 600px). No external CSS/JS, no images with tracking pixels.\n2) Use accessible, email-safe markup: role=\"presentation\" on layout tables, semantic headings (<h1>/<h2>), alt text for logos, sufficient contrast.\n3) Inline styles only. Use web-safe fonts (e.g., font-family: Arial, Helvetica, sans-serif). Avoid absolute positioning, background images, :hover effects.\n4) If a field is missing, omit the row/section—never show “N/A”. If address arrives as a stringified JSON, parse and gracefully render available parts.\n5) Numbers & currency: format with thousands separators, prefix currency symbol (e.g., ₹99,999). If currency unknown, keep numeric with “Total”.\n6) Tone: concise, courteous, trustworthy. Indian English is fine if locale suggests it. Avoid hype; focus on clarity and next steps.\n7) Security & privacy: show only what the payload provides; do not invent IDs, links, or PII. Never echo raw JSON.\n8) Include a preheader comment at the top inside the body as: <!-- PREHEADER: Your order  {{ $json.OrderID }}is confirmed. -->\n9) Add a prominent CTA button “View your order” if a URL is provided; otherwise omit.\n10) Footer: brand address (if provided), support channels, simple disclaimer. Include lightweight social icons only if URLs are present (as text links if images not provided).\n\nSTRUCTURE (exact order)\n• Preheader comment\n• Outer wrapper (100% width) → centered 600px container table\n• Brand header: logo (if provided) + brand_name; subtle divider\n• Hero/title: “Order confirmed” (or status-specific)\n• Order meta: Order ID, Date, Status (badges via inline styles)\n• Items table: Product, Qty, Price line(s); subtotal/total if provided\n• Delivery address (if available)\n• Next steps / contact info\n• CTA button (if view_order_url present)\n• Secondary links: Help Center, Support Email/Phone (if provided)\n• Legal/footer block\n\nFINAL OUTPUT CONTRACT\n• Return ONLY the HTML for the <body>…</body> section.\n• No JSON. No backticks. No explanations.\n• Keep total size compact (< 100KB). Ensure it renders well in Gmail and Outlook.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -48
+      ],
+      "id": "cc1c4e8a-857e-48e5-bf73-7bda8c632bb6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5eb1fe55-c1a5-40fd-b92a-fde020675701",
+              "name": "OrderID",
+              "value": "={{ $json.body.order_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fbe5eea3-5341-4447-adc6-8eebb1958441",
+              "name": "Name ",
+              "value": "={{ $json.body.customer_details.name }}",
+              "type": "string"
+            },
+            {
+              "id": "da6a93fa-84a4-4576-8e93-2f7d1b0184cb",
+              "name": "Gmail",
+              "value": "={{ $json.body.customer_details.email }}",
+              "type": "string"
+            },
+            {
+              "id": "fb5e9733-b144-4f47-b71b-385cd6ad3fea",
+              "name": "Mobile",
+              "value": "={{ $json.body.customer_details.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "c42c110e-37a6-4e1b-a2e6-f24d2a055ea5",
+              "name": "Address",
+              "value": "={{ $json.body.customer_details.address }}",
+              "type": "string"
+            },
+            {
+              "id": "121f47c9-5560-43e7-bd62-cb644aaeb03d",
+              "name": "Product_name",
+              "value": "={{ $json.body.order_items[0].product_name }}",
+              "type": "string"
+            },
+            {
+              "id": "8027f4a2-5289-4840-a864-1271be78f85c",
+              "name": "Qunatity",
+              "value": "={{ $json.body.order_items[0].quantity }}",
+              "type": "number"
+            },
+            {
+              "id": "f3d30337-0488-470e-81d7-cd114175c47a",
+              "name": "Category",
+              "value": "={{ $json.body.order_items[0].category }}",
+              "type": "string"
+            },
+            {
+              "id": "6d837f92-7f22-493d-93d1-b4b4bcad6b8e",
+              "name": "Item_Amount",
+              "value": "={{ $json.body.order_items[0].item_subtotal }}",
+              "type": "string"
+            },
+            {
+              "id": "b493788a-c084-452d-8efd-e7073a274c39",
+              "name": "Order_status",
+              "value": "={{ $json.body.order_status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        224
+      ],
+      "id": "626ea702-6198-4ecf-9ec9-e0f8821b6c78",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        512,
+        112
+      ],
+      "id": "cf5d59a4-7331-4f3f-a34e-1a0a16bdbecb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "=E-Commerce Order confirm  {{ $('Edit Fields').item.json.OrderID }}",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        -48
+      ],
+      "id": "30c01c1e-9cec-4653-970c-16a4e18b8aa2",
+      "name": "Send a message",
+      "webhookId": "23a198a1-fee4-4707-9452-34895e0a56d3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xAMl4zSjBRQk6v6r",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 161570840,
+          "mode": "list",
+          "cachedResultName": "e-commerce DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=161570840"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ORDER_ID": "={{ $json.OrderID }}",
+            "NAME": "={{ $json['Name '] }}",
+            "GMAIL": "={{ $json.Gmail }}",
+            "MOBILE NUMBER": "={{ $json.Mobile }}",
+            "ADDRESS": "={{ $json.Address }}",
+            "PRODUCT _NAME": "={{ $json.Product_name }}",
+            "QUANTITY NO": "={{ $json.Qunatity }}",
+            "CATEGORY": "={{ $json.Category }}",
+            "TOTAL AMOUNT": "=₹{{ $json.Item_Amount }}",
+            "ORDER STATUS": "={{ $json.Order_status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ORDER_ID",
+              "displayName": "ORDER_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GMAIL",
+              "displayName": "GMAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MOBILE NUMBER",
+              "displayName": "MOBILE NUMBER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ADDRESS",
+              "displayName": "ADDRESS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRODUCT _NAME",
+              "displayName": "PRODUCT _NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "QUANTITY NO",
+              "displayName": "QUANTITY NO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORY",
+              "displayName": "CATEGORY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TOTAL AMOUNT",
+              "displayName": "TOTAL AMOUNT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ORDER STATUS",
+              "displayName": "ORDER STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        496
+      ],
+      "id": "17928762-abd0-49d8-9560-f91d03b48a95",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Confirm MAil\n",
+        "height": 400,
+        "width": 752
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        448,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "3d3d33bd-0772-45db-b78d-d93eb04e6c1b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Sheet Data\n",
+        "height": 208,
+        "width": 288,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        432
+      ],
+      "typeVersion": 1,
+      "id": "d6c7ba1f-423c-4467-8945-019901774d6a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Weebhook Post ",
+        "height": 192,
+        "width": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "0fcc8c5e-c2ec-4bde-876f-4170dc5be60e",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1feb03bf-5e08-4101-9139-1e0c3f771908",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "2n3wz3wyccxbklPM",
+  "tags": []
+}

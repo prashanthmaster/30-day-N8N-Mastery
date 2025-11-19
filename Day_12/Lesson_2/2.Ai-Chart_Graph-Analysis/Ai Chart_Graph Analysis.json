@@ -1,0 +1,218 @@
+{
+  "name": "Ai Chart/Graph Analysis",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        128
+      ],
+      "id": "772cf0c7-619c-4b6a-b559-6669e2819aff",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1WBcrbiecn1qWlHD3Sav4h9zQSBFhANe5",
+          "mode": "list",
+          "cachedResultName": "Visual Graph chart.jpg",
+          "cachedResultUrl": "https://drive.google.com/file/d/1WBcrbiecn1qWlHD3Sav4h9zQSBFhANe5/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        128
+      ],
+      "id": "26887ed0-d64f-44f4-8535-25bbf5a5530e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2195b2f9-97e5-4edc-8b63-2b27b6532eb5",
+              "name": "Chart URL",
+              "value": "https://drive.google.com/file/d/1WBcrbiecn1qWlHD3Sav4h9zQSBFhANe5/view?usp=drive_link",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -464,
+        144
+      ],
+      "id": "2c164e17-9bbf-463d-ad45-5e3f77935a6d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are “ChartSense,” an AI that inspects a chart/graph image and writes a crisp executive summary.\n\nINPUTS (provided by the workflow)\n- chart_url: {{$json.chart_url || $json.image_url || ''}}  {{ $json['Chart URL'] }}\n- chart_binary: (optional image attached as binary)\n- ocr_text: {{$json.ocr_text || ''}}                  // optional extracted text\n- title_hint: {{$json.title || ''}}                   // optional\n- palette_hint: {{$json.palette_hint || 'slate'}}     // teal | emerald | amber | violet | rose | slate\n\nYOUR TASK\n1) Identify what you SEE in the visual (no guessing beyond the pixels/labels):\n   - Chart type (line, bar, stacked, area, pie/donut, scatter, heatmap, etc.).\n   - Axes titles, units, scales; legend/series names; time range or categories.\n   - Data encodings (color, size, position). If ambiguous → “Unknown”.\n2) Analyze and quantify:\n   - Overall trend(s) per series (↑/↓/flat), start vs end values, absolute & % change.\n   - Peaks/troughs with labels (name/date/category & value) and notable inflection points.\n   - Outliers/anomalies, seasonality, comparisons between series, correlations (if visually clear).\n   - For stacked/100% charts, distinguish total vs composition shares.\n3) Interpret (briefly & safely):\n   - What it suggests operationally (e.g., “growth accelerating”, “share shifting”, “volatility high”).\n   - Call out caveats: missing units, truncated axes, small samples, unclear legend, etc.\n4) Accessibility:\n   - Provide 1–2 sentence ALT text describing the chart content.\n\nSTRICT RULES\n- Derive ONLY from visible/derivable information (image + ocr_text). If unsure → “Unknown”.\n- Do NOT fabricate numbers; read them from labels/ticks if legible. Otherwise use qualitative phrases (“rises sharply”).\n- Keep numbers in the units shown on the chart; include units in-line.\n- Be concise; avoid jargon unless present in the chart.\n\nOUTPUT FORMAT — EXACTLY TWO SECTIONS (no extra text, no code fences in your response):\nSUBJECT:\n<one line, e.g., “Line Chart — Revenue vs. Cost (Jan–Jun 2025)”>\n\nBODY:\n<html>\n  <!-- Inline CSS only -->\n  <head><meta charset=\"utf-8\"></head>\n  <body style=\"font-family:Arial,Segoe UI,Helvetica,Roboto,sans-serif;max-width:640px;margin:0 auto;padding:16px;\">\n    <header style=\"background:#334155;color:#fff;border-radius:10px;padding:16px 18px;margin-bottom:16px;\">\n      <h2 style=\"margin:0 0 6px 0;\">Chart Summary</h2>\n      <div style=\"opacity:.9;\">File: {{title_hint || 'Unknown'}}</div>\n    </header>\n\n    <section style=\"margin-bottom:14px;\">\n      <h3 style=\"margin:0 0 8px 0;\">What the chart shows</h3>\n      <ul style=\"margin:0 0 0 18px;padding:0;\">\n        <li>Type: <b>[type]</b></li>\n        <li>X-axis: <b>[label / categories]</b></li>\n        <li>Y-axis: <b>[label & unit]</b></li>\n        <li>Series: <b>[series names]</b></li>\n        <li>Range: <b>[time/categories]</b></li>\n      </ul>\n    </section>\n\n    <section style=\"margin-bottom:14px;\">\n      <h3 style=\"margin:0 0 8px 0;\">Key highlights</h3>\n      <ul style=\"margin:0 0 0 18px;padding:0;\">\n        <!-- 3–6 bullets with quantified/qualified insights -->\n        <li>[Series A] moves from <b>[start]</b> to <b>[end]</b> (<b>[Δ, %Δ]</b>).</li>\n        <li>Peak at <b>[value]</b> on <b>[label]</b>; trough at <b>[value]</b> on <b>[label]</b>.</li>\n        <li>[Notable pattern: seasonality/trend/volatility/ crossover / share shift].</li>\n        <li>[Outlier/anomaly] observed at <b>[label]</b> with <b>[value]</b>.</li>\n      </ul>\n    </section>\n\n    <section style=\"margin-bottom:14px;\">\n      <h3 style=\"margin:0 0 8px 0;\">Quick comparisons</h3>\n      <ul style=\"margin:0 0 0 18px;padding:0;\">\n        <li>Top performer: <b>[series/category]</b> at <b>[value, unit]</b>.</li>\n        <li>Lagging: <b>[series/category]</b> at <b>[value, unit]</b>.</li>\n        <li>Relative gap: <b>[abs/%, unit]</b> between <b>[A]</b> and <b>[B]</b> at <b>[label]</b>.</li>\n      </ul>\n    </section>\n\n    <section style=\"margin-bottom:14px;\">\n      <h3 style=\"margin:0 0 8px 0;\">Caveats</h3>\n      <p style=\"margin:0;\">[Axis starts not at zero / units unclear / labels unreadable / sampling unknown / “Unknown” where applicable].</p>\n    </section>\n\n    <section style=\"margin-bottom:18px;\">\n      <h3 style=\"margin:0 0 8px 0;\">Accessibility</h3>\n      <p style=\"margin:0;\"><b>ALT:</b> [1–2 sentence plain-language description of the visual].</p>\n    </section>\n\n    <!-- CTA only if we have a link -->\n    {{ chart_url ? (\n      '<div style=\"margin-top:10px;\"><a href=\"' + chart_url + '\" style=\"background:#0d9488;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;display:inline-block;\">View Chart</a></div>'\n    ) : '' }}\n  </body>\n</html>\n\nTHEME\n- Replace header/button color using palette_hint:\n  teal #0d9488, emerald #059669, amber #d97706, violet #7c3aed, rose #e11d48, slate #334155.\n- If palette_hint missing, default to slate.\n\nVALIDATION\n- Ensure the two required sections are present and the BODY is valid HTML.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "9171f60a-1e06-458a-85c3-3ec803585733",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        304
+      ],
+      "id": "189a3d37-2d10-4992-aa5b-68769c831684",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "o1yvYdsTMwd04brT",
+          "name": "Gemini 2.5-flash"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\n// Split an AI message that contains:\n//   SUBJECT:\\n<one line or paragraph>\\nBODY:\\n<html>...</html>\n// into two fields: { subject, bodyHtml } for the next node (e.g., Gmail).\n\nfunction getRaw(obj) {\n  return (\n    obj?.output ??\n    obj?.text ??\n    obj?.data ??\n    obj?.content ??\n    obj?.message ??\n    obj?.choices?.[0]?.message?.content ??\n    obj?.choices?.[0]?.text ??\n    ''\n  );\n}\n\nfunction unwrapFences(s) {\n  let t = String(s || '').trim();\n  if (t.startsWith('```')) {\n    t = t.replace(/^```[a-zA-Z0-9]*\\s*/, '').replace(/```$/, '');\n  }\n  return t.trim();\n}\n\nfunction parseSections(raw) {\n  const text = unwrapFences(raw);\n  const re = /^\\s*SUBJECT:\\s*([\\s\\S]*?)\\n\\s*BODY:\\s*/i;\n  const m = text.match(re);\n\n  let subject = '';\n  let body = '';\n\n  if (m) {\n    subject = (m[1] || '').trim();\n    body = text.slice(m.index + m[0].length).trim();\n  } else {\n    // Fallback if labels aren't perfectly formatted\n    const idx = text.toUpperCase().indexOf('BODY:');\n    if (idx > -1) {\n      subject = text.slice(0, idx).replace(/^\\s*SUBJECT:\\s*/i, '').trim();\n      body = text.slice(idx + 5).trim();\n    } else {\n      // Nothing matched: treat whole text as body\n      body = text.trim();\n    }\n  }\n  return { subject, body };\n}\n\nfunction ensureHtml(html) {\n  const t = String(html || '').trim();\n  if (t.startsWith('<') && t.includes('</')) return t; // already HTML\n  // Wrap plain text as safe HTML\n  const esc = t.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));\n  return (\n    '<!DOCTYPE html><html><head><meta charset=\"utf-8\">' +\n    '<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>' +\n    '<body style=\"font-family:Arial,Segoe UI,Helvetica,Roboto,sans-serif;padding:16px;\">' +\n    '<pre style=\"white-space:pre-wrap;word-break:break-word;margin:0;\">' + esc + '</pre>' +\n    '</body></html>'\n  );\n}\n\n// Process all incoming items (works for single-item too)\nconst out = $input.all().map(item => {\n  const raw = getRaw(item.json);\n  const { subject, body } = parseSections(raw);\n  return {\n    json: {\n      subject: subject || 'Document Summary',\n      bodyHtml: ensureHtml(body)\n    }\n  };\n});\n\nreturn out;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -16
+      ],
+      "id": "c351c2fd-4a0d-45c9-9c14-41ccea0be1e7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.bodyHtml }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        0
+      ],
+      "id": "64f4e5a3-4159-4512-9598-3d76290c32e0",
+      "name": "Send a message",
+      "webhookId": "4e5fa244-7280-489e-9829-4bb9e0cdf274",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2680b77a-e4cf-412b-baca-d4ebf45694dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "jJ8kVafwDB1KZcWB",
+  "tags": []
+}

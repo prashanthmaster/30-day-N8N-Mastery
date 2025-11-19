@@ -1,0 +1,223 @@
+{
+  "name": "Pdf's  - AI  Vision  workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -16
+      ],
+      "id": "60bc418f-bbe5-4501-a8fe-1ce61685fb21",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2bd193e6-0d69-4518-8e37-8edf52a1737d",
+              "name": "pdf URL",
+              "value": "https://drive.google.com/file/d/1WBIYzl7MzxW3I05Hvj15EISwPvu4d6Wa/view?usp=sharing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "fd7c5e7a-b266-40cc-a96b-cd1768c81395",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1WBIYzl7MzxW3I05Hvj15EISwPvu4d6Wa",
+          "mode": "list",
+          "cachedResultName": "sample pdf for n8n.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1WBIYzl7MzxW3I05Hvj15EISwPvu4d6Wa/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "e62e2ddf-b00d-4c0f-94bd-792efa3eb7c5",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DDww6KfVnEMmLdiU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are \"PDF Vision Explainer,\" an AI agent that analyzes PDFs containing BOTH text and images.\n\n## Inputs (passed by the workflow)\n- pdf_url: {{ $json.pdfUrl || $json.PDF_URL || '' }}{{ $('Edit Fields').item.json['pdf URL'] }}\n- ocr_text: {{ $json.ocr_text || '' }}   // full text extracted from the PDF (page order preserved)\n- images: {{ Array.isArray($json.images) ? 'array of page images provided as attachments or URLs' : 'may be missing' }} \n- meta: {{ $json.meta || '' }}           // optional metadata such as title, author, date, page count\n\n## Objectives\n1) Comprehensively describe the PDF:\n   - Summarize overall purpose and key takeaways.\n   - Extract important sections, headings, lists, tables (as text summaries).\n   - For each page with an image, write a short but specific visual description (objects, charts, diagrams, colors, layout).\n   - Tie images to the surrounding text (e.g., “Page 3 image illustrates the ‘Architecture Diagram’ section”).\n2) Be factual. If something cannot be confirmed from content, say \"Unknown\".\n3) Produce a premium HTML email body with inline CSS (no external CSS):\n   - Professional color palette, soft gradient header, readable fonts.\n   - Mobile-friendly (single-column, max-width container, generous line-height).\n   - Include key sections: Title, Overview, Highlights (bullets), Image Descriptions (by page), Notable Quotes/Stats (if any), and a clear “Open PDF” button linking to pdf_url.\n4) Also produce a concise email SUBJECT line (<= 80 chars).\n5) Output STRICTLY in compact JSON only (no markdown, no extra commentary), using this schema:\n\n{\n  \"subject\": \"string - concise email subject\",\n  \"pdf_url\": \"https://... (must echo back the pdf_url input)\",\n  \"html_body\": \"<!doctype html> ... inline-styled premium HTML ...\"\n}\n\n## Style & Constraints\n- Tone: clear, confident, helpful; no fluff.\n- Avoid hallucinations; never invent data not present.\n- Use short, scannable bullet points.\n- Ensure links are absolute.\n- HTML must be valid, self-contained, and renderable in common email clients (Gmail/Outlook). Use inline CSS only.\n- Color palette suggestion (you may adapt as needed):\n  - Primary: #4F46E5\n  - Accent:  #06B6D4\n  - Text:    #0F172A\n  - Muted:   #64748B\n- The primary CTA button text: “Open PDF”.\n\n## Example section titles for the HTML BODY\n- “Overview”\n- “Highlights”\n- “Image Descriptions by Page”\n- “Notable Quotes & Stats” (only if present)\n- “Open PDF” (button)\n\nReturn ONLY the JSON object (no leading/trailing prose).\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "e4516866-9985-49dc-9e82-6d66c7a39b9c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        192
+      ],
+      "id": "2f8f68e3-3f6e-45ad-97ee-a756644132fc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "cLCdY5swsxgvlPYD",
+          "name": "Open AI API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input assumptions:\n// - The previous node (Chat/LLM) returns the AI text in one of these fields:\n//   $json.output, $json.text, $json.data, $json.choices[0].message.content, or $json.choices[0].text\n// - Preferably the AI returns strict JSON as instructed:\n//   { \"subject\": \"...\", \"pdf_url\": \"...\", \"html_body\": \"<html>...</html>\" }\n// - If JSON parse fails, we attempt to parse labeled sections:\n//   SUBJECT: ...\n//   PDF_URL: ...\n//   HTML_BODY: ... (or BODY: ...)\n// - If pdf_url is missing from the AI response, we fall back to inbound workflow values:\n//   $json.pdfUrl, $json.PDF_URL, or $json['PDF URL']\n\nfunction take(obj, keys, def='') {\n  for (const k of keys) {\n    if (obj && typeof obj === 'object' && obj[k] != null) return String(obj[k]);\n  }\n  return def;\n}\n\nfunction extractMarkedSections(raw) {\n  const out = { subject: '', body: '', pdf_url: '' };\n  // SUBJECT:\n  const mSub = raw.match(/(?:^|\\n)SUBJECT:\\s*([\\s\\S]*?)(?=\\n[A-Z_]+:|$)/i);\n  if (mSub) out.subject = mSub[1].trim();\n\n  // PDF_URL:\n  const mPdf = raw.match(/(?:^|\\n)(PDF_URL|PDF|URL):\\s*(https?:\\/\\/\\S+)/i);\n  if (mPdf) out.pdf_url = mPdf[2].trim();\n\n  // HTML body (try HTML_BODY first, then BODY)\n  let mBody = raw.match(/(?:^|\\n)HTML_BODY:\\s*([\\s\\S]*?)(?=\\n[A-Z_]+:|$)/i);\n  if (!mBody) mBody = raw.match(/(?:^|\\n)BODY:\\s*([\\s\\S]*?)(?=\\n[A-Z_]+:|$)/i);\n  if (mBody) out.body = mBody[1].trim();\n\n  return out;\n}\n\nconst raw =\n  $json.output\n  || $json.text\n  || $json.data\n  || ($json.choices && $json.choices[0]?.message?.content)\n  || ($json.choices && $json.choices[0]?.text)\n  || '';\n\nlet subject = '';\nlet body = '';\nlet pdf_url = '';\n\n// 1) Try JSON first\nlet parsed = null;\nif (typeof raw === 'string') {\n  const trimmed = raw.trim();\n  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {\n    try {\n      parsed = JSON.parse(trimmed);\n    } catch {}\n  }\n} else if (typeof raw === 'object' && raw !== null) {\n  // Some models already return JSON\n  parsed = raw;\n}\n\nif (parsed) {\n  subject  = take(parsed, ['subject','SUBJECT','title']);\n  body     = take(parsed, ['html_body','HTML_BODY','body','BODY']);\n  pdf_url  = take(parsed, ['pdf_url','pdfURL','PDF_URL','PDF','url','URL']);\n}\n\n// 2) If still missing, parse by markers\nif (!subject || !body || !pdf_url) {\n  const byMarkers = extractMarkedSections(String(raw || ''));\n  subject = subject || byMarkers.subject;\n  body    = body    || byMarkers.body;\n  pdf_url = pdf_url || byMarkers.pdf_url;\n}\n\n// 3) Final fallbacks for PDF URL from the inbound workflow\nif (!pdf_url) {\n  pdf_url = $json.pdfUrl || $json.PDF_URL || $json['PDF URL'] || '';\n}\n\n// 4) If body is plain text (no <html>), wrap it in a premium inline-styled HTML shell\nconst looksHtml = /<\\s*html[\\s>]/i.test(body) || /<\\s*body[\\s>]/i.test(body);\nif (!looksHtml) {\n  const safeBody = String(body || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\\n/g, '<br/>');\n  body = `<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <title>${subject || 'PDF Summary'}</title>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  </head>\n  <body style=\"margin:0;padding:0;background:#F8FAFC;color:#0F172A;font-family:Inter,Arial,Helvetica,sans-serif;\">\n    <div style=\"background:linear-gradient(90deg,#4F46E5,#06B6D4);padding:24px;\">\n      <h1 style=\"margin:0;color:#FFFFFF;font-size:22px;line-height:1.3;\">${subject || 'PDF Summary'}</h1>\n    </div>\n    <div style=\"max-width:720px;margin:0 auto;padding:24px;\">\n      <div style=\"background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:20px;box-shadow:0 6px 20px rgba(15,23,42,0.06);\">\n        <div style=\"font-size:15px;line-height:1.7;color:#0F172A;\">${safeBody}</div>\n        ${pdf_url ? `\n        <div style=\"margin-top:20px;text-align:center;\">\n          <a href=\"${pdf_url}\" style=\"display:inline-block;padding:12px 18px;background:#4F46E5;color:#FFFFFF;text-decoration:none;border-radius:10px;font-weight:600;\">Open PDF</a>\n        </div>` : ``}\n      </div>\n      <div style=\"text-align:center;color:#64748B;font-size:12px;padding:20px 10px;\">\n        Generated automatically — review for accuracy.\n      </div>\n    </div>\n  </body>\n</html>`;\n}\n\n// 5) Return parsed fields + raw for debugging\nreturn [\n  {\n    json: {\n      subject: subject || 'PDF Summary',\n      body,\n      pdf_url,\n      raw\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        -96
+      ],
+      "id": "01ca7fc2-e745-4850-a148-a82053e2bb19",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "jashwanthboddupally@gmail.com,support@botcampus.ai",
+        "subject": "=AI Vision - {{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        -96
+      ],
+      "id": "94fedcf1-92fa-4d5d-b085-a07f3ea4ad12",
+      "name": "Send a message",
+      "webhookId": "96a85311-3456-4c33-9b66-1a08123076e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4032426b-4254-470e-8bbc-71afee9bd9fe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  },
+  "id": "odf7oIjdgNwSbMwi",
+  "tags": []
+}

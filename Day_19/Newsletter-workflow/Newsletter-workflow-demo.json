@@ -1,0 +1,435 @@
+{
+  "name": "NewsLetter",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Newsletter Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "phone number",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -544,
+        -240
+      ],
+      "id": "282232af-9fcc-4d13-b0ac-648de6e0311a",
+      "name": "On form submission",
+      "webhookId": "987947c4-dcd8-4c14-a0e4-6c95f1ed1da4"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "🎉 Welcome! Your Free Study Guide is Ready",
+        "message": "=<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\">\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"x-apple-disable-message-reformatting\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <title>Welcome to Our Community!</title>\n    <!--[if mso]>\n    <style type=\"text/css\">\n        body, table, td {font-family: Arial, Helvetica, sans-serif !important;}\n    </style>\n    <![endif]-->\n    <style type=\"text/css\">\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n        \n        body {\n            margin: 0 !important;\n            padding: 0 !important;\n            background-color: #f4f7fa !important;\n            -webkit-text-size-adjust: 100%;\n            -ms-text-size-adjust: 100%;\n        }\n        \n        table {\n            border-spacing: 0;\n            mso-table-lspace: 0pt;\n            mso-table-rspace: 0pt;\n        }\n        \n        td {\n            padding: 0;\n        }\n        \n        img {\n            border: 0;\n            height: auto;\n            line-height: 100%;\n            outline: none;\n            text-decoration: none;\n            -ms-interpolation-mode: bicubic;\n        }\n        \n        a {\n            text-decoration: none;\n        }\n        \n        .email-body {\n            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n        }\n        \n        .btn-primary {\n            display: inline-block;\n            padding: 16px 36px;\n            background-color: #4F46E5;\n            color: #ffffff !important;\n            text-decoration: none;\n            border-radius: 8px;\n            font-weight: 600;\n            font-size: 15px;\n            line-height: 1;\n            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);\n        }\n        \n        .btn-secondary {\n            display: inline-block;\n            padding: 14px 32px;\n            background-color: #ffffff;\n            color: #4F46E5 !important;\n            text-decoration: none;\n            border-radius: 8px;\n            border: 2px solid #4F46E5;\n            font-weight: 600;\n            font-size: 15px;\n            line-height: 1;\n        }\n        \n        .resource-card {\n            background-color: #ffffff;\n            border: 1px solid #E5E7EB;\n            border-radius: 12px;\n            padding: 24px;\n            margin-bottom: 16px;\n        }\n        \n        @media only screen and (max-width: 600px) {\n            .email-container {\n                width: 100% !important;\n                margin: auto !important;\n            }\n            \n            .mobile-padding {\n                padding: 30px 20px !important;\n            }\n            \n            .btn-primary, .btn-secondary {\n                padding: 14px 28px !important;\n                font-size: 14px !important;\n                display: block !important;\n                margin-bottom: 12px !important;\n            }\n            \n            h1 {\n                font-size: 28px !important;\n            }\n            \n            .resource-card {\n                padding: 20px !important;\n            }\n        }\n    </style>\n</head>\n<body style=\"margin: 0; padding: 0; background-color: #f4f7fa;\" class=\"email-body\">\n    <!-- Preheader Text -->\n    <div style=\"display: none; max-height: 0px; overflow: hidden; color: #f4f7fa; font-size: 1px; line-height: 1px;\">\n        Welcome! Your free study guide is ready to download. Let's get started on your learning journey! 🚀\n    </div>\n    \n    <!-- Main Container -->\n    <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #f4f7fa;\">\n        <tr>\n            <td align=\"center\" style=\"padding: 50px 15px;\">\n                \n                <!-- Email Container -->\n                <table role=\"presentation\" class=\"email-container\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); overflow: hidden;\">\n                    \n                    <!-- Hero Header with Confetti -->\n                    <tr>\n                        <td style=\"padding: 0; position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-align: center;\">\n                            <!-- Confetti decoration -->\n                            \n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                <tr>\n                                    <td style=\"padding: 50px 50px 40px;\">\n                                        <!-- Welcome Icon -->\n                                        <div style=\"width: 100px; height: 100px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto 24px; backdrop-filter: blur(10px);\">\n                                            <span style=\"font-size: 48px;\">👋</span>\n                                        </div>\n                                        \n                                        <h1 style=\"margin: 0 0 16px; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: -0.5px;\">Welcome BotCampus AI</h1>\n                                        <p style=\"margin: 0; color: rgba(255, 255, 255, 0.95); font-size: 18px; line-height: 1.6; font-weight: 500;\">\n                                            We're thrilled to have you in our community\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n                    \n                    <!-- Main Content -->\n                    <tr>\n                        <td class=\"mobile-padding\" style=\"padding: 50px 50px;\">\n                            \n                            <!-- Personalized Greeting -->\n                            <p style=\"margin: 0 0 24px; font-size: 18px; line-height: 1.6; color: #1F2937;\">\n                                Hi <strong style=\"color: #4F46E5;\">{{ $('On form submission').item.json['First Name'] }} {{ $('On form submission').item.json['Last Name'] }}</strong>,\n                            </p>\n                            \n                            <p style=\"margin: 0 0 24px; font-size: 16px; line-height: 1.8; color: #374151;\">\n                                Thank you for confirming your subscription! 🎉 Your email has been successfully verified, and you're now part of our growing community.\n                            </p>\n                            \n                            <p style=\"margin: 0 0 32px; font-size: 16px; line-height: 1.8; color: #374151;\">\n                                We're excited to share exclusive resources and valuable content to help you on your journey. Let's get started!\n                            </p>\n                            \n                            <!-- Additional Resources -->\n                            <h2 style=\"margin: 0 0 24px; font-size: 20px; color: #1F2937; font-weight: 600;\">\n                                More Resources for You\n                            </h2>\n                            \n                            <!-- Resource Card 1 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 16px;\">\n                                <tr>\n                                    <td style=\"background-color: #ffffff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px;\">\n                                        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                            <tr>\n                                                <td width=\"48\" valign=\"top\" style=\"padding-right: 16px;\">\n                                                    <div style=\"width: 48px; height: 48px; background-color: #DBEAFE; border-radius: 8px; display: flex; align-items: center; justify-content: center;\">\n                                                        <span style=\"font-size: 24px;\">📚</span>\n                                                    </div>\n                                                </td>\n                                                <td>\n                                                    <h3 style=\"margin: 0 0 8px; font-size: 16px; color: #1F2937; font-weight: 600;\">Resource Library</h3>\n                                                    <p style=\"margin: 0 0 12px; font-size: 14px; color: #6B7280; line-height: 1.6;\">\n                                                        Access our complete collection of tutorials, templates, and guides.\n                                                    </p>\n                                                    <a href=\"{{ $json.link }}\" style=\"color: #4F46E5; font-size: 14px; font-weight: 500; text-decoration: none;\">\n                                                        Browse Library →\n                                                    </a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Resource Card 2 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 16px;\">\n                                <tr>\n                                    <td style=\"background-color: #ffffff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px;\">\n                                        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                            <tr>\n                                                <td width=\"48\" valign=\"top\" style=\"padding-right: 16px;\">\n                                                    <div style=\"width: 48px; height: 48px; background-color: #FCE7F3; border-radius: 8px; display: flex; align-items: center; justify-content: center;\">\n                                                        <span style=\"font-size: 24px;\">🎥</span>\n                                                    </div>\n                                                </td>\n                                                <td>\n                                                    <h3 style=\"margin: 0 0 8px; font-size: 16px; color: #1F2937; font-weight: 600;\">Video Tutorials</h3>\n                                                    <p style=\"margin: 0 0 12px; font-size: 14px; color: #6B7280; line-height: 1.6;\">\n                                                        Watch step-by-step video lessons from industry experts.\n                                                    </p>\n                                                    <a href=\"{{ $json.link }}\" style=\"color: #4F46E5; font-size: 14px; font-weight: 500; text-decoration: none;\">\n                                                        Watch Now →\n                                                    </a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Resource Card 3 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td style=\"background-color: #ffffff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px;\">\n                                        <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                            <tr>\n                                                <td width=\"48\" valign=\"top\" style=\"padding-right: 16px;\">\n                                                    <div style=\"width: 48px; height: 48px; background-color: #D1FAE5; border-radius: 8px; display: flex; align-items: center; justify-content: center;\">\n                                                        <span style=\"font-size: 24px;\">💬</span>\n                                                    </div>\n                                                </td>\n                                                <td>\n                                                    <h3 style=\"margin: 0 0 8px; font-size: 16px; color: #1F2937; font-weight: 600;\">Community Forum</h3>\n                                                    <p style=\"margin: 0 0 12px; font-size: 14px; color: #6B7280; line-height: 1.6;\">\n                                                        Join discussions, ask questions, and connect with fellow learners.\n                                                    </p>\n                                                    <a href=\"{{ $json.link }}\" style=\"color: #4F46E5; font-size: 14px; font-weight: 500; text-decoration: none;\">\n                                                        Join Community →\n                                                    </a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- What's Next Section -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td style=\"background-color: #F0FDF4; border-left: 4px solid #10B981; padding: 24px; border-radius: 8px;\">\n                                        <h3 style=\"margin: 0 0 16px; font-size: 18px; color: #1F2937; font-weight: 600;\">\n                                            🚀 What's Next?\n                                        </h3>\n                                        <ul style=\"margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8; color: #374151;\">\n                                            <li style=\"margin-bottom: 8px;\">Explore our resource library for valuable content</li>\n                                            <li style=\"margin-bottom: 8px;\">Join our community to connect with other learners</li>\n                                            <li style=\"margin-bottom: 8px;\">Watch educational video tutorials from experts</li>\n                                            <li>Receive weekly emails with tips, updates, and exclusive offers</li>\n                                        </ul>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- CTA Section -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td align=\"center\" style=\"padding: 32px 0;\">\n                                        <p style=\"margin: 0 0 20px; font-size: 16px; color: #374151; font-weight: 500;\">\n                                            Ready to get started?\n                                        </p>\n                                        <a href=\"https://www.botcampus.ai/\" class=\"btn-primary\" style=\"display: inline-block; padding: 16px 36px; background-color: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);\">\n                                            Get Started Now\n                                        </a>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Divider -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 32px 0;\">\n                                <tr>\n                                    <td style=\"border-bottom: 1px solid #E5E7EB;\"></td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Help Section -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                <tr>\n                                    <td style=\"padding: 24px; background-color: #F9FAFB; border-radius: 8px; text-align: center;\">\n                                        <p style=\"margin: 0 0 12px; font-size: 15px; color: #374151; font-weight: 500;\">\n                                            Need Help Getting Started?\n                                        </p>\n                                        <p style=\"margin: 0 0 16px; font-size: 14px; color: #6B7280; line-height: 1.6;\">\n                                            Our support team is here to help you every step of the way.\n                                        </p>\n                                        <a href=\"mailto:support@yourcompany.com\" style=\"color: #4F46E5; font-size: 14px; font-weight: 500; text-decoration: none;\">\n                                            Contact Support →\n                                        </a>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                        </td>\n                    </tr>\n                    \n                    <!-- Footer -->\n                    <tr>\n                        <td style=\"padding: 40px 50px; background: linear-gradient(to bottom, #ffffff 0%, #F9FAFB 100%); border-top: 1px solid #E5E7EB;\">\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                <tr>\n                                    <td align=\"center\">\n                                        \n                                        <!-- Social Media -->\n                                        <p style=\"margin: 0 0 16px; font-size: 14px; color: #6B7280; font-weight: 500;\">\n                                            Follow us for daily tips and updates\n                                        </p>\n                                        \n                                        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 0 auto 24px;\">\n                                            <tr>\n                                                <td style=\"padding: 0 10px;\">\n                                                    <a href=\"{{facebook_link}}\" style=\"display: inline-block; width: 36px; height: 36px; background-color: #4F46E5; border-radius: 50%; text-align: center; line-height: 36px;\">\n                                                        <span style=\"color: #ffffff; font-size: 18px; font-weight: bold;\">f</span>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 10px;\">\n                                                    <a href=\"{{twitter_link}}\" style=\"display: inline-block; width: 36px; height: 36px; background-color: #4F46E5; border-radius: 50%; text-align: center; line-height: 36px;\">\n                                                        <span style=\"color: #ffffff; font-size: 18px;\">𝕏</span>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 10px;\">\n                                                    <a href=\"{{linkedin_link}}\" style=\"display: inline-block; width: 36px; height: 36px; background-color: #4F46E5; border-radius: 50%; text-align: center; line-height: 36px;\">\n                                                        <span style=\"color: #ffffff; font-size: 18px; font-weight: bold;\">in</span>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 10px;\">\n                                                    <a href=\"{{instagram_link}}\" style=\"display: inline-block; width: 36px; height: 36px; background-color: #4F46E5; border-radius: 50%; text-align: center; line-height: 36px;\">\n                                                        <span style=\"color: #ffffff; font-size: 18px; font-weight: bold;\">📷</span>\n                                                    </a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                        \n                                        <!-- Company Info -->\n                                        <p style=\"margin: 0 0 8px; font-size: 13px; color: #9CA3AF; line-height: 1.6;\">\n                                            <strong style=\"color: #6B7280;\">Your Company Name</strong><br/>\n                                            123 Business Street, Suite 100<br/>\n                                            City, State 12345, Country\n                                        </p>\n                                        \n                                        <p style=\"margin: 0 0 16px; font-size: 12px; color: #9CA3AF; line-height: 1.6;\">\n                                            You're receiving this email because you subscribed to our mailing list.<br/>\n                                            <a href=\"{{ $json.link }}\" style=\"color: #6B7280; text-decoration: underline;\">Update preferences</a> | \n                                            <a href=\"{{unsubscribe_link}}\" style=\"color: #6B7280; text-decoration: underline;\">Unsubscribe</a>\n                                        </p>\n                                        \n                                        <p style=\"margin: 0; font-size: 12px; color: #9CA3AF;\">\n                                            © 2025 Your Company Name. All rights reserved.\n                                        </p>\n                                        \n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n                    \n                </table>\n                <!-- End Email Container -->\n                \n            </td>\n        </tr>\n    </table>\n    <!-- End Main Container -->\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        -256
+      ],
+      "id": "e78fb59b-2b8f-46a8-9fb1-036fa6d911f7",
+      "name": "Send a message1",
+      "webhookId": "9cd1f82b-55b8-4846-bb43-cb9605bd2d93",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xAMl4zSjBRQk6v6r",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        96
+      ],
+      "id": "5054aa6e-0521-49c3-88e1-d79212d31964",
+      "name": "SET WEEKLY- Timings ",
+      "webhookId": "5996ea33-f037-4897-a063-8add94e88aaf"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Newsletter AI Agent specialized in curating and generating the latest AI news. Your purpose is to research current AI developments, breakthroughs, and industry updates, then compile them into a clean, professional newsletter format.\n\nCore Responsibilities:\n1. Search for the most recent AI news, developments, and breakthroughs\n2. Identify credible sources and significant updates from the past 24-48 hours\n3. Organize information into clear, digestible sections\n4. Generate a newsletter in plain HTML format without graphics or colors\n5. Ensure each newsletter contains fresh, unique content\n\nSearch Strategy:\n- Always search for \"AI news today\" or \"latest artificial intelligence news\" with current date\n- Look for news from the past 24-48 hours\n- Focus on: major AI model releases, research breakthroughs, industry announcements, policy updates, and significant applications\n- Verify information from multiple sources when possible\n\nNewsletter Structure:\n- Use simple HTML formatting only (h1, h2, h3, p, ul, li, strong, em)\n- No CSS styling, colors, or inline styles\n- No images or graphics\n- Clear hierarchy with headers\n- Concise summaries with source citations\n- Include 4-6 news items per newsletter\n- Add a brief intro and closing\n\nQuality Standards:\n- Accuracy: Only include verified information\n- Recency: Prioritize news from the last 24-48 hours\n- Relevance: Focus on significant AI developments\n- Clarity: Write in clear, professional language\n- Attribution: Always cite sources properly\n\nOutput Format:\nDeliver ONLY the HTML body content, starting with opening tags and ending with closing tags. No additional commentary or formatting outside the HTML.",
+        "options": {
+          "systemMessage": "=Generate today's AI newsletter with the latest news. Search for the most recent AI developments, breakthroughs, and announcements from the past 24-48 hours. Create a clean HTML newsletter with 4-6 significant news items. Remember: HTML body only, no graphics or colors."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        32
+      ],
+      "id": "959630f0-ff5d-4f05-a1ad-b0940115e583",
+      "name": "Newsletter Campaigns Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        208
+      ],
+      "id": "fdb7c9fb-64ac-49ad-92ba-fd90849fd87a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": " 🚨 Latest AI Breakthroughs  Newsletter- You Need to Know ",
+        "message": "={{ $json.output }}\nhttps://drive.google.com/file/d/1IfcuupKbLu6yKlVPxHgEzrpWie2HRmfi/view?usp=sharing",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        736,
+        16
+      ],
+      "id": "68bebac2-5036-4338-b45a-a67b7d06057a",
+      "name": "Send a message2",
+      "webhookId": "2c6de106-e42d-4167-a8d8-37bd7a1d5730",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xAMl4zSjBRQk6v6r",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Confirmation mail - Email Marketing Workflow",
+        "message": "=<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\">\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta name=\"x-apple-disable-message-reformatting\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <title>Confirm Your Subscription</title>\n    <!--[if mso]>\n    <style type=\"text/css\">\n        body, table, td {font-family: Arial, Helvetica, sans-serif !important;}\n    </style>\n    <![endif]-->\n    <style type=\"text/css\">\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n        \n        body {\n            margin: 0 !important;\n            padding: 0 !important;\n            background-color: #f4f7fa !important;\n            -webkit-text-size-adjust: 100%;\n            -ms-text-size-adjust: 100%;\n        }\n        \n        table {\n            border-spacing: 0;\n            mso-table-lspace: 0pt;\n            mso-table-rspace: 0pt;\n        }\n        \n        td {\n            padding: 0;\n        }\n        \n        img {\n            border: 0;\n            height: auto;\n            line-height: 100%;\n            outline: none;\n            text-decoration: none;\n            -ms-interpolation-mode: bicubic;\n        }\n        \n        a {\n            text-decoration: none;\n            color: #4F46E5;\n        }\n        \n        .email-body {\n            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n        }\n        \n        .btn {\n            display: inline-block;\n            padding: 16px 32px;\n            background-color: #4F46E5;\n            color: #ffffff !important;\n            text-decoration: none;\n            border-radius: 8px;\n            font-weight: 600;\n            font-size: 16px;\n            line-height: 1;\n            transition: background-color 0.3s ease;\n        }\n        \n        .btn:hover {\n            background-color: #4338CA;\n        }\n        \n        .info-box {\n            background-color: #EEF2FF;\n            border-left: 4px solid #4F46E5;\n            padding: 20px;\n            border-radius: 4px;\n        }\n        \n        .icon-check {\n            width: 64px;\n            height: 64px;\n            background-color: #10B981;\n            border-radius: 50%;\n            display: inline-block;\n        }\n        \n        @media only screen and (max-width: 600px) {\n            .email-container {\n                width: 100% !important;\n                margin: auto !important;\n            }\n            \n            .mobile-padding {\n                padding: 20px !important;\n            }\n            \n            .mobile-text {\n                font-size: 14px !important;\n            }\n            \n            h1 {\n                font-size: 24px !important;\n            }\n        }\n        \n        @media screen and (max-width: 525px) {\n            .mobile-hide {\n                display: none !important;\n            }\n        }\n    </style>\n</head>\n<body style=\"margin: 0; padding: 0; background-color: #f4f7fa;\" class=\"email-body\">\n    <!-- Preheader Text -->\n    <div style=\"display: none; max-height: 0px; overflow: hidden; color: #f4f7fa; font-size: 1px; line-height: 1px;\">\n        Your subscription confirmation email has been sent. Please check your inbox to verify.\n    </div>\n    \n    <!-- Main Container -->\n    <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #f4f7fa;\">\n        <tr>\n            <td align=\"center\" style=\"padding: 40px 15px;\">\n                \n                <!-- Email Container -->\n                <table role=\"presentation\" class=\"email-container\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden;\">\n                    \n                    <!-- Header with Logo -->\n                    <tr>\n                        <td style=\"padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #4F46E5 100%);\">\n                            <!-- Success Icon -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                <tr>\n                                    <td align=\"center\" style=\"padding-bottom: 20px;\">\n                                        <div style=\"width: 64px; height: 64px; background-color: #10B981; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto;\">\n                                            <svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                                                <path d=\"M9 11L12 14L22 4\" stroke=\"white\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n                                                <path d=\"M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16\" stroke=\"white\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n                                            </svg>\n                                        </div>\n                                    </td>\n                                </tr>\n                            </table>\n                            <h1 style=\"margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;\">Confirmation Email Sent!</h1>\n                        </td>\n                    </tr>\n                    \n                    <!-- Main Content -->\n                    <tr>\n                        <td class=\"mobile-padding\" style=\"padding: 50px 40px;\">\n                            \n                            <!-- Greeting -->\n                            <p style=\"margin: 0 0 24px; font-size: 18px; line-height: 1.6; color: #1F2937; font-weight: 500;\">\n                                Hello <span style=\"color: #4F46E5; font-weight: 600;\">{{ $json['First Name'] }} {{ $json['Last Name'] }} </span> 👋\n                            </p>\n                            \n                            <!-- Main Message -->\n                            <p style=\"margin: 0 0 24px; font-size: 16px; line-height: 1.8; color: #374151;\">\n                                Thank you for subscribing to our mailing list! We're thrilled to have you as part of our community.\n                            </p>\n                            \n                            <p style=\"margin: 0 0 32px; font-size: 16px; line-height: 1.8; color: #374151;\">\n                                A confirmation email has been automatically sent to your inbox via <strong>Mailchimp</strong>. To complete your subscription, please verify your email address by clicking the confirmation link.\n                            </p>\n                            \n                            <!-- Info Box -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td style=\"background-color: #EEF2FF; border-left: 4px solid #4F46E5; padding: 24px; border-radius: 8px;\">\n                                        <p style=\"margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: #4F46E5; font-weight: 600;\">\n                                            🔒 Why Double Opt-In?\n                                        </p>\n                                        <p style=\"margin: 0; font-size: 14px; line-height: 1.7; color: #6B7280;\">\n                                            This verification step ensures we have your genuine consent to send you emails. It protects you from spam and keeps our community quality high while maintaining legal compliance (GDPR, CAN-SPAM).\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Steps Section -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td>\n                                        <h2 style=\"margin: 0 0 20px; font-size: 20px; color: #1F2937; font-weight: 600;\">What to Do Next:</h2>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Step 1 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 16px;\">\n                                <tr>\n                                    <td width=\"40\" valign=\"top\">\n                                        <div style=\"width: 32px; height: 32px; background-color: #4F46E5; color: #ffffff; border-radius: 50%; text-align: center; line-height: 32px; font-weight: 600; font-size: 14px;\">1</div>\n                                    </td>\n                                    <td style=\"padding-left: 12px;\">\n                                        <p style=\"margin: 0; font-size: 15px; line-height: 1.6; color: #374151;\">\n                                            <strong style=\"color: #1F2937;\">Check your email inbox</strong><br/>\n                                            <span style=\"color: #6B7280; font-size: 14px;\">Look for an email from Mailchimp (check spam/junk folder too)</span>\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Step 2 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 16px;\">\n                                <tr>\n                                    <td width=\"40\" valign=\"top\">\n                                        <div style=\"width: 32px; height: 32px; background-color: #4F46E5; color: #ffffff; border-radius: 50%; text-align: center; line-height: 32px; font-weight: 600; font-size: 14px;\">2</div>\n                                    </td>\n                                    <td style=\"padding-left: 12px;\">\n                                        <p style=\"margin: 0; font-size: 15px; line-height: 1.6; color: #374151;\">\n                                            <strong style=\"color: #1F2937;\">Click the confirmation link</strong><br/>\n                                            <span style=\"color: #6B7280; font-size: 14px;\">This verifies your email address and activates your subscription</span>\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Step 3 -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 32px;\">\n                                <tr>\n                                    <td width=\"40\" valign=\"top\">\n                                        <div style=\"width: 32px; height: 32px; background-color: #4F46E5; color: #ffffff; border-radius: 50%; text-align: center; line-height: 32px; font-weight: 600; font-size: 14px;\">3</div>\n                                    </td>\n                                    <td style=\"padding-left: 12px;\">\n                                        <p style=\"margin: 0; font-size: 15px; line-height: 1.6; color: #374151;\">\n                                            <strong style=\"color: #1F2937;\">You're all set!</strong><br/>\n                                            <span style=\"color: #6B7280; font-size: 14px;\">Start receiving our valuable updates and content</span>\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Divider -->\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 32px 0;\">\n                                <tr>\n                                    <td style=\"border-bottom: 1px solid #E5E7EB;\"></td>\n                                </tr>\n                            </table>\n                            \n                            <!-- Disclaimer -->\n                            <p style=\"margin: 0; font-size: 14px; line-height: 1.7; color: #6B7280; font-style: italic;\">\n                                <strong style=\"color: #374151;\">Didn't sign up?</strong> No worries! If you didn't request this subscription, you can safely ignore this email and the confirmation email. Your email address will not be added to our list.\n                            </p>\n                            \n                        </td>\n                    </tr>\n                    \n                    <!-- Footer -->\n                    <tr>\n                        <td style=\"padding: 40px; background-color: #F9FAFB; border-top: 1px solid #E5E7EB;\">\n                            <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n                                <tr>\n                                    <td align=\"center\">\n                                        <!-- Social Icons -->\n                                        <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin-bottom: 20px;\">\n                                            <tr>\n                                                <td style=\"padding: 0 8px;\">\n                                                    <a href=\"#\" style=\"display: inline-block;\">\n                                                        <img src=\"https://cdn-icons-png.flaticon.com/512/733/733579.png\" alt=\"Twitter\" width=\"24\" height=\"24\" style=\"display: block;\"/>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 8px;\">\n                                                    <a href=\"#\" style=\"display: inline-block;\">\n                                                        <img src=\"https://cdn-icons-png.flaticon.com/512/733/733547.png\" alt=\"Facebook\" width=\"24\" height=\"24\" style=\"display: block;\"/>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 8px;\">\n                                                    <a href=\"#\" style=\"display: inline-block;\">\n                                                        <img src=\"https://cdn-icons-png.flaticon.com/512/733/733558.png\" alt=\"LinkedIn\" width=\"24\" height=\"24\" style=\"display: block;\"/>\n                                                    </a>\n                                                </td>\n                                                <td style=\"padding: 0 8px;\">\n                                                    <a href=\"#\" style=\"display: inline-block;\">\n                                                        <img src=\"https://cdn-icons-png.flaticon.com/512/733/733614.png\" alt=\"Instagram\" width=\"24\" height=\"24\" style=\"display: block;\"/>\n                                                    </a>\n                                                </td>\n                                            </tr>\n                                        </table>\n                                        \n                                        <p style=\"margin: 0 0 12px; font-size: 14px; color: #6B7280; line-height: 1.6;\">\n                                            <strong style=\"color: #374151;\">Need help?</strong> Our support team is here for you<br/>\n                                            <a href=\"mailto:support@yourcompany.com\" style=\"color: #4F46E5; text-decoration: none; font-weight: 500;\">support@yourcompany.com</a>\n                                        </p>\n                                        \n                                        <p style=\"margin: 0 0 12px; font-size: 13px; color: #9CA3AF; line-height: 1.6;\">\n                                            Your Company Name, Inc.<br/>\n                                            123 Business Street, Suite 100<br/>\n                                            City, State 12345, Country\n                                        </p>\n                                        \n                                        <p style=\"margin: 0; font-size: 12px; color: #9CA3AF;\">\n                                            © 2025 Your Company Name. All rights reserved.\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n                        </td>\n                    </tr>\n                    \n                </table>\n                <!-- End Email Container -->\n                \n            </td>\n        </tr>\n    </table>\n    <!-- End Main Container -->\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        -528
+      ],
+      "id": "40d98082-f2ca-4cd4-bff3-0031bdfd00ca",
+      "name": "Confirmation mail",
+      "webhookId": "2d406cf7-d6d4-4479-a0ff-f8e86922deb2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xAMl4zSjBRQk6v6r",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 582385870,
+          "mode": "list",
+          "cachedResultName": "NewsLetter-Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=582385870"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FIRST-NAME": "={{ $('On form submission').item.json['First Name'] }}",
+            "LAST-NAME": "={{ $('On form submission').item.json['Last Name'] }}",
+            "PHONE ": "={{ $('On form submission').item.json['phone number'] }}",
+            "EMAIL": "={{ $('On form submission').item.json.Email }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "FIRST-NAME",
+              "displayName": "FIRST-NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LAST-NAME",
+              "displayName": "LAST-NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EMAIL",
+              "displayName": "EMAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PHONE ",
+              "displayName": "PHONE ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        496,
+        -528
+      ],
+      "id": "ab81dc74-28b2-46ce-9e5e-76393a3c756b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ac5e9333-121b-489e-9daa-d54afddd8902",
+              "name": "link",
+              "value": "https://www.botcampus.ai/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -256
+      ],
+      "id": "48a0c161-f233-4eb1-a554-e8111770ffd5",
+      "name": "Website URL"
+    },
+    {
+      "parameters": {
+        "content": "## Confirm Mail and store Data In Sheets\n",
+        "height": 224,
+        "width": 800,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        -592
+      ],
+      "typeVersion": 1,
+      "id": "6dddd134-f56a-41d1-bcea-ac5bfedf11f2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Welcome Mail  ",
+        "height": 224,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "ec2f9c97-b513-4444-bd20-e5e593062623",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Sending NewsLetters\n\n",
+        "height": 384,
+        "width": 1136,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "a9a1d3b4-1c76-450b-907a-d7546e554784",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Submit form here\n",
+        "height": 224,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "dc7f51a5-3124-40f4-84dd-e9ef7dbbcd73",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Confirmation mail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Website URL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SET WEEKLY- Timings ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "SET WEEKLY- Timings ": {
+      "main": [
+        [
+          {
+            "node": "Newsletter Campaigns Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Newsletter Campaigns Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Newsletter Campaigns Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmation mail": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website URL": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "37f283dc-2a38-4561-b30b-2d8b34ad1af7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "o3BS24To09fsGRjl",
+  "tags": []
+}
