@@ -1,0 +1,1452 @@
+{
+  "name": "Build-Your-Research-Assistant-Json",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "16dedbb3-4ea2-44c5-a8ea-a5d1db6db39e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "mistral-large-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        16,
+        896
+      ],
+      "id": "39cfd302-04e8-4b43-87a0-3caa2390ef28",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "MnrDZ9HZlxqb3a0e",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -240
+      ],
+      "id": "736514f9-9233-430c-8f52-c9ff71ea2ece",
+      "name": "Deepseek-R1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "GSWk8nSgfdoKxuwo",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE: Senior Research Analyst (Reasoning-First)\n\nGOAL: Deliver a high-accuracy research brief with clear evidence and citations.\nYou may reason internally, but share only concise conclusions and short justifications (no step-by-step chain-of-thought).\n\nMETHOD\n1) Clarify scope from the user message; extract entities, time range, region, and definitions.\n2) Triangulate facts across diverse, high-quality sources. Prefer primary data, official docs, standards, peer-reviewed work.\n3) Quantify when possible: include small calculations, sanity checks, and units.\n4) Surface disagreement: note competing claims and evaluate them.\n5) If evidence is weak or unknown, say so explicitly and suggest next queries.\n\n\nInput :\n{{ $json.prompt }}\n\nOUTPUT (Markdown)\n- Title\n- TL;DR (3–5 bullets)\n- Key Findings (short bullets, each ending with an inline source tag like [S1])\n- Deep Dive (short sections; include small formulas/tables as needed)\n- Risks / Unknowns\n- Actionable Next Steps (bullets)\n- Sources [S1…Sn]: list 5–12 credible links with publisher + date\n\nRULES\n- No speculation, no invented citations, no paywalled summaries without indicating paywall.\n- Include publish/update dates for sources.\n- If the user provides a cutoff date (“as of …”), honor it; otherwise prefer freshest reliable sources.\n- Keep answers compact and information-dense; avoid filler.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -80,
+        -416
+      ],
+      "id": "960a2ba2-0410-4ad5-87a6-30a1f43f541d",
+      "name": "Deepseek R1 Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE: Evidence-Driven Research Assistant\n\nOBJECTIVE: Produce a concise, well-structured research report with accurate citations. Perform internal planning; share only final rationale bullets (no chain-of-thought).\n\nRESEARCH PRINCIPLES\n- Prioritize primary sources (official docs, datasets, standards, statutes, peer-reviewed papers).\n- Cross-check at least 3 independent sources for critical claims.\n- Prefer recent materials; include the publication date next to each citation.\n- Clearly label uncertainty and data gaps; never guess.\n\nDELIVERABLE (Markdown)\n1) Executive Summary (max 120 words)\n2) Key Points (5–8 bullets, each with [S#])\n3) Analysis (short subsections; compare viewpoints; include small tables if helpful)\n4) What’s Contested vs. Settled\n5) Practical Implications / Recommendations\n6) Citations: [S1] … [Sn] → full link + publisher/name + date\n\nSTYLE & SAFETY\n- Factual, neutral tone; no marketing language.\n- No fabricated sources or quotes.\n- If tools/browsing aren’t available, state the limitation and base answers on provided context only.\n\nInput Prompt:\n{{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "83c2d588-e83b-47df-94d8-3281d5d5e2ea",
+      "name": "gemini Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE: Skeptical Investigator\n\nTARGET: Deliver a compact, audit-friendly brief backed by verifiable sources. Do internal reasoning; output only conclusions with short justification bullets.\n\nPROCESS\n- Decompose the question into sub-questions; check definitions and units.\n- Triangulate claims across reputable sources from different regions/perspectives.\n- Highlight methodological quality (sample size, dataset, standard, version).\n- Perform quick calculations/estimates where relevant; show the final numbers and formulas only.\n\nInput Prompt:\n{{ $json.prompt }}\n\n\nOUTPUT FORMAT (Markdown)\n- One-line Verdict\n- Evidence Matrix (table): Claim | Best Source | Confidence (Low/Med/High) | Note\n- Analysis (concise paragraphs; include trade-offs/edge cases)\n- Open Questions & How to Resolve\n- Source List: 6–10 links with publisher + date\n\nRULES\n- No single-source conclusions on critical facts.\n- Prefer original PDFs, specs, RFCs, statutes, official changelogs over blogs.\n- If conflicting evidence, present both and state which is stronger and why.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        16,
+        736
+      ],
+      "id": "3dc00ca4-d855-4397-98aa-5e9b217fbc51",
+      "name": "Mistral"
+    },
+    {
+      "parameters": {
+        "content": "## Different AI Models\n",
+        "height": 1696,
+        "width": 1152,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "93547d49-23aa-44bf-b679-41ac290eb191",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "Give a prompt",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "prompt",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1200,
+        144
+      ],
+      "id": "7fde618b-8bb1-4186-873d-a3043618b931",
+      "name": "On form submission",
+      "webhookId": "65480379-8116-4a1f-b4ef-e9c75df5552b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE: Global Research Analyst (Multilingual)\n\nMISSION: Produce a bilingual-aware research brief (English primary; include original non-English source titles in parentheses when useful). Think privately; present only final results with concise justifications.\n\nGUIDELINES\n- Search across English and non-English materials; do not exclude Chinese/EU/JP standards and government sources.\n- Normalize numbers and units; state currency and time zone if relevant.\n- Provide short quote snippets (≤20 words) ONLY when essential, with citation.\n\nInput Prompt:\n{{ $json.prompt }}\n\nOUTPUT (Markdown)\n- Summary (3–4 bullets)\n- Context & Definitions (one short section)\n- Comparative Analysis (regions/standards/policies/implementations)\n- Data/Calculations (mini table if needed)\n- Limitations & Unknowns\n- References: numbered list with full links; add original-language titles in parentheses when not English; include dates.\n\nRULES\n- No invented links or papers.\n- Mark uncertain items clearly.\n- Respect user-specified cutoff dates or jurisdictions; otherwise prefer recent, authoritative sources.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -32,
+        304
+      ],
+      "id": "a2e6986f-9ad0-4215-b9aa-95ac33fef6d3",
+      "name": "Qwen1"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-30b-a3b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        496
+      ],
+      "id": "1494bfbf-29a1-4c9e-95e8-d519d4e2d331",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "HZhkdXOd7pAELnnH",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b2daa3c-03d5-4848-8362-181c24501e49",
+              "name": "Qwen_Response",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        320
+      ],
+      "id": "8dcee092-9090-4dfd-a70f-c8d4dadce8a7",
+      "name": "Qwen_Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "350f7b43-3285-4e5b-b873-602e14e9cdc9",
+              "name": "Mistral_Response",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        752
+      ],
+      "id": "1c9e2e6c-ebf4-4623-874f-5282308ece22",
+      "name": "Mistral_Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c7a55b60-7ccf-45de-bfb5-36642cb8b1dd",
+              "name": "Deepseek-Response",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "0aed7405-880b-46be-81e3-ca3c3735d638",
+              "name": "prompt",
+              "value": "={{ $('On form submission').item.json.prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        -352
+      ],
+      "id": "b41848f1-46d4-4d59-b589-d84a40fbcae3",
+      "name": "Deepseek-Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1684050-acf8-4073-90e1-672d499e96ff",
+              "name": "Gemini_Response",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        0
+      ],
+      "id": "5a801ffb-d4f0-4269-ad1e-c40a594f48b2",
+      "name": "Gemini_Response"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Qwen Response": "={{ $json.Qwen_Response }}",
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}"
+          },
+          "matchingColumns": [
+            "Prompt "
+          ],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        304
+      ],
+      "id": "178806e4-4e1a-448a-bf4e-0efb26ee5797",
+      "name": "Qwen Response into sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Mistral Response": "={{ $json.Mistral_Response }}",
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}"
+          },
+          "matchingColumns": [
+            "Prompt "
+          ],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        736
+      ],
+      "id": "026f63c6-3fb4-423d-8f32-6d5c44c25e03",
+      "name": "Mistral Response",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Gemini Response": "={{ $json.Gemini_Response }}",
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}"
+          },
+          "matchingColumns": [
+            "Prompt "
+          ],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        16
+      ],
+      "id": "cf05aa09-415d-4d07-81c9-409a954e9cea",
+      "name": "Gemini Response",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Deepseek Respone": "={{ $json['Deepseek-Response'] }}",
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        720,
+        -352
+      ],
+      "id": "26e5f0e0-59ea-4b42-931e-70735aaac7a5",
+      "name": "Deepseek Response",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1680,
+        352
+      ],
+      "id": "91ea40d2-5796-4f44-851f-257cb0f628f9",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        320
+      ],
+      "id": "d58aed78-38d0-44d1-bfda-d9359146ba5f",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t \"Analysis\": \"string\"\n\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        336
+      ],
+      "id": "61110caf-a7e6-4a35-89cb-4a54c1dc4be2",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE\nAnalysis agent with access to the Google Sheets tool.\n\nOBJECTIVE\n1) Use the Google Sheets tool to read ALL rows from the target worksheet and extract model outputs from these columns:\n   - \"Deepseek Response\"  (also accept: Deepseek_Response, Deepseek-Response, Deepseek Respone)\n   - \"Gemini Response\"    (also: Gemini_Response, Gemini-Response)\n   - \"Mistral Response\"   (also: Mistral_Response, Mistral-Response)\n   - \"Qwen Response\"      (also: Qwen_Response, Qwen-Response)\n   - If a \"Prompt\" column exists, use it to maintain per-row context.\n2) Perform a re-research synthesis across ALL rows and ALL models:\n   - Cross-compare statements, extract common/unique claims, and resolve contradictions.\n   - Produce the best consolidated answer reflecting strongest consensus and clearest reasoning based ONLY on the sheet.\n\nDATA RETRIEVAL\n- Use the Sheets tool; if provided, honor `spreadsheet_id`, `sheet_name` or A1 range.\n- First non-empty row is headers; match case-insensitively and tolerate underscores/hyphens/typos.\n- Ignore empty rows/cells. Preserve meaningful Markdown lists/headings if present.\n\nRE-RESEARCH & DATA-ANALYTICS METHOD (no external browsing)\n- Normalize text (strip code fences, collapse whitespace). Keep useful Markdown bullets/headers.\n- For each row: extract short propositions; tag with source model (Deepseek/Gemini/Mistral/Qwen).\n- Across all rows:\n  • Consensus scoring → for each proposition compute `support_count` (#models supporting) and `%coverage` across rows.  \n  • Conflict detection → summarize genuine disagreements.  \n  • Outlier detection → propositions supported by only one model/row.  \n  • Salience ranking → rank by support_count, clarity/specificity, and alignment with majority.  \n  • Gaps/Unknowns → note missing info exposed by the comparison.\n\nOUTPUT CONTENT (compose ONE Markdown string)\nUse this structure (headings must appear exactly as below):\n- **Best Consolidated Answer** — cohesive synthesis (≈120–220 words)\n- **Analytics Snapshot**\n  - Top consensus facts (3–5) with `(support: X models, coverage: Y%)`\n  - Key disagreements (brief contrast)\n  - Notable outliers (1–3 short lines)\n- **Actionable Next Steps** (3–5 concrete bullets)\n\nRULES\n- Base EVERYTHING only on the sheet; no invented facts or external links.\n- De-duplicate repeated sentences; keep neutral, precise language; avoid marketing tone.\n\nERROR HANDLING\nIf the sheet/headers can’t be read or target columns are missing, output:\n{ \"Analysis\": \"ERROR: <short reason and what to check>\" }\n\nOUTPUT RULE (STRICT)\nReturn ONLY raw JSON (no backticks, no prose around it) with EXACT shape:\n{ \"Analysis\": \"<the entire Markdown report as a single string>\" }\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        80
+      ],
+      "id": "7ba0e78a-897a-43ea-b7a2-7423892bf431",
+      "name": "Analysis AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ROLE\nProfessional LinkedIn article writer with access to the Google Sheets tool.\n\nOBJECTIVE\nRead ALL relevant inputs from:\n1) Google Sheets (all rows/range provided)\n2) Upstream/pinned workflow context (any JSON you receive)\n\nSynthesize ONE polished LinkedIn article that follows the format below and reflects the strongest, most credible insights from the sheet.\n\nFORMAT (strict)\nBased On Deep Researched data  create a professional LinkedIn Aricle \n2) Key Points — 3–6 bullets. Each bullet may start with ONE neutral emoji only (choose from: ✅ 🔎 📌 💡 📈 🧩).\n3) Hashtags — 5–10 relevant tags, all lowercase (except proper nouns), no spaces (use camelCase if needed).\n\nTONE & STYLE (professional)\n- Executive, concise, outcome-oriented; avoid buzzwords and filler.\n- Prefer concrete impact, clear value, and precise wording.\n- If quantitative hints exist, surface them (e.g., “reduced latency ~18–22%”).\n- No invented links, quotes, or citations. Base content ONLY on the sheet/pinned context.\n- American English, consistent tense, no second-person salesy voice.\n- Length target: 120–220 words.\n\nSHEETS INGESTION\n- First non-empty row is headers; match case-insensitively with tolerance for underscores/hyphens/typos.\n- Accept columns such as: Prompt, Deepseek Response, Gemini Response, Mistral Response, Qwen Response (and variants).\n- Ignore empty rows/cells; de-duplicate repeated sentences across rows; merge consistent themes.\n\nSELECTION & SYNTHESIS\n- Prioritize consensus themes across models/rows; include at most 1–2 unique high-value insights if they are clear and non-contradictory.\n- Resolve minor wording conflicts; omit ambiguous or unsupported claims.\n- Convert raw notes into readable, audience-ready prose suitable for LinkedIn.\n\nOUTPUT\nReturn ONLY raw JSON (no backticks, no extra prose), exactly:\n{\n  \"LinkedIn\": \"<final article text as one string>\"\n}\n\nERROR HANDLING\nIf the sheet cannot be read or required columns are missing:\n{\n  \"LinkedIn\": \"ERROR: <short reason and what to check>\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2480,
+        64
+      ],
+      "id": "6a62a59a-43e4-4081-8732-0251e379e2d7",
+      "name": "Writer AI Agent1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2640,
+        272
+      ],
+      "id": "123ada6d-7f34-4c12-a17e-7f543d0cd9b7",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"LinkedIn\" : \"String\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2752,
+        336
+      ],
+      "id": "a8715f85-960f-4316-ba58-8b539161745b",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "person": "lOKWmA6wrH",
+        "text": "={{ $json.output.LinkedIn }}",
+        "additionalFields": {
+          "visibility": "CONNECTIONS"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        3392,
+        64
+      ],
+      "id": "0380e508-2da2-4610-afdd-54939a69aa90",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "g4VBw3vnRdd91Tq5",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Analysis AI Agent",
+        "height": 624,
+        "width": 656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "01bc205d-1023-40eb-a278-b36938d27a0c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Writer Agent",
+        "height": 656,
+        "width": 608,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2336,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "bbb9a886-7be6-435d-a1e4-62d4c7cd5a60",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## LinkedIn \nposting in LinkedIn",
+        "height": 272,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3296,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "87485ac3-3a04-4a89-ba6a-8080eb7e2ee8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## N8n form \nEnter the prompt here  to post in linkedIn \nwith Deep research",
+        "height": 336,
+        "width": 384,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1328,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "afa74f1f-a1a4-4e82-906f-4ee767ee035b",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        272
+      ],
+      "id": "abeb77d2-d0be-477a-9d2b-807710da1d80",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}",
+            "LinkedIn Article": "={{ $json.output.LinkedIn }}"
+          },
+          "matchingColumns": [
+            "Prompt "
+          ],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Analyst agent",
+              "displayName": "Analyst agent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Article",
+              "displayName": "LinkedIn Article",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3008,
+        96
+      ],
+      "id": "8aa2a6bb-131a-48b3-a822-a28f20a21075",
+      "name": "Updating the LinkedIn Row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 720580844,
+          "mode": "list",
+          "cachedResultName": "Deep research",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=720580844"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Prompt ": "={{ $('On form submission').item.json.prompt }}",
+            "Analyst agent": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "Prompt "
+          ],
+          "schema": [
+            {
+              "id": "Prompt ",
+              "displayName": "Prompt ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deepseek Respone",
+              "displayName": "Deepseek Respone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Gemini Response",
+              "displayName": "Gemini Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mistral Response",
+              "displayName": "Mistral Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Qwen Response",
+              "displayName": "Qwen Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Analyst agent",
+              "displayName": "Analyst agent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2096,
+        128
+      ],
+      "id": "855c28da-505e-4597-bfc9-49c8f000ebfe",
+      "name": "Appending the  Analyst row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "gemini Model",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Mistral",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek-R1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Deepseek R1 Model",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek R1 Model": {
+      "main": [
+        [
+          {
+            "node": "Deepseek-Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini Model": {
+      "main": [
+        [
+          {
+            "node": "Gemini_Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral": {
+      "main": [
+        [
+          {
+            "node": "Mistral_Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Deepseek R1 Model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "gemini Model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Qwen1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mistral",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Qwen1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen1": {
+      "main": [
+        [
+          {
+            "node": "Qwen_Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen_Response": {
+      "main": [
+        [
+          {
+            "node": "Qwen Response into sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral_Response": {
+      "main": [
+        [
+          {
+            "node": "Mistral Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek-Response": {
+      "main": [
+        [
+          {
+            "node": "Deepseek Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini_Response": {
+      "main": [
+        [
+          {
+            "node": "Gemini Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deepseek Response": {
+      "main": [
+        []
+      ]
+    },
+    "Gemini Response": {
+      "main": [
+        []
+      ]
+    },
+    "Mistral Response": {
+      "main": [
+        [
+          {
+            "node": "Analysis AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen Response into sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analysis AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analysis AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analysis AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analysis AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Appending the  Analyst row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Writer AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Writer AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writer AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Updating the LinkedIn Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Writer AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating the LinkedIn Row": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appending the  Analyst row": {
+      "main": [
+        [
+          {
+            "node": "Writer AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be787d03-2059-44ff-89b7-097176659fe7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "YzGDhRn3hXlwE30K",
+  "tags": []
+}

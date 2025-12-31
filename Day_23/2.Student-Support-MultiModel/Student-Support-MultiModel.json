@@ -1,0 +1,695 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "numberInputs": 3,
+        "rules": {
+          "rule": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0258dedb-d9d9-464c-b6e6-54b87dfe3bc5",
+                    "leftValue": "Gemini",
+                    "rightValue": "={{ $json['Ai Model'] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "modelIndex": 2,
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "06ace170-ef7f-4e5c-bf2b-b173e6100f57",
+                    "leftValue": "Mistral",
+                    "rightValue": "={{ $json['Ai Model'] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "modelIndex": 3,
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "77b1048f-c78b-4b1a-90e0-0f5f6a890bf4",
+                    "leftValue": "OpenRouter",
+                    "rightValue": "={{ $json['Ai Model'] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.modelSelector",
+      "typeVersion": 1,
+      "position": [
+        -4592,
+        8256
+      ],
+      "id": "4f5d3c96-a989-48af-82d5-4bd7715edd75",
+      "name": "Model Selector"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -4528,
+        8432
+      ],
+      "id": "86728d8a-7c5a-48c5-a2a6-76c2dff2b6fe",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "ieiFSnFBGuQ0CBgY",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen3-coder:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -4352,
+        8432
+      ],
+      "id": "1e4b78ce-9acb-4ff1-a635-bc5a3831e6e8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MPNvC8XSi2L4kN5l",
+          "name": "qwen/qwen3-235b-a22b:free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "=New Customer ",
+        "emailType": "text",
+        "message": "=Category: {{ $json.output.category }}\nName: {{ $json.output.name }}\nEmail: {{ $json.output.email }}\nNote: {{ $json.output.subject }}\nTicketId: {{ $json.output.ticketId }}\nTimeStamp: {{ $json.output.timestamp }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -3632,
+        8240
+      ],
+      "id": "2817e1a8-be88-4b60-b3e4-574006a6a8c8",
+      "name": "Admission Mail1",
+      "webhookId": "f99eb41a-6210-4a7b-91bd-a6a3d1c502ed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Raised Complant Request is Solved",
+        "emailType": "text",
+        "message": "=Issue: {{ $json.description }}\nTicketid: {{ $json.ticketid }}\nComplaint: Resolved",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -3440,
+        8048
+      ],
+      "id": "ce63335a-0fb4-40f4-b3db-69c0189b4ba3",
+      "name": "Technical issue Solved Mail1",
+      "webhookId": "5271621b-0685-48ec-b2f7-b1b63fbfd27c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Switch2').item.json.output.email }}",
+        "subject": "={{ $json.output.subject }}",
+        "message": "={{ $json.output.body_html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -3392,
+        7680
+      ],
+      "id": "8f4841ee-c31b-4e80-918d-82fd53a7cbca",
+      "name": "Answer Email1",
+      "webhookId": "0cf3c8dc-d202-4187-9e49-5974b0a2ce67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "H8FsF1EFAlLLjH1d",
+          "name": "N8n office setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ckpi4oZNWVSappQaOkcNZl5AtimN7gLsY27xl1qSD5M",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ckpi4oZNWVSappQaOkcNZl5AtimN7gLsY27xl1qSD5M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "description": "={{ $json.output.description }}",
+            "email": "={{ $json.output.email }}",
+            "timestramp": "={{ $json.output.timestamp }}",
+            "ticketid": "={{ $json.output.ticketId }}",
+            "statues": "not yet cleared"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestramp",
+              "displayName": "timestramp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ticketid",
+              "displayName": "ticketid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "statues",
+              "displayName": "statues",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3648,
+        8048
+      ],
+      "id": "ffdd7231-52b7-4bf5-8d1c-4a9320630736",
+      "name": "Technical Support1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SoHpJYpDRosdTPQh",
+          "name": "sheets Office n8n setup"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3744,
+        7856
+      ],
+      "id": "20242a8b-834a-4dce-a9c2-4288ba5d3957",
+      "name": "Solution1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H1EYoYJiYdnPFswd",
+          "name": "global-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -4688,
+        8432
+      ],
+      "id": "b0d70149-c259-4c84-ae41-819c6da1f1e6",
+      "name": "Category Fetcher1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "H1EYoYJiYdnPFswd",
+          "name": "global-n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Bot Campus Contact Form",
+        "formDescription": "Please drop your issue / problems here ...👇🏻",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Please Enter your name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Gmail",
+              "fieldType": "email",
+              "placeholder": "Enter your Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "problem / Issue  ",
+              "fieldType": "textarea",
+              "placeholder": "Enter your Issue !",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Ai Model",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Gemini"
+                  },
+                  {
+                    "option": "Mistral"
+                  },
+                  {
+                    "option": "OpenRouter"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -4736,
+        8064
+      ],
+      "id": "deaf2947-dd5e-441e-9a60-6dfe7f5e64b7",
+      "name": "Contact Form1",
+      "webhookId": "9c8be75a-828e-4409-8737-be6b9d18bd14"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"subject\": \"string\",\n  \"body_text\": \"string\",\n  \"body_html\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -3568,
+        7872
+      ],
+      "id": "242bc7d5-34fd-4c9d-b569-aa366a47595d",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an Academic Support Email Assistant.\n\nScope:\n- ONLY handle academic questions (concepts, exercises, explanations, study tips).\n- If the input is not academic, politely say it’s out of scope and recommend contacting the appropriate team.\n\n\nInputs :\n\nInput format (JSON keys you will receive):\n- category (expected: \"Academic\")\n- subject : {{ $json.output.subject }}\n- priority :{{ $json.output.priority }}\n- description: {{ $json.output.description }}\n- name :{{ $json.output.name }}\n- email :{{ $json.output.email }}\n- timestamp :{{ $json.output.timestamp }}\n- ticketId:{{ $json.output.ticketId }}\n\nYour tasks:\n1) Understand the academic question from the JSON (prefer description/subject).\n2) Provide a concise, correct solution or explanation with clear steps.\n3) Offer 1–3 short practice suggestions or next steps.\n\nOutput:\n\nOutput strictly as a single JSON object with EXACTLY these fields:\n{\n  \"subject\": \"Give me exact sunject based on question\",\n  \"body_text\": \"string\",\n  \"body_html\": \"string\"\n}\n\nFormatting rules:\n- subject: \"Question [{{ $('Contact Form1').item.json['problem / Issue  '] }}]-Ticket {{ $json.output.ticketId }}\"\n- body_text: plain text, short paragraphs, no markdown.\n- body_html: simple HTML only (<p>, <ul>, <li>, <strong>).\n- Keep tone supportive and clear.\n- End both bodies with this sign-off block exactly:\n  —\n  Academic Support Team\n  Ticket: {{ $json.output.ticketId }}\n\nGuardrails:\n- If category != \"Academic\" or the question is not academic, do NOT solve it; reply that it’s out of scope and suggest contacting the correct team.\n- Do not include any other keys or commentary outside the required JSON fields.\n\n\n\n",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -3728,
+        7664
+      ],
+      "id": "d703cb65-b7ce-413a-8713-449c974578dd",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"category\": \"string\",\n  \"subject\": \"string\",\n  \"priority\": \"string\",\n  \"description\": \"string\",\n  \"name\": \"string\",\n  \"email\": \"string\",\n  \"timestamp\": \"string\",\n  \"ticketId\": \"string\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -4176,
+        8336
+      ],
+      "id": "ca693783-e01c-4fea-aa18-6c65a157836a",
+      "name": "Structured Output Parser4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent message classification assistant that formats messages for Slack.\n\nYour task is to analyze the user's message and create a structured output with:\n\n1. \"category\": Choose EXACTLY one of the following support teams:\n\n   - \"Academic\" → for study-related, subject doubts, or academic guidance\n   - \"Technical\" → for bugs, errors, software/platform issues, or technical questions\n   - \"Admission\" → for enrollment, registration, application, or admission-related queries\n\n2. \"priority\": Assign the urgency level\n   - Default: \"Normal\"\n   - If the message includes words such as \"urgent\", \"asap\", \"immediately\", or \"critical\", set to \"High\"\n\n3. Extract all relevant information from the incoming form submission\n----\n\nInputs :\n\n- Name = {{ $json.Name }}\n- Gmail = {{ $json.Gmail }}\n- Issue/Problem Raised = {{ $json['problem / Issue  '] }}\n- category = AI should decide the Category \n- Subject = Create a subject based on Issue/Problem Raised → {{ $json['problem / Issue  '] }}\n- description = Create a description based on Issue/Problem Raised → {{ $json['problem / Issue  '] }}\n- Ticket\n\n---\n\nReturn ONLY valid JSON in this exact structure (no explanations, no comments):\n\n{\n  \"channel\": \"string\",\n  \"priority\": \"string\",\n  \"category\": \"string\",\n  \"subject\": \"string\",\n  \"description\": \"string\",\n  \"name\": \"{{ $json.Name }}\",\n  \"email\": \"{{ $json.Gmail }}\",\n  \"timestamp\": \"{{ $json.submittedAt }}\",\n  \"ticketId\": \"Create Random ID with number + Alphabets\"\n}\n\n---\n\nClassification examples:\n- \"Need help with semester syllabus\" → { \"channel\": \"Academic\", \"priority\": \"Normal\", \"category\": \"Academic\" }\n- \"Urgent! My portal is not opening\" → { \"channel\": \"Technical\", \"priority\": \"High\", \"category\": \"Technical\" }\n- \"How can I apply for admission?\" → { \"channel\": \"Admission\", \"priority\": \"Normal\", \"category\": \"Admission\" }\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -4352,
+        8064
+      ],
+      "id": "cd9cccc0-3392-4ff0-8779-d87bc7cfed45",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "Academic",
+                    "rightValue": "={{ $json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "557731fb-102c-469e-8da7-5790c2857f8c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Academic"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a6ef381b-beb8-4441-9d50-b0e8ce2bf69d",
+                    "leftValue": "Technical",
+                    "rightValue": "={{ $json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Technical"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2b8c8c90-094a-42fa-8db3-4cb66ed56a6b",
+                    "leftValue": "Admission",
+                    "rightValue": "={{ $json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Admission"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -3984,
+        8112
+      ],
+      "id": "fe259e29-874c-45e0-a63a-15c0a5d642e0",
+      "name": "Switch2"
+    }
+  ],
+  "connections": {
+    "Model Selector": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Model Selector",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Model Selector",
+            "type": "ai_languageModel",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Technical Support1": {
+      "main": [
+        [
+          {
+            "node": "Technical issue Solved Mail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solution1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Category Fetcher1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Model Selector",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Form1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Answer Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser4": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Technical Support1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Admission Mail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3dea0691859c9aeb717420e8c6ea2b1a347ba82ac56d40cedc9406e5f2667166"
+  }
+}

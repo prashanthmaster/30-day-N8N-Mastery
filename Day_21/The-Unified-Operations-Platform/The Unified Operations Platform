@@ -1,0 +1,571 @@
+{
+  "name": "Multi-Support AI Agnet",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Bot Campus Contact Form",
+        "formDescription": "Please drop your issue / problems here ...👇🏻",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Please Enter your name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Gmail",
+              "fieldType": "email",
+              "placeholder": "Enter your Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "problem / Issue  ",
+              "fieldType": "textarea",
+              "placeholder": "Enter your Issue !",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        80
+      ],
+      "id": "de1d921f-c021-4510-bc8d-17a06774d5e9",
+      "name": "On form submission",
+      "webhookId": "f382717c-2c85-4303-a3ce-663cd6521710"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "Technical_support",
+                    "rightValue": "={{ $('AI Agent').item.json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3d6f65d5-9d95-4e79-bcc9-87223fe4523e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Technical_support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "66b5d6d0-48ec-4bce-b05f-0160a35800c2",
+                    "leftValue": "Sales_Support",
+                    "rightValue": "={{ $('AI Agent').item.json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sales_Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ef8de3c3-f54b-4d6d-a745-5c6ba5e2f382",
+                    "leftValue": "Billing_Support",
+                    "rightValue": "={{ $('AI Agent').item.json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Billing_Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9d0c9af5-2362-4d2b-805d-92b29e24e211",
+                    "leftValue": "General_Support",
+                    "rightValue": "={{ $('AI Agent').item.json.output.category }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General_Support"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1312,
+        16
+      ],
+      "id": "b9aa6cb5-e120-4173-9ead-7fee8b58bfc5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent message classification assistant that formats messages for Slack.\n\nYour task is to analyze the user's message and create a structured output with:\n\n1. \"category\": Choose EXACTLY one of the following support teams:\n\n   - \"Sales_Support\" → for partnership, marketing, or sales-related messages\n   - \"Technical_support\" → for bugs, product issues, errors, or technical support\n   - \"Billing_Support\" → for invoice, refund, subscription, or payment-related questions\n   - \"General_Support\" → for general information, miscellaneous, or unclear cases\n\n2. \"priority\": Assign the urgency level\n   - Default: \"Normal\"\n   - If the message includes words such as \"urgent\", \"asap\", \"immediately\",\"Payment\", \"emergency\" or \"critical\", set to \"High\"\n\n3. Extract all relevant information from the incoming form submission\n----\n\nInputs :\n\n- Name = {{ $json.Name }}\n-  Gmail = {{ $json.Gmail }}\n- Issue/Problem Raised = {{ $json['problem / Issue  '] }}\n-  category = AI should make decide the Category \n- Subject = craete a subject based on Issue/Problem Raised  {{ $json['problem / Issue  '] }}\n- description = Create a description based on Issue/Problem Raised = {{ $json['problem / Issue  '] }}\n- Ticket\n\nslack output :- \n\n Slack Message Format Template\n *New Incoming Request*\n*Priority:* string\n*Category:* string\n*Title:* string \n*Description:* string\n *From:* name  (Email)\n *Received:* Timestamp\n *Assigned To:* Channel\n\n\n---\n\nReturn ONLY valid JSON in this exact structure (no explanations, no comments):\n\n{\n  \"channel\": \"string\",\n  \"priority\": \"string\",\n  \"category\": \"string\",\n  \"subject\": \"string\",\n  \"description\": \"string\",\n  \"name\": \"{{ $json.Name }}\",\n  \"email\": \"{{ $json.Gmail }}\",\n  \"timestamp\": \"{{ $json.submittedAt }}\",\n  \"ticketId\": \"Craete Random ID  with number + Alphabets\"\n}\n\n---\n\nClassification examples:\n- \"I want to partner with your company\" → { \"channel\": \"Sales_Support\", \"priority\": \"Normal\", \"category\": \"Partnership\" }\n- \"Urgent! Website is not loading!\" → { \"channel\": \"Technical_support\", \"priority\": \"High\", \"category\": \"Bug Report\" }\n- \"I was charged twice this month!\" → { \"channel\": \"Billing_Support\", \"priority\": \"High\", \"category\": \"Billing Issue\" }",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        -48
+      ],
+      "id": "7947acbb-4548-424d-878c-11331305ac23",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        496
+      ],
+      "id": "6ae2eb6f-4b4a-427a-a066-a900afe2dc82",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "41I2rVpURWg24NMv",
+          "name": "Gemini Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"category\": \"string\",\n  \"subject\": \"string\",\n  \"priority\": \"string\",\n  \"description\": \"string\",\n  \"name\": \"string\",\n  \"email\": \"string\",\n  \"timestamp\": \"string\",\n  \"ticketId\": \"string\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        144
+      ],
+      "id": "0a757c38-1873-4e36-8377-5b4588ec4f1d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional Slack message formatter. Convert incoming support ticket JSON into a single, well-structured Slack message. Follow the rules exactly and output ONLY the final Slack message text—no explanations, no code fences, no extra characters.\n\nData Source\n- Use fields from {$json.output}. If any field is missing/empty, substitute \"Not provided\".\n\nRequired Output Template (exact structure & spacing)\n\n📩 *New Incoming Request*\n\n*Priority:* {{ $json.output.priority }}\n*Category:* {{ $json.output.category }}\n*Description:* {{ $json.output.description }}\n👤 *From:* {{ $json.output.name }} & ({{ $json.output.email }})\n📅 *Received:* {{ $json.output.timestamp }}\n\n🎫 *Ticket ID:* {{ $json.output.ticketId }}\n\nFormatting Rules\n1) Priority mapping (case-insensitive):{{ $json.output.priority }}\n   - \"high\"   → \"🔴 High\"\n   - \"medium\" → \"🟡 Medium\"\n   - \"low\"    → \"🟢 Low\"\n\n2) Category : {{ $json.output.category }}.\n\n3) Title:\n   - Use {{ $json.output.subject }} as-is; fallback \"Not provided\".\n\n4) Description:\n   - Use {{ $json.output.description }} verbatim.\n   - If length > 500 chars, keep first 500 and append \"…\".\n   - If missing → \"Not provided\".\n\n5) From:\n   - Name: {{ $json.output.name }}\n   - Email: {{ $json.output.email }}\n\n\n6) Timestamp:\n   - Parse ISO string from {{ $json.output.timestamp }}.\n   - Format: \"Month DD, YYYY at hh:mm AM/PM Z\".\n   - If offset is +05:30, use \"IST\" as Z; otherwise use numeric offset from the ISO (e.g., +02:00).\n   - If parsing fails → \"Not provided\".\n\n7) Ticket ID:\n   - Use {{ $json.output.ticketId }}; fallback \"Not provided\".\n\n8) Output Contract:\n   - Produce ONLY the filled template block above.\n   - Preserve line breaks, emojis, Slack markdown asterisks, and spacing exactly.\n   - Do NOT wrap your final output in quotes or code fences.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        432,
+        -32
+      ],
+      "id": "f3bbf10d-6bb0-4199-8964-4bf440f11741",
+      "name": "Slack Message Agent "
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09K1N9QS7Q",
+          "mode": "list",
+          "cachedResultName": "technical_support"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1808,
+        -320
+      ],
+      "id": "8b550edb-6be5-4e04-ac49-cb2074078f97",
+      "name": "Techinical Support",
+      "webhookId": "2811584c-1745-4ee7-acbb-4bc03e77d697",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "KvC1xcaNHKsgCCmm",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2127930059,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JfUJ3E0hevU3laYzaGUxULYT-SbBmxOEJVK-tD71qVI/edit#gid=2127930059"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Ticket ID": "={{ $('AI Agent').item.json.output.ticketId }}",
+            "DATA": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "Ticket ID"
+          ],
+          "schema": [
+            {
+              "id": "Ticket ID",
+              "displayName": "Ticket ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA",
+              "displayName": "DATA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        416
+      ],
+      "id": "6e1c9b32-3daa-42bf-88fd-1414f926fc6b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tqjFpBwTffq6qvQw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09KGTXR2NM",
+          "mode": "list",
+          "cachedResultName": "sales_support"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1824,
+        -32
+      ],
+      "id": "9881836b-f3e1-4286-bd3f-c421709c8f05",
+      "name": "Sales_Support",
+      "webhookId": "585f75c0-a3c8-449c-8c8e-f868db569fc6",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "KvC1xcaNHKsgCCmm",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09KJ0PGF97",
+          "mode": "list",
+          "cachedResultName": "general_support"
+        },
+        "text": "={{ $('Slack Message Agent ').item.json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1808,
+        512
+      ],
+      "id": "68929602-4c05-48c5-8d41-8e3a04bb5faa",
+      "name": "General_Support",
+      "webhookId": "fea7f8c3-c487-4391-9b41-072c063369cf",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "KvC1xcaNHKsgCCmm",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Data Base\n",
+        "height": 224,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        656,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "e6b14783-dfcf-47e0-a921-62cf89b7c4ec",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Slack Support Channels\n",
+        "height": 1120,
+        "width": 1024,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        -368
+      ],
+      "typeVersion": 1,
+      "id": "bc14d25f-f7d6-4e67-90f0-8ad76433b64f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## AI Agents \n",
+        "height": 1072,
+        "width": 1376,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "9359593e-b81b-44ee-a58c-26b54b72b539",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09JNHFSL9M",
+          "mode": "list",
+          "cachedResultName": "billing_support"
+        },
+        "text": "={{ $('Slack Message Agent ').item.json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1824,
+        208
+      ],
+      "id": "30398e75-30cf-49c9-bd8d-f9fdd36e128c",
+      "name": "Billing_Support",
+      "webhookId": "3b58e112-8462-4a27-9229-0e8057ac75ea",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "KvC1xcaNHKsgCCmm",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Slack Message Agent ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Slack Message Agent ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Techinical Support",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sales_Support",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Billing_Support",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "General_Support",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Message Agent ": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9071c675-c42e-4147-aee3-49c177608e8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce10c10157d15b5f2fbc692795dabfeb448c588cac607b6a1251102b4354dcae"
+  },
+  "id": "z7SDiCgu5QK8PueY",
+  "tags": []
+}

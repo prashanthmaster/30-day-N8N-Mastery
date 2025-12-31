@@ -1,0 +1,283 @@
+{
+  "name": "First-Ml-Model-Predictor",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b0a5cccf-bd31-4287-96e4-136e620215e5",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "db9b9133-16ef-4c53-ac33-ba7002da5560",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "10010630-850c-4bb9-b0cc-d43c17029abd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "e40c914e-a36f-450b-b8a5-95f1384f4beb",
+      "name": "local webhook",
+      "webhookId": "10010630-850c-4bb9-b0cc-d43c17029abd"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\njson: {\ntemperature: $input.first().json.body.temperature,\nvibration:$input.first().json.body.vibration,\npressure: $input.first().json.body.pressure\n}\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "b1593cdb-7e08-4e98-95d7-e2c3608dccc6",
+      "name": "return input json"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5000/predict",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "f26b7f74-b2bf-440c-bdb0-bf451a514acb",
+      "name": "ml model predictor",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "Error in Model",
+        "emailType": "text",
+        "message": "=Status: {{ $json.error.status }}\nCode: {{ $json.error.code }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        96
+      ],
+      "id": "e28de9a9-da7a-4ba5-af6f-32f4a00ef564",
+      "name": "Error Message",
+      "webhookId": "59296772-d9f9-4616-9c99-a71f7dc96b69",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UHZa8dl21qZshVrS",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "79ad6d55-5990-4934-8f35-7c8cbcd88590",
+              "name": "Success",
+              "value": "={{ $json.statusCode }}",
+              "type": "string"
+            },
+            {
+              "id": "4b47f4d6-2a42-4ddf-a27f-d9ed9ab4b2ec",
+              "name": "failure_probability",
+              "value": "={{ $json.body.failure_probability }}",
+              "type": "string"
+            },
+            {
+              "id": "1e3440d8-189c-410f-919b-02206d8f8079",
+              "name": "prediction",
+              "value": "={{ $json.body.prediction }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "cb3e4d6b-98d6-4d20-ae0c-096d9ce0825a",
+      "name": "values"
+    },
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "Prediction",
+        "emailType": "text",
+        "message": "=input:\ntemperature:{{ $('return input json').item.json.temperature }}\nvibration:{{ $('return input json').item.json.vibration }}\npressure:{{ $('return input json').item.json.pressure }}\n\noutput:\nfailure_probability: {{ $json.failure_probability }}\nprediction:{{ $json.prediction }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        -96
+      ],
+      "id": "232af6fa-dbb6-4164-8e66-cb06ffd63814",
+      "name": "Prediction output",
+      "webhookId": "e5e223ca-a601-4f86-a02c-84980fac4c94",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UHZa8dl21qZshVrS",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "local webhook": [
+      {
+        "json": {
+          "headers": {
+            "message": "hellow",
+            "content-type": "application/json",
+            "user-agent": "PostmanRuntime/7.48.0",
+            "accept": "*/*",
+            "cache-control": "no-cache",
+            "postman-token": "c221382a-b777-44c0-b308-3bd93b7ac769",
+            "host": "localhost:5678",
+            "accept-encoding": "gzip, deflate, br",
+            "connection": "keep-alive",
+            "content-length": "63"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "temperature": 50,
+            "vibration": 2,
+            "pressure": 12
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/10010630-850c-4bb9-b0cc-d43c17029abd",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "values",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "local webhook": {
+      "main": [
+        [
+          {
+            "node": "return input json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "return input json": {
+      "main": [
+        [
+          {
+            "node": "ml model predictor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ml model predictor": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "values": {
+      "main": [
+        [
+          {
+            "node": "Prediction output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85d2ce78-6516-4918-8bf6-ccd1624ec8da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0668e88de7a16f28d063324a020917a9ba638413818ac1cc358f702865c45d84"
+  },
+  "id": "VEtOuZcmxJAfEp6U",
+  "tags": []
+}

@@ -1,0 +1,1107 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7af1dc41-a440-493b-9c06-cef9a6f85db5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        128
+      ],
+      "id": "aadca6c3-b398-4870-8f10-37fd69111a52",
+      "name": "Webhook",
+      "webhookId": "7af1dc41-a440-493b-9c06-cef9a6f85db5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb459c80-7b5e-440f-8f88-271740a0a932",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -224
+      ],
+      "id": "5ca10328-28d2-49f2-8f85-f80f4866726b",
+      "name": "order details"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ],
+      "id": "2781608d-7994-4305-b4be-86d445ca610f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6ij9OcJamOS507z1",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb459c80-7b5e-440f-8f88-271740a0a932",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        128
+      ],
+      "id": "9717fda6-fa80-4171-8821-dd6b0ef3a46e",
+      "name": "Product Details"
+    },
+    {
+      "parameters": {
+        "collection": "product_items",
+        "options": {},
+        "query": "={\n  \"name\": \"{{$json.body.order_items[0].product_name}}\"\n}"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        128
+      ],
+      "id": "4eb12cbc-8529-4586-a655-bc7f78795b43",
+      "name": "Fetching Product",
+      "credentials": {
+        "mongoDb": {
+          "id": "DUSo8O2eYYyFBls9",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "229492f2-1529-4a0e-a87b-e7f9388ed8f7",
+              "name": "=quantity",
+              "value": "={{ Number($json.quantity)-($('Product Details').item.json.body.order_items[0].quantity) }}",
+              "type": "number"
+            },
+            {
+              "id": "1e6f6ee9-02e0-4090-904e-8e24973df064",
+              "name": "_id",
+              "value": "={{ $json._id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        128
+      ],
+      "id": "bfc6cf95-1ff8-42f7-8877-ecd0b3b88266",
+      "name": "updateing quantity"
+    },
+    {
+      "parameters": {
+        "collection": "product_items",
+        "options": {},
+        "query": "={\n  \"name\": \"{{ $('Fetching Product').item.json.name }}\"\n}"
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        128
+      ],
+      "id": "b6d70fc5-a547-4f64-ae8a-c47cdddc8864",
+      "name": "Find documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "DUSo8O2eYYyFBls9",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "collection": "product_items",
+        "updateKey": "_id",
+        "fields": "=quantity,{{ $json.quantity }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        128
+      ],
+      "id": "c287d6d2-dc58-415c-866b-33c4363792d0",
+      "name": "Update documents",
+      "credentials": {
+        "mongoDb": {
+          "id": "DUSo8O2eYYyFBls9",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        304
+      ],
+      "id": "30dae6f7-1b04-4860-bf6d-dfccc7fa6ef2",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6ij9OcJamOS507z1",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        672
+      ],
+      "id": "273da4ee-6fd2-4f8c-bcba-7b8a4459613c",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6ij9OcJamOS507z1",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('order details1').item.json.body.customer_details.email }}",
+        "subject": "Order Delivered",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        432
+      ],
+      "id": "8584e422-742e-46b1-9752-55aa52c8b128",
+      "name": "delivered message",
+      "webhookId": "2021e33b-9512-4487-a2b5-a3547fc9f367",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VFWr85yEsexYlf9I",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appg1nCzpDVkY5pIe",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl7PDQNaa1DHmwte",
+          "mode": "list",
+          "cachedResultName": "orders crm",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe/tbl7PDQNaa1DHmwte"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Quantity": "={{ $('order details').item.json.body.order_items[0].quantity }}",
+            "Order Id": "={{ $('order details').item.json.body.order_id }}",
+            "Product Name": "={{ $('order details').item.json.body.order_items[0].product_name }}",
+            "Order date": "={{ $('order details').item.json.body.order_date }}",
+            "Payment": "={{ $('order details').item.json.body.payment_status }}",
+            "Statues": "Order Placed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order Id",
+              "displayName": "Order Id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Statues",
+              "displayName": "Statues",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Payment",
+              "displayName": "Payment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        -224
+      ],
+      "id": "1ba49e73-7397-494a-b9b8-aa5bc286a9bb",
+      "name": "order detailes in crm",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "DKQfFStyUqXF5c05",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appg1nCzpDVkY5pIe",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl7PDQNaa1DHmwte",
+          "mode": "list",
+          "cachedResultName": "orders crm",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe/tbl7PDQNaa1DHmwte"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Quantity": "={{ $('Product Details').item.json.body.order_items[0].quantity }}",
+            "Order Id": "={{ $('Product Details').item.json.body.order_id }}",
+            "Product Name": "={{ $('Product Details').item.json.body.order_items[0].product_name }}",
+            "Order date": "={{ $('Product Details').item.json.body.order_date }}",
+            "Payment": "={{ $('Product Details').item.json.body.payment_status }}",
+            "Statues": "in Shipping "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order Id",
+              "displayName": "Order Id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Statues",
+              "displayName": "Statues",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Payment",
+              "displayName": "Payment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        128
+      ],
+      "id": "0a38a4cc-f913-47c8-b43f-e698bb69e06c",
+      "name": "Shipping Details in Crm",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "DKQfFStyUqXF5c05",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appg1nCzpDVkY5pIe",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl7PDQNaa1DHmwte",
+          "mode": "list",
+          "cachedResultName": "orders crm",
+          "cachedResultUrl": "https://airtable.com/appg1nCzpDVkY5pIe/tbl7PDQNaa1DHmwte"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Quantity": "={{ $('order details1').item.json.body.order_items[0].quantity }}",
+            "Order Id": "={{ $('order details1').item.json.body.order_id }}",
+            "Product Name": "={{ $('order details1').item.json.body.order_items[0].product_name }}",
+            "Order date": "={{ $('order details1').item.json.body.order_date }}",
+            "Payment": "=COD Paid",
+            "Statues": "Delivered"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order Id",
+              "displayName": "Order Id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Order date",
+              "displayName": "Order date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Statues",
+              "displayName": "Statues",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Payment",
+              "displayName": "Payment",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        320,
+        624
+      ],
+      "id": "1b0cf82a-7d42-4a73-82ae-03dd0f8cd880",
+      "name": "Delivery Details in Crm",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "DKQfFStyUqXF5c05",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09K894BYNR",
+          "mode": "list",
+          "cachedResultName": "all-bot-campus"
+        },
+        "text": "=Order Has Been Delivered to Customer\nOrder Id: {{ $json.fields['Order Id'] }}\nProduct Name: {{ $json.fields['Product Name'] }} \nQuantity: {{ $json.fields.Quantity }} \nOrder Data: {{ $json.fields['Order date'] }} \nPayment: COD Paid",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        624
+      ],
+      "id": "45fba3c9-4ffa-411e-bcb8-bb3cce30beb0",
+      "name": "Delivered Message to team",
+      "webhookId": "32c916f9-1d90-43d7-b444-1d09c914d436",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "x4cD0jqjUNO3TUpM",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09K894BYNR",
+          "mode": "list",
+          "cachedResultName": "all-bot-campus"
+        },
+        "text": "=Order Has Been Shipped From Ware House \nOrder Id: {{ $json.fields['Order Id'] }}\nProduct Name: {{ $json.fields['Product Name'] }} \nQuantity: {{ $json.fields.Quantity }} \nOrder Data: {{ $json.fields['Order date'] }} \nPayment: {{ $json.fields.Payment }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        128
+      ],
+      "id": "3187119a-f020-4a87-94f6-802854cfb9e4",
+      "name": "Shipped Message To Team",
+      "webhookId": "32c916f9-1d90-43d7-b444-1d09c914d436",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "x4cD0jqjUNO3TUpM",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09K894BYNR",
+          "mode": "list",
+          "cachedResultName": "all-bot-campus"
+        },
+        "text": "=New Order Has Been Placed\nOrder Id: {{ $json.fields['Order Id'] }} \nProduct Name: {{ $json.fields['Product Name'] }}\nQuantity: {{ $json.fields.Quantity }}\nOrder Data: {{ $json.fields['Order date'] }}\nPayment: {{ $json.fields.Payment }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        -224
+      ],
+      "id": "0ae72a3a-2183-46cf-8fb6-a49f4123e234",
+      "name": "Order Details Message to Team",
+      "webhookId": "3e99ba28-2406-44d6-9bba-f82234c18670",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "x4cD0jqjUNO3TUpM",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('order details').item.json.body.customer_details.email }}",
+        "subject": "Order Report",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        -384
+      ],
+      "id": "36211aa5-1b65-4724-93ca-7be95218efbd",
+      "name": "Ordered Message for Customer",
+      "webhookId": "d82404d1-dd62-4c9a-a788-cab9b92317c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VFWr85yEsexYlf9I",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Product Details').item.json.body.customer_details.email }}",
+        "subject": "Order Report",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        -64
+      ],
+      "id": "c0cc7a55-c774-4f6d-827b-eedd8d422635",
+      "name": "Shipping Started Message for customer",
+      "webhookId": "d82404d1-dd62-4c9a-a788-cab9b92317c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VFWr85yEsexYlf9I",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      _id: $json[\"_id\"].replace(/^\"|\"$/g, \"\")\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        128
+      ],
+      "id": "e9916c1a-b2e4-42de-9fba-1910d3e867fc",
+      "name": "Remove Quotes from Id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "90b5d2f8-fe56-4096-9aa3-5ebc41291081",
+              "name": "_id",
+              "value": "={{ $json._id }}",
+              "type": "string"
+            },
+            {
+              "id": "44f8fd27-d61b-4ed1-9d83-906b1631af05",
+              "name": "quantity",
+              "value": "={{ $('updateing quantity').item.json.quantity }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        128
+      ],
+      "id": "cef7c7cd-e605-4cbe-95de-c3cebd1ee14b",
+      "name": "Update details"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96ea33ab-61c0-4d8c-9acc-226e592f5eb3",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        512
+      ],
+      "id": "41df2227-0242-4380-86bd-f1b9d5f9205e",
+      "name": "order details1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Use the normalized payload to generate the email BODY HTML now.\n\nBrand:\n- brand_name: {{ $json.brand_name || \"Your Store\" }}\n- logo_url: {{ $json.logo_url || \"\" }}\n- brand_color: {{ $json.brand_color || \"#0E7C86\" }}\n\nOrder:\n- order_id: {{ $json.body.order_id }}\n- order_date: {{ $json.order_date || $now }}\n- order_status: {{ $json.Order_status || $json.order_status || \"confirmed\" }}\n\nCustomer:\n- name: {{ $json.body.customer_details.name }}\n- email: {{ $json.body.customer_details.email }}\n- phone: {{ $json.body.customer_details.phone }}\n\nShipping Address (may be a JSON string in $json.Address):\n- address_raw: {{ $json.body.customer_details.address }}\n- street: {{ $json.body.customer_details.address.street }}\n- city: {{ $json.body.customer_details.address.city }}\n- state: {{ $json.body.customer_details.address.state }}\n- zip: {{ $json.body.customer_details.address.zip }}\n- country: {{ $json.body.customer_details.address.country }}\n\nItem (single example; loop upstream if multiple):\n- product_name: {{ $json.body.order_items[0].product_name }}\n- category: {{ $json.body.order_items[0].category }}\n- quantity: {{ $json.body.order_items[0].quantity }}\n- item_amount: {{ $json.body.order_items[0].unit_price }}\n- currency: {{ $json.currency || \"INR\" }}\n\nLinks & Support:\n- view_order_url: {{ $json.view_order_url || \"\" }}\n- help_center_url: {{ $json.help_center_url || \"\" }}\n- support_email: {{ $json.support_email || \"support@example.com\" }}\n- support_phone: {{ $json.support_phone || \"\" }}\n- brand_address_block: {{ $json.brand_address_block || \"\" }}\n\nReturn ONLY the <body>…</body> HTML per the System rules.",
+        "options": {
+          "systemMessage": "=You are a senior E-commerce Communications AI that crafts production-ready EMAIL HTML bodies.\n\nPRIMARY GOAL\n• Generate a polished, brand-safe, responsive HTML email BODY (return ONLY <body>…</body>, no <html>, no <head>, no Markdown, no code fences).\n\nINPUTS YOU MAY RECEIVE\n• order_id, order_date, order_status\n• customer: name, email, phone\n• address: street, apartment, city, state, zip, country (may arrive as a JSON string—parse it safely)\n• items: product_name, category, quantity, unit_price (or item_amount/total); currency (default \"INR\")\n• links: view_order_url, help_center_url, support_email, support_phone\n• brand: brand_name, logo_url, brand_color (hex), address_block\n\nRULES\n1) Return ONLY <body>…</body> with inline CSS and a 600px table layout.\n2) Use email-safe markup (role=\"presentation\", proper alt text, accessible contrast).\n3) Omit missing fields; never show \"N/A\".\n4) Format numbers with separators; prefix currency symbol when known (₹).\n5) Tone: concise and courteous; never echo raw JSON or placeholders.\n6) Add: <!-- PREHEADER: Your order  is confirmed. -->\n7) Include a \"View your order\" CTA only if a URL is provided.\n8) Add a footer with brand address & support if provided.\n\nFINAL CONTRACT\n• Output must be ONLY the <body>…</body> HTML. No explanations, no wrappers."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -224
+      ],
+      "id": "1fdacfd9-1e28-4e7a-a866-247809c18c04",
+      "name": "Confirm Order Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Use the normalized payload to generate the “Out for delivery / Shipment started” email BODY HTML now.\n\nBrand:\n- brand_name: {{ $json.brand_name || \"Your Store\" }}\n- logo_url: {{ $json.logo_url || \"\" }}\n- brand_color: {{ $json.brand_color || \"#0E7C86\" }}\n\nOrder:\n- order_id:{{ $('Product Details').item.json.body.order_id }}\n- order_date: {{ $json.order_date || $now }}\n- order_status: {{ $json.Order_status || $json.order_status || \"confirmed\" }}\n- payment_status:{{ $('Product Details').item.json.body.payment_status }} \nCustomer:\n- name: {{ $('Product Details').item.json.body.customer_details.name }}\n- email:{{ $('Product Details').item.json.body.customer_details.email }}\n- phone: {{ $('Product Details').item.json.body.customer_details.phone }}\n\nShipping Address (may be a JSON string in $json.Address):\n- address_raw: {{ $('Product Details').item.json.body.customer_details.address }}\n- street: {{ $('Product Details').item.json.body.customer_details.address.street }}\n- city:{{ $('Product Details').item.json.body.customer_details.address.city }}\n- state: {{ $('Product Details').item.json.body.customer_details.address.state }}\n- zip: {{ $('Product Details').item.json.body.customer_details.address.zip }}\n- country: {{ $('Product Details').item.json.body.customer_details.address.country }}\n\nItems (single example; loop upstream if multiple):\n- product_name: {{ $('Product Details').item.json.body.order_items[0].product_name }}\n- category:{{ $('Product Details').item.json.body.order_items[0].category }}\n- quantity: {{ $('Product Details').item.json.body.order_items[0].quantity }}\n- item_amount: {{ $('Product Details').item.json.body.order_items[0].unit_price }}\n- currency: {{ $json.currency || \"INR\" }}\n\nShipping Details:\n- shipping_status: {{ $json.shipping_status || ($json.shipping && $json.shipping.status) || \"out_for_delivery\" }}\n- carrier_name: {{ $json.carrier_name || ($json.shipping && $json.shipping.carrier_name) || \"\" }}\n- tracking_number: {{ $json.tracking_number || ($json.shipping && $json.shipping.tracking_number) || \"\" }}\n- tracking_url: {{ $json.tracking_url || ($json.shipping && $json.shipping.tracking_url) || \"\" }}\n- shipped_at: {{ $json.shipped_at || ($json.shipping && $json.shipping.shipped_at) || \"\" }}\n- expected_delivery_date: {{ $json.expected_delivery_date || ($json.shipping && $json.shipping.expected_delivery_date) || \"\" }}\n- delivery_otp: {{ $json.delivery_otp || \"\" }}\n- delivery_instructions: {{ $json.delivery_instructions || \"\" }}\n\nLinks & Support:\n- view_order_url: {{ $json.view_order_url || \"\" }}\n- help_center_url: {{ $json.help_center_url || \"\" }}\n- support_email: {{ $json.support_email || \"support@example.com\" }}\n- support_phone: {{ $json.support_phone || \"\" }}\n- brand_address_block: {{ $json.brand_address_block || \"\" }}\n\nReturn ONLY the <body>…</body> HTML per the System rules (use the shipping_status as the controlling state for the copy and banners).\n",
+        "options": {
+          "systemMessage": "=You are a senior E-commerce Communications AI that crafts production-ready EMAIL HTML bodies for “Out for delivery / Shipment started” updates.\n\nPRIMARY GOAL\n• Generate a polished, brand-safe, responsive HTML email BODY announcing that the shipment is on the way (return ONLY <body>…</body>, no <html>, no <head>, no Markdown, no code fences).\n\nINPUTS YOU MAY RECEIVE\n• order_id, order_date, order_status\n• customer: name, email, phone\n• address: street, apartment, city, state, zip, country (may arrive as a JSON string — parse safely)\n• items: product_name, category, quantity, unit_price (or item_amount/total); currency (default \"INR\")\n• shipment: shipping_status (e.g., out_for_delivery, in_transit), carrier_name, tracking_number, tracking_url, shipped_at, expected_delivery_date, delivery_otp\n• links: view_order_url, help_center_url, support_email, support_phone\n• brand: brand_name, logo_url, brand_color (hex), address_block\n\nINTERPRETATION RULES\n• Treat shipping_status ∈ {out_for_delivery, shipment_started, in_transit} as the controlling state even if order_status says “confirmed” or “processing.”\n• Omit any field not provided; never render “N/A” or empty placeholders.\n• Currency: default to INR and prefix with ₹; use thousands separators for numbers.\n• Dates: show a readable local date (e.g., “8 Oct 2025”) when possible; if a time is included, show it in a compact format.\n• Address: render in multiline form; gracefully handle partial addresses.\n\nLAYOUT & ACCESSIBILITY\n1) Return ONLY <body>…</body> using a 600px centered table layout with inline CSS.\n2) Use email-safe markup (role=\"presentation\", alt text for images, sufficient contrast).\n3) Mobile-friendly: readable font sizes (14–16px), tappable CTA, max-width images at 100%.\n4) Color: use brand_color if provided; otherwise use a safe, accessible accent (#0E7C86).\n\nCONTENT REQUIREMENTS\n• Preheader: <!-- PREHEADER: Your order is out for delivery. -->\n• Header: brand logo + brand_name (if available).\n• Status banner: “Out for delivery” / “Your package is on the way.”\n• Key facts block:\n  – Order ID\n  – Tracking section if available: carrier_name, tracking_number (copy-friendly), and a “Track package” CTA ONLY if tracking_url is provided.\n  – Expected delivery date if provided.\n• Delivery address block (if present).\n• Item summary:\n  – Show each item’s product_name, quantity × unit_price and line totals (if present).\n  – Show subtotal/tax/shipping/total if order_summary is provided.\n• Payment status line (e.g., “Payment pending” or “Paid”) if payment_status exists.\n• Secondary CTA:\n  – “View your order” ONLY if view_order_url is provided.\n• Help & support panel:\n  – Show help_center_url/support_email/support_phone if provided.\n• Footer:\n  – brand address_block if provided.\n  – Company/legal line kept concise.\n\nSAFETY & POLISH\n• Never echo raw JSON, variables, or placeholders.\n• Don’t invent tracking links, dates, or amounts.\n• Keep tone concise, courteous, and reassuring.\n• Use semantic copy like “We’ll notify you if there are any updates.”\n\nFINAL CONTRACT\n• Output MUST be ONLY the <body>…</body> HTML with inline CSS. No <html>, no <head>, no <style> tags, no explanations, no wrappers.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        128
+      ],
+      "id": "1d442632-ed41-442b-8ba8-8803f6634edb",
+      "name": "Confirm Shipping Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM PROMPT — ORDER DELIVERED SUCCESSFULLY (n8n AI Agent)\n\nROLE\nYou are a senior E-commerce Communications AI that crafts production-ready EMAIL HTML bodies for “Order delivered successfully” updates.\n\nPRIMARY GOAL\n• Generate a polished, brand-safe, responsive HTML email BODY confirming the order was delivered.\n• Output MUST be ONLY the <body>…</body> HTML. Do NOT include <html>, <head>, <style>, Markdown, or commentary.\n\nINPUTS YOU MAY RECEIVE\n• order_id, order_date, order_status\n• payment_status\n• customer: name, email, phone\n• address: street, apartment, city, state, zip, country (may arrive as a JSON string — parse safely)\n• items: product_name, category, quantity, unit_price (or item_amount/total); currency (default \"INR\")\n• order_summary: subtotal, tax, shipping, discount, total, currency (default \"INR\")\n• shipment: shipping_status (e.g., delivered, delivery_confirmed), carrier_name, tracking_number, tracking_url, shipped_at, delivered_at\n• links: view_order_url, help_center_url, support_email, support_phone\n• brand: brand_name, logo_url, brand_color (hex), address_block\n\nINTERPRETATION RULES\n• Treat shipping_status ∈ {delivered, delivery_confirmed} as the controlling state even if order_status says something else.\n• Omit any field not provided; never render “N/A” or placeholders.\n• Currency: default to INR and prefix with ₹; apply thousands separators.\n• Dates: render as “8 Oct 2025”; if time exists, use compact form “8 Oct 2025, 3:45 PM”.\n• Address: display as multiline; if address is a JSON string, try JSON.parse; on failure, show a cleaned single block (no braces/quotes).\n\nLAYOUT & ACCESSIBILITY\n1) 600px centered, single main table (role=\"presentation\"), inline CSS only, light gray page background (#f6f7f9).\n2) Accessible, email-safe markup; alt text for images; sufficient color contrast.\n3) Mobile-friendly: base font 14–16px, line-height ≥ 1.4, CTA buttons with ample padding, images max-width:100%.\n4) Accent color = brand_color if provided; else #0E7C86.\n\nCONTENT REQUIREMENTS\n• Preheader comment at the very top:\n  <!-- PREHEADER: Your order was delivered. -->\n• Header: brand logo (if logo_url) + brand_name (if provided).\n• Status banner: prominent “Delivered” with a short subline like “Your package was delivered.”\n• Key facts block:\n  – Order ID : {{ $json.body.order_id }}\n  -product name: {{ $json.body.order_items[0].product_name }}\n  -quantity: {{ $json.body.order_items[0].quantity }}\n  – Delivered at (delivered_at) if present\n  – Tracking (optional): carrier_name and tracking_number (copy-friendly). Include a “View tracking” CTA ONLY if tracking_url exists.\n• Delivery address block :Street: {{ $json.body.customer_details.address.street }}\nCity: {{ $json.body.customer_details.address.city }}\nState: {{ $json.body.customer_details.address.state }}\nzip: {{ $json.body.customer_details.address.zip }}\ncountry:{{ $json.body.customer_details.address.country }}\n(if address present), clean multiline layout.\n• Item summary (if items present):\n  – Each item: product_name and “quantity × unit_price”; compute line total if both available.\n  – If order_summary present, show subtotal, tax, shipping, discount (if any), and grand total.\n• Payment status line (if payment_status): “Payment received” / “Payment pending” / “Payment status: Success”.\n• Secondary CTA: “View your order” ONLY if view_order_url is provided.\n• Help & support panel: render any of help_center_url, support_email, support_phone provided.\n• Footer:\n  – brand address_block if provided.\n  – Concise legal/company line.\n• Close with a reassuring note (e.g., “Thanks for shopping with us.”).\n\nSAFETY & POLISH\n• Never echo raw JSON, variable names, or templating placeholders.\n• Do not invent tracking links, dates, or amounts; only use what’s provided.\n• Keep tone concise, courteous, and reassuring.\n\nFINAL CONTRACT\n• Return ONLY <body>…</body> with inline CSS. No other text, wrappers, external assets, <style> or <script>.\n\nEXPLICIT GUARDS\n• If brand_color missing → use #0E7C86.\n• If currency missing → assume INR and use the ₹ prefix.\n• If tracking_url missing → do NOT render a tracking button.\n• If view_order_url missing → do NOT render a “View your order” button.\n• If items missing → omit the items section entirely.\n• If address parsing fails → render a single cleaned line from the raw address text.\n",
+        "options": {
+          "systemMessage": "=SYSTEM PROMPT — ORDER DELIVERED EMAIL (n8n AI Agent)\n\nYou are a senior E-commerce Communications AI that crafts production-ready EMAIL HTML bodies for “Order delivered successfully” updates.\n\nPRIMARY GOAL\n• Generate a polished, brand-safe, responsive HTML email BODY announcing that the order has been delivered.\n• Return ONLY the <body>…</body> HTML. Do NOT include <html>, <head>, <style>, Markdown, or code fences.\n\nINPUTS YOU MAY RECEIVE\n• order_id, order_date, order_status\n• payment_status\n• customer: name, email, phone\n• address: street, apartment, city, state, zip, country (may arrive as a JSON string — parse safely)\n• items: product_name, category, quantity, unit_price (or item_amount/total); currency (default \"INR\")\n• order_summary: subtotal, tax, shipping, discount, total, currency (default \"INR\")\n• shipment: shipping_status (e.g., delivered, delivery_confirmed), carrier_name, tracking_number, tracking_url, shipped_at, delivered_at, expected_delivery_date\n• links: view_order_url, help_center_url, support_email, support_phone\n• brand: brand_name, logo_url, brand_color (hex), address_block\n\nINTERPRETATION RULES\n• Treat shipping_status ∈ {delivered, delivery_confirmed} as the controlling state even if order_status is “confirmed” or “processing”.\n• Omit any field not provided; never render placeholders like “N/A”.\n• Currency: default to INR and prefix with ₹; apply thousands separators for numbers.\n• Dates: render as readable local dates, e.g., “8 Oct 2025”. If a time exists, show compactly (e.g., “8 Oct 2025, 3:45 PM”).\n• Address: render in multiline form; gracefully handle partial data.\n• If address is a JSON string, attempt safe parse; on failure, print as a single human-readable block without braces/quotes.\n\nLAYOUT & ACCESSIBILITY\n1) Use a single 600px centered table layout with inline CSS only; role=\"presentation\"; max-width: 600px; margin: 0 auto; background #f6f7f9.\n2) Use accessible, email-safe markup; provide alt text for images; ensure sufficient color contrast.\n3) Mobile-friendly: base font 14–16px, line-height ≥ 1.4, buttons with generous padding, images width: 100% max-width: 100%.\n4) Color: use brand_color if provided; otherwise use #0E7C86 for accents and buttons.\n\nCONTENT REQUIREMENTS\n• Preheader comment at the very top:\n  <!-- PREHEADER: Your order was delivered. -->\n• Header: brand logo (if logo_url) and brand_name (if provided).\n• Status banner: “Delivered” and a concise subline like “Your package was delivered.”\n• Key facts block:\n  – Order ID (if provided)\n  – Delivered at (delivered_at) if present; otherwise omit.\n  – Tracking (if provided): carrier_name and tracking_number (copy-friendly). Include a CTA ONLY if tracking_url exists; label the CTA “View tracking”.\n• Delivery address block (if address present), multiline and tidy.\n• Item summary (if items array is present):\n  – Each item row shows product_name and quantity × unit_price; compute and display line total if unit_price and quantity are provided.\n  – If order_summary is provided, show subtotal, tax, shipping, discount (if any), and grand total.\n• Payment status line (if payment_status exists), e.g., “Payment received” / “Payment pending”.\n• Secondary CTA: “View your order” ONLY if view_order_url is provided.\n• Help & support panel: render help_center_url/support_email/support_phone if present.\n• Footer:\n  – brand address_block if provided.\n  – Concise legal/company line.\n• Closing note with reassurance, e.g., “We’ll notify you if there are any updates.”\n\nSAFETY & POLISH\n• Never echo raw JSON, variable names, or placeholders.\n• Do not invent tracking links, dates, or amounts; only use what’s provided.\n• Keep tone concise, courteous, and reassuring.\n• Ensure consistent spacing and divider lines for readability.\n\nFINAL CONTRACT\n• Output MUST be ONLY the <body>…</body> HTML with inline CSS. No other text, no wrappers, no external assets, no embedded <style> or <script>.\n\nEXPLICIT BEHAVIORAL GUARDS\n• If brand_color is missing, default to #0E7C86.\n• If currency is missing, assume INR and use the ₹ prefix.\n• If tracking_url is missing, DO NOT render a tracking button.\n• If view_order_url is missing, DO NOT render the “View your order” button.\n• If items are missing, omit the item summary section entirely.\n• If address parsing fails, output a simple single-block address line from the raw text (without JSON punctuation).\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        512
+      ],
+      "id": "2cdd4992-f8e5-47b9-8501-f562219a6ed0",
+      "name": "Confirm Delivered Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "order details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Product Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "order details1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "order details": {
+      "main": [
+        [
+          {
+            "node": "Confirm Order Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Confirm Order Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Details": {
+      "main": [
+        [
+          {
+            "node": "Fetching Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetching Product": {
+      "main": [
+        [
+          {
+            "node": "updateing quantity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateing quantity": {
+      "main": [
+        [
+          {
+            "node": "Remove Quotes from Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update documents": {
+      "main": [
+        [
+          {
+            "node": "Find documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find documents": {
+      "main": [
+        [
+          {
+            "node": "Confirm Shipping Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Confirm Shipping Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Confirm Delivered Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "order detailes in crm": {
+      "main": [
+        [
+          {
+            "node": "Order Details Message to Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shipping Details in Crm": {
+      "main": [
+        [
+          {
+            "node": "Shipped Message To Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery Details in Crm": {
+      "main": [
+        [
+          {
+            "node": "Delivered Message to team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shipped Message To Team": {
+      "main": [
+        []
+      ]
+    },
+    "Order Details Message to Team": {
+      "main": [
+        []
+      ]
+    },
+    "Ordered Message for Customer": {
+      "main": [
+        []
+      ]
+    },
+    "Remove Quotes from Id": {
+      "main": [
+        [
+          {
+            "node": "Update details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update details": {
+      "main": [
+        [
+          {
+            "node": "Update documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "order details1": {
+      "main": [
+        [
+          {
+            "node": "Confirm Delivered Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Order Agent": {
+      "main": [
+        [
+          {
+            "node": "Ordered Message for Customer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "order detailes in crm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Shipping Agent": {
+      "main": [
+        [
+          {
+            "node": "Shipping Started Message for customer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Shipping Details in Crm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Delivered Agent": {
+      "main": [
+        [
+          {
+            "node": "delivered message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delivery Details in Crm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "59e48040-5f04-4a8c-8849-e2730679ea73",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09ace0978f111a318a47bb9ca1684cddb283474980bcad2a64ecc984f6ba3a0c"
+  },
+  "id": "SxHSbNymMyxvYp0I",
+  "tags": []
+}

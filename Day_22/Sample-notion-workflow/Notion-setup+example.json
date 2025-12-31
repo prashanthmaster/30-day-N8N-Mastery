@@ -1,0 +1,259 @@
+{
+  "name": "Notion-setup+example",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        832
+      ],
+      "id": "4ba19adf-813f-4df1-a65c-8a0de1219b08",
+      "name": "When chat message received",
+      "webhookId": "49c79103-73c0-46aa-aa8b-294c286f1595"
+    },
+    {
+      "parameters": {
+        "content": "# Scraping from web and appending into Notion Page ",
+        "height": 752,
+        "width": 1552,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -336,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "4bad2472-7e93-4efe-bfc2-3aa3f6d2f366",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# AI Research Agent System Prompt\n\nYou are a research and documentation agent that searches topics and saves findings to Notion pages.\n\n## Workflow\n\n1. Search from the serpAPI\n2. Structure the data into Tittle,summary,points,urls,etcc\n\nOutput:\n{\n\n   \"Heading\" : \"string\",\n    \"summary\" : \"string\",\n  \"key_points\" : \"string\"\n\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        240,
+        832
+      ],
+      "id": "13b2299d-5efe-44d8-beb4-54370db5b25e",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        1152
+      ],
+      "id": "9ccfd234-dcf0-416b-a8bb-5d36503a8d5b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "={{ $fromAI('query', 'The search query based on the topic the user wants to research', 'string') }}"
+            },
+            {
+              "name": "api_key",
+              "value": "c4fb24405ec981dc88326a47a6ffbae15ffe2cf4ab5ec61f2399867af2c0724e"
+            },
+            {
+              "name": "hl",
+              "value": "en"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        416,
+        1152
+      ],
+      "id": "9dde8bba-5cf5-4611-a4be-4f237f63d1ae",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        1136
+      ],
+      "id": "763d3e51-7c54-4de7-b200-29fe8dbe3889",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gu3dB7v46IeeSEes",
+          "name": "MY account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\n   \"Heading\" : \"string\",\n    \"summary\" : \"string\",\n  \"key_points\" : \"string\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        1072
+      ],
+      "id": "5f3ae364-7837-4dcb-87f4-a6937c289770",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/29d8b67274e181d286bfeb9720270af8",
+          "mode": "url"
+        },
+        "title": "={{ $json.output.Heading }}",
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_1",
+              "textContent": "={{ $json.output.Heading }}"
+            },
+            {
+              "textContent": "={{ $json.output.summary }}\n\n{{ $json.output.key_points }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        832
+      ],
+      "id": "d0f6835c-898d-4516-b728-e934c0e75493",
+      "name": "Create a page",
+      "credentials": {
+        "notionApi": {
+          "id": "mfLnebYbjodDmPey",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Create a page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "776a3470-e557-49ec-85a6-4be7ed389ce5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5169143968f8c39688edf7cf36e8f683b0933ca424cc61a28c8ea6c31ee83429"
+  },
+  "id": "KkZ4fgkEJUg1td5e",
+  "tags": []
+}

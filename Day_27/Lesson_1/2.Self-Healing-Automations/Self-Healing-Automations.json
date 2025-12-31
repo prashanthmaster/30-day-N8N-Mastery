@@ -1,0 +1,328 @@
+{
+  "name": "Self Healing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e943efb2-0129-4f6e-b663-9c32edca234e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        -48
+      ],
+      "id": "12e85b75-9bae-44c0-bab4-c51f579db36a",
+      "name": "Webhook",
+      "webhookId": "e943efb2-0129-4f6e-b663-9c32edca234e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5707ead9-ac93-45e7-9cf4-e308ca8a34b9",
+              "leftValue": "={{ $json.error.status }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        -48
+      ],
+      "id": "bf7931e9-0520-4fc3-9119-18f1829fcf83",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a928b694-9a86-437b-96b6-cb251b6eafae",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        48
+      ],
+      "id": "b10f6399-6ce0-4b6b-98c5-a0a4b23aea76",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "https://httpbin.org/status/500",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "29e1fae0-ceb0-456b-b53c-d59641cf4cb3",
+      "name": "Status 500 error",
+      "retryOnFail": false,
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c3b64c1d-057e-421a-9801-c723ac7f7041",
+              "name": "Success",
+              "value": "={{ $('Status 500 error').item.json.error.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        -128
+      ],
+      "id": "2c3cf4f2-1aae-439f-bde3-3bdf0f297d74",
+      "name": "Success"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        48
+      ],
+      "id": "c6d04fbf-a99e-4a06-a5cb-71888de04ddb",
+      "name": "delay 5 sec",
+      "webhookId": "90b57bab-cecd-472a-b80e-22b00ffc9b79"
+    },
+    {
+      "parameters": {
+        "url": "https://httpbin.org/status/200",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        48
+      ],
+      "id": "aeaf81c9-d859-4758-9ba8-ad7a1c3bff0c",
+      "name": "Statues 200 ",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "736b80c1-4121-42f4-9af5-5edbf86354d3",
+              "name": "success",
+              "value": "={{ $('Statues 200 ').item.json.error.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        -48
+      ],
+      "id": "dd73470a-e69c-4594-b418-b457173e1488",
+      "name": "Success1"
+    },
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "error",
+        "message": "={{ $json.error.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        144
+      ],
+      "id": "7da7360b-76a1-46fd-97a9-5a2449e9b150",
+      "name": "Error Message Send",
+      "webhookId": "29c03ac4-4293-4f59-88cd-51d7288b7bf4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UHZa8dl21qZshVrS",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "name": "krus",
+            "content-type": "application/json",
+            "user-agent": "PostmanRuntime/7.48.0",
+            "accept": "*/*",
+            "cache-control": "no-cache",
+            "postman-token": "05b15992-2951-4b83-8272-83cefdd52d0e",
+            "host": "localhost:5678",
+            "accept-encoding": "gzip, deflate, br",
+            "connection": "keep-alive",
+            "content-length": "70"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "status": "pending",
+            "score": 72,
+            "fullName": "Ali Khan"
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/e943efb2-0129-4f6e-b663-9c32edca234e",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Status 500 error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "delay 5 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Success1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Message Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status 500 error": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delay 5 sec": {
+      "main": [
+        [
+          {
+            "node": "Statues 200 ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Statues 200 ": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2868ff04-d61b-4413-ab8b-36804933c658",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0668e88de7a16f28d063324a020917a9ba638413818ac1cc358f702865c45d84"
+  },
+  "id": "a4bGBMMR6jmfIoib",
+  "tags": []
+}

@@ -1,0 +1,296 @@
+{
+  "name": "ELK Stack",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "krus0523@gmail.com",
+        "subject": "error in elastik search",
+        "message": "=code:{{ $json.error.code }}\nstatues code: {{ $json.error.status }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        48
+      ],
+      "id": "7fad4ad2-52d2-4eed-bd44-1b9e5e70e261",
+      "name": "Send a message",
+      "webhookId": "56631e84-46bb-40c1-b1c1-786345dbb6f5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uwlFWAp8XLHMZISH",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "log-event",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -32
+      ],
+      "id": "4abf93cf-537c-4101-9d37-0ba8ea6cf8e3",
+      "name": "get data",
+      "webhookId": "caa823ce-ce78-45a5-a632-c20848daa6e5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "982ac867-98cf-48af-9d09-2089bc961ce3",
+              "name": "timestamp ",
+              "value": "={{$now}}",
+              "type": "string"
+            },
+            {
+              "id": "bab8d8af-f06e-47ae-be42-3044931bcf45",
+              "name": "workflow",
+              "value": "={{$json.workflow || \"Order Processing\"}}",
+              "type": "string"
+            },
+            {
+              "id": "3c5ac4c2-8b98-408a-bf5c-4d411bc524d3",
+              "name": "status",
+              "value": "={{$json.status || \"success\"}}",
+              "type": "string"
+            },
+            {
+              "id": "34b7a2b7-b22a-4001-9922-23d2748ad2ae",
+              "name": "severity",
+              "value": "={{$json.severity || ($json.status === \"failed\" ? \"error\" : \"info\")}}",
+              "type": "string"
+            },
+            {
+              "id": "23a1ccdb-b3b3-4033-bba1-f9fa7ac2a481",
+              "name": "message",
+              "value": "={{$json.message || \"Order processed successfully.\"}}",
+              "type": "string"
+            },
+            {
+              "id": "0413f05a-b10f-4572-b500-976c623c0e6b",
+              "name": "execution_id",
+              "value": "={{$execution.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "5eef0edb-1780-464e-ad19-4fb65862948a",
+      "name": "set data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://a298ea5c84cf4e1383d05d373d1caf3e.us-central1.gcp.cloud.es.io/n8n-logs/_doc",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"ApiKey N19rMDVwa0J6UzZiVjJGQVU3Zl86R1pJSHBfOExVZnlrX1RTVl95andpdw==\",\n  \"Content-Type\": \"application/json\"\n}\n",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "{{$json}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        -32
+      ],
+      "id": "c175eb28-172b-4094-a52e-7e412f31e4cd",
+      "name": "elastic search request",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4086f77c-023f-4c1a-8c9c-87f2348f2095",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 201,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "b9fa83e4-5be0-45e3-bfee-c1e244f756b4",
+      "name": "statuscode verifier"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5879e031-9e37-4fe8-a006-b89eee2db649",
+              "name": "logs",
+              "value": "={{ $json.result }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -112
+      ],
+      "id": "e427b31c-fa00-4f42-bd21-a5581e868668",
+      "name": "Success"
+    }
+  ],
+  "pinData": {
+    "get data": [
+      {
+        "json": {
+          "headers": {
+            "host": "ch-vishal.app.n8n.cloud",
+            "user-agent": "PostmanRuntime/7.48.0",
+            "content-length": "152",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cache-control": "no-cache",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2406:b400:b1:7791:ec8c:6e54:dbc0:2537",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "IN",
+            "cf-ray": "98ed0e6e6183d85a-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "name": "krus",
+            "postman-token": "3c8c7dd7-3b92-4581-a1b0-cfca9db4bb46",
+            "x-forwarded-for": "2406:b400:b1:7791:ec8c:6e54:dbc0:2537, 172.71.198.26",
+            "x-forwarded-host": "ch-vishal.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-16-6f778b7769-7dmkt",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2406:b400:b1:7791:ec8c:6e54:dbc0:2537"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "workflow": "Order Processing",
+            "status": "success",
+            "severity": "info",
+            "message": "Order processed successfully.",
+            "execution_id": "12345"
+          },
+          "webhookUrl": "https://ch-vishal.app.n8n.cloud/webhook-test/log-event",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "get data": {
+      "main": [
+        [
+          {
+            "node": "set data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set data": {
+      "main": [
+        [
+          {
+            "node": "elastic search request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "elastic search request": {
+      "main": [
+        [
+          {
+            "node": "statuscode verifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "statuscode verifier": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e3ac28c8-5f66-4318-b30f-0bf1e09989a3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09ace0978f111a318a47bb9ca1684cddb283474980bcad2a64ecc984f6ba3a0c"
+  },
+  "id": "aDMWMw3gR9gb2nhh",
+  "tags": []
+}
